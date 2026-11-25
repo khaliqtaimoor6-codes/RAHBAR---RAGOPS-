@@ -37,7 +37,7 @@ dev: ## run the API with stubs on http://localhost:8000, serving the chat UI too
 	cd api && SERVE_UI_DIR=../ui RETRIEVER=stub LLM_PROVIDER=stub $(BIN)/uvicorn app.main:app --reload --port 8000
 
 cluster: ## start minikube with Calico, then enable metrics-server and ingress
-	minikube start --driver=docker --cni=calico --memory=6144 --cpus=4
+	minikube start --driver=docker --cni=calico --memory=3072 --cpus=2 --disk-size=12g
 	minikube addons enable metrics-server
 	minikube addons enable ingress
 
@@ -57,8 +57,8 @@ secret: ## create the LLM key Secret from the LLM_API_KEY variable; never from a
 	kubectl create secret generic rahbar-secret -n $(NS) \
 	  --from-literal=LLM_API_KEY="$$LLM_API_KEY" --dry-run=client -o yaml | kubectl apply -f -
 
-index: ## re-index now, from the CronJob's template: no redeploy, no downtime
-	kubectl create job --from=cronjob/reindex reindex-$$(date +%s) -n $(NS)
+index: ## run the ingestion Job now (verify + incremental update), from the CronJob's template
+	kubectl create job --from=cronjob/ingest ingest-$$(date +%s) -n $(NS)
 	@echo "watch it with: kubectl get jobs -n $(NS) -w"
 
 ask: ## ask through the Ingress: make ask Q="What CGPA puts a student on academic warning?"

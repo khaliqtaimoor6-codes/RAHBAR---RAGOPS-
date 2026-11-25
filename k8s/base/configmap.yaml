@@ -23,6 +23,15 @@ data:
   CHUNK_SIZE: "150"
   CHUNK_OVERLAP: "30"
   CORPUS_DIR: "/corpus"
+  # --- Assignment 03 Part A: data lake and verification thresholds ----------------------
+  LAKE_DIR: "/data/lake"
+  VERIFY_MIN_WORDS: "40"                    # fewer words extracted -> "empty"
+  VERIFY_MIN_CLEAN_CHARS: "0.85"            # share of ordinary characters; below -> garbled
+  VERIFY_MIN_WORDLIKE: "0.55"               # share of word-like tokens; below -> garbled
+  NEAR_DUP_THRESHOLD: "0.985"               # document-fingerprint cosine; at/above -> near-dup
+  # --- Assignment 03 Part D: traces and the injection rail -------------------------------
+  TRACE_DIR: "/traces"
+  INJECTION_ACTION: "drop"                  # drop | flag | off
   # --- retrieval and grounding ------------------------------------------------------
   TOP_K: "5"
   HYBRID: "true"                            # lexical leg for clause numbers and codes

@@ -10,6 +10,7 @@ resources:
   - namespace.yaml
   - serviceaccounts.yaml
   - configmap.yaml
+  - pvc.yaml
   - services.yaml
   - chroma-statefulset.yaml
   - redis.yaml
@@ -19,5 +20,5 @@ resources:
   - pdb.yaml
   - ingress.yaml
   - networkpolicy.yaml
-  - indexer-job.yaml
-  - reindex-cronjob.yaml
+  - ingest-job.yaml
+  - ingest-cronjob.yaml

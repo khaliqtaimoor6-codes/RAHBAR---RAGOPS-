@@ -1,1 +1,2 @@
 - {op: remove, path: /spec/jobTemplate/spec/template/spec/initContainers}
+- {op: replace, path: /spec/jobTemplate/spec/template/spec/containers/0/command, value: ["python", "-m", "pipeline.run"]}

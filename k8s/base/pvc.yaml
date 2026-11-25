@@ -1,0 +1,39 @@
+# F1: state that must survive pod restarts lives on PersistentVolumeClaims.
+#
+# rahbar-lake    the data lake (Part A): mirror of the public corpus, inbox for new
+#                batches, current/ (retrieval sources), archive/ (superseded versions,
+#                restorable), quarantine/ (failed verification), deleted/, the extracted
+#                text cache, the registry and every verification/ingest report.
+#                Written only by the ingestion Job; mounted read-only everywhere else.
+# rahbar-traces  one JSON line per query from every api pod (D1/F4), read by the report
+#                scripts (app.tools.trace_summary / trace_show) and by the eval Job.
+#
+# The vector store's own volume comes from the chroma StatefulSet's volumeClaimTemplates
+# (data-chroma-0), so it follows chroma-0 across restarts.
+#
+# ReadWriteOnce means "one node", not "one pod": on minikube (one node) the three api
+# replicas and the Jobs can all mount these. A multi-node cluster would need
+# ReadWriteMany (NFS, CephFS, a cloud file store) for rahbar-traces, or one file per node.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rahbar-lake
+  namespace: rahbar
+  labels: {app.kubernetes.io/part-of: rahbar, rahbar/role: data-lake}
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi        # corpus ~35 MB + extracted text + archive + reports, with room
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rahbar-traces
+  namespace: rahbar
+  labels: {app.kubernetes.io/part-of: rahbar, rahbar/role: traces}
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 512Mi      # a trace line is ~6-10 KB: ~50,000 queries before rotation

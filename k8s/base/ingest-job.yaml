@@ -1,10 +1,15 @@
-# The indexer is a Job, not part of the api (ADR 0001, section 4.2): it runs once,
-# writes the index, and exits. The api only reads. Re-index with no redeploy:
-#   kubectl create job --from=cronjob/reindex manual-reindex-1 -n rahbar
+# F2: ingestion with verification (Part A) as a Job: fetch -> verify -> update the data
+# lake -> update the retrieval sources, then exit. It is the ONLY writer to the vector
+# store: the api only reads (ADR 0001), the eval Job only queries the api, and the
+# NetworkPolicy lets nothing but app=api and app=indexer reach chroma at all.
+#
+# Run it again by hand (same pod spec, from the CronJob):
+#   kubectl -n rahbar create job --from=cronjob/ingest ingest-manual-$(date +%s)
+# Feed it a new batch first: scripts/lake_upload.sh data/batch_b   (see k8s/README.md)
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: indexer
+  name: ingest
   namespace: rahbar
   labels: {app: indexer, app.kubernetes.io/part-of: rahbar}
 spec:
@@ -22,15 +27,16 @@ spec:
         runAsNonRoot: true
         runAsUser: 10001
         runAsGroup: 10001
+        fsGroup: 10001
         seccompProfile: {type: RuntimeDefault}
       initContainers:
-        # Download the corpus listed in corpus/sources.yaml into an emptyDir and compare
-        # every SHA-256 with the committed corpus/MANIFEST.md (PIPELINE.md, "How the
-        # documents reach the Job"). Nothing from nu.edu.pk is baked into an image.
+        # Download the public corpus listed in corpus/sources.yaml into the lake's mirror/
+        # and check every SHA-256 against corpus/MANIFEST.md. Files already present with
+        # the right hash are kept ("have"), so an unchanged corpus downloads nothing.
         - name: fetch-corpus
           image: rahbar-indexer
           imagePullPolicy: IfNotPresent
-          command: ["python", "corpus/fetch.py", "--dest", "/corpus"]
+          command: ["python", "corpus/fetch.py", "--dest", "/data/lake/mirror"]
           resources:
             requests:
               cpu: 20m
@@ -45,25 +51,25 @@ spec:
               drop:
                 - ALL
           volumeMounts:
-            - {name: corpus, mountPath: /corpus}
+            - {name: lake, mountPath: /data/lake}
             - {name: tmp, mountPath: /tmp}
       containers:
-        - name: indexer
+        - name: ingest
           image: rahbar-indexer
           imagePullPolicy: IfNotPresent
-          args: []                      # the real pipeline; ["--dummy"] for week-1 testing
+          command: ["python", "-m", "pipeline.ingest"]
+          args: []                      # ["--reconcile-only"] to rebuild from the lake only
           envFrom:
             - configMapRef: {name: rahbar-config}
-          # Measured peak 186Mi / 1411m CPU (docs/evidence/kubectl-top-indexer.txt), OCR of the
-          # scanned 2023 rules. Limit 512Mi = 2.7x the sampled peak (samples are 15 s apart).
-          # Too low -> OOMKilled, exit code 137, and the Job retries up to backoffLimit.
+          # Assignment 02 measured the OCR peak at 186Mi / 1411m (kubectl-top-indexer.txt).
+          # Re-measured for the RAGOps Job in docs/RAGOPS.md (F5).
           resources:
             requests:
               cpu: 250m
               memory: 256Mi
             limits:
               cpu: "1500m"
-              memory: 512Mi
+              memory: 768Mi
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -71,10 +77,10 @@ spec:
               drop:
                 - ALL
           volumeMounts:
-            - {name: corpus, mountPath: /corpus, readOnly: true}
+            - {name: lake, mountPath: /data/lake}
             - {name: tmp, mountPath: /tmp}      # pdf2image and tesseract write here
       volumes:
-        - name: corpus
-          emptyDir: {sizeLimit: 256Mi}
+        - name: lake
+          persistentVolumeClaim: {claimName: rahbar-lake}
         - name: tmp
           emptyDir: {sizeLimit: 512Mi}

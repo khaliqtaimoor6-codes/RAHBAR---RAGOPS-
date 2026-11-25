@@ -1,2 +1,5 @@
-# No download in CI: the fixtures are in the image. Drop the fetch-corpus init container.
+# No download in CI: the fixtures are in the image. Drop the fetch-corpus init container,
+# and index them with the Assignment 02 build-aside pipeline (the fixtures carry no
+# title/family metadata, so the Assignment 03 verification stage would quarantine them).
 - {op: remove, path: /spec/template/spec/initContainers}
+- {op: replace, path: /spec/template/spec/containers/0/command, value: ["python", "-m", "pipeline.run"]}

@@ -1,5 +1,7 @@
 # minikube on a laptop (README "From a clean clone"): images built locally by
-# `make images` and loaded with `minikube image load`; Ollama on the host.
+# `make images` and loaded with `minikube image load`; Ollama on the host for embeddings
+# only (no local chat model); answers from the hosted provider in the ConfigMap.
+# Sized for a laptop with little free RAM: 2 api replicas instead of 3.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
@@ -8,3 +10,14 @@ images:
   - {name: rahbar-api, newTag: dev}
   - {name: rahbar-ui, newTag: dev}
   - {name: rahbar-indexer, newTag: dev}
+patches:
+  - target: {kind: Deployment, name: api}
+    patch: |-
+      - {op: replace, path: /spec/replicas, value: 2}
+  - target: {kind: HorizontalPodAutoscaler, name: api}
+    patch: |-
+      - {op: replace, path: /spec/minReplicas, value: 2}
+      - {op: replace, path: /spec/maxReplicas, value: 4}
+  - target: {kind: PodDisruptionBudget, name: api}
+    patch: |-
+      - {op: replace, path: /spec/minAvailable, value: 1}

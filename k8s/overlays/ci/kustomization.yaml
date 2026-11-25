@@ -10,9 +10,9 @@ resources:
 patches:
   - path: config.yaml
   - path: fixture-corpus.yaml
-    target: {kind: Job, name: indexer}
+    target: {kind: Job, name: ingest}
   - path: fixture-corpus-cron.yaml
-    target: {kind: CronJob, name: reindex}
+    target: {kind: CronJob, name: ingest}
 images:
   - {name: rahbar-api, newTag: ci}
   - {name: rahbar-ui, newTag: ci}

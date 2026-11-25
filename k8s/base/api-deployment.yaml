@@ -29,6 +29,7 @@ spec:
         runAsNonRoot: true
         runAsUser: 10001
         runAsGroup: 10001
+        fsGroup: 10001
         seccompProfile: {type: RuntimeDefault}
       containers:
         - name: api
@@ -62,6 +63,7 @@ spec:
                 - ALL
           volumeMounts:
             - {name: tmp, mountPath: /tmp}
+            - {name: traces, mountPath: /traces}      # D1/F4: one file per pod
           startupProbe:          # finished booting? liveness and readiness wait for it
             httpGet: {path: /healthz, port: 8000}
             failureThreshold: 30
@@ -83,3 +85,5 @@ spec:
       volumes:
         - name: tmp
           emptyDir: {sizeLimit: 64Mi}
+        - name: traces
+          persistentVolumeClaim: {claimName: rahbar-traces}

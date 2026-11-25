@@ -54,14 +54,14 @@ grep -E '^\s+image:' /tmp/rahbar-ci.yaml | sort -u
 kubectl apply -f /tmp/rahbar-ci.yaml || { sleep 15; kubectl apply -f /tmp/rahbar-ci.yaml; }
 
 log "indexer Job, then the api rollout"
-if ! kubectl -n $NS wait --for=condition=complete job/indexer --timeout=420s; then
+if ! kubectl -n $NS wait --for=condition=complete job/ingest --timeout=420s; then
   kubectl -n $NS get pods -o wide
-  kubectl -n $NS logs job/indexer --all-containers --tail=50 || true
+  kubectl -n $NS logs job/ingest --all-containers --tail=50 || true
   kubectl -n $NS logs statefulset/chroma --previous --tail=20 || true
   kubectl -n $NS get events --sort-by=.lastTimestamp | tail -25 || true
   exit 1
 fi
-kubectl -n $NS logs job/indexer | tail -3
+kubectl -n $NS logs job/ingest | tail -3
 kubectl -n $NS rollout status deploy/api --timeout=240s
 kubectl -n $NS rollout status deploy/ui --timeout=120s
 kubectl -n $NS get pods,svc,ingress,hpa

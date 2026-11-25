@@ -1,0 +1,47 @@
+# An operator pod with the data lake and the traces volume mounted, for copying a new
+# batch into the inbox, dropping a _delete.txt / _restore.txt control file, and copying
+# reports and traces back out. It has no network access to anything (default-deny
+# NetworkPolicy, and no policy selects role=lake-shell), so it cannot write to the
+# vector store: only the ingestion Job does that.
+#
+#   kubectl apply -f k8s/tools/lake-shell.yaml
+#   kubectl -n rahbar cp data/batch_b lake-shell:/data/lake/inbox/batch_b
+#   kubectl -n rahbar delete pod lake-shell
+# scripts/lake_upload.sh and scripts/lake_pull.sh wrap these.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lake-shell
+  namespace: rahbar
+  labels: {app.kubernetes.io/part-of: rahbar, rahbar/role: lake-shell}
+spec:
+  enableServiceLinks: false
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile: {type: RuntimeDefault}
+  containers:
+    - name: shell
+      image: rahbar-indexer
+      imagePullPolicy: IfNotPresent
+      command: ["python", "-c", "import time; time.sleep(6 * 3600)"]
+      resources:
+        requests: {cpu: 5m, memory: 16Mi}
+        limits: {cpu: 100m, memory: 64Mi}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+      volumeMounts:
+        - {name: lake, mountPath: /data/lake}
+        - {name: traces, mountPath: /traces}
+  volumes:
+    - name: lake
+      persistentVolumeClaim: {claimName: rahbar-lake}
+    - name: traces
+      persistentVolumeClaim: {claimName: rahbar-traces}
+  restartPolicy: Never
