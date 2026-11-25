@@ -113,7 +113,8 @@ def fetch(force: bool, dest: Path | None = None) -> int:
             if old and not force and (RAW / old["file"]).exists() and old["url"] == url:
                 print(f"  have    {old['file']}")
                 entries.append({**old, "doc_version": doc.get("doc_version", "unknown"),
-                                "superseded": bool(doc.get("superseded", False))})
+                                "superseded": bool(doc.get("superseded", False)),
+                                "family": doc.get("family", "")})
                 continue
             print(f"  fetch   {name}")
             try:
@@ -133,6 +134,8 @@ def fetch(force: bool, dest: Path | None = None) -> int:
                     "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
                     "doc_version": doc.get("doc_version", "unknown"),
                     "superseded": bool(doc.get("superseded", False)),
+                    # Versions of one document share a family (Assignment 03, recency check).
+                    "family": doc.get("family", ""),
                 })
                 print(f"          {file}, {len(response.content):,} bytes")
             except Exception as exc:  # report every failure, keep going
