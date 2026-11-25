@@ -175,6 +175,27 @@ different documents in our corpus: highest 0.9606 (Annual Report 2019-20 vs 2023
 then 0.9124 (b06 vs b01, same template), all others ≤ 0.862. The planted near-duplicate
 scored 0.9997. 0.985 sits in the gap with margin on both sides.
 
+### D: answers and traces with the Groq key set
+
+Six questions (`docs/evidence/a3/D-sample-answers.json`):
+
+| Question | Answered | Behaviour |
+| --- | --- | --- |
+| CGPA to stay off academic warning | yes | 2.00, cites 5.4 Academic Warning/Probation (2026 handbook) |
+| Until when can a student withdraw | yes | "last day of the makeup week" (2026, current edition) |
+| Is attendance optional? | yes | "No", cites 1 / 1.21 Attendance; the injected b10 chunks were dropped by the rail |
+| What did the 2023 rules say about withdrawal | yes | "last day of classes": the archived 2023 version, because the question asks for it |
+| How do I apply for a hostel room | no | the model declined (not in the corpus) |
+| Capital of France | no | relevance floor: abstained without a model call |
+
+- D1: full record for the CGPA answer: `docs/evidence/a3/D1-full-trace-record.json`.
+- D2: `trace_show d2ca42d6` rebuilds the prompt, hash **MATCH**
+  (`D2-trace-show-answered.txt`); a cache-hit trace prints without a prompt
+  (`D2-trace-show-cache-hit.txt`).
+- **Found and fixed on the cluster:** `trace_show` crashed on cache-hit traces (their
+  retrieved list had no `rank`). Both the trace writer and the tool are fixed, with a test.
+- F4: the same records are in `kubectl logs` (`F4-trace-in-kubectl-logs.txt`).
+
 ### D: traces (first queries, before the Groq key was set)
 
 - `trace_show` on the attendance question (`docs/evidence/a3/D2-trace-show-injection.txt`):

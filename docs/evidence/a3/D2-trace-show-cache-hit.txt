@@ -1,0 +1,17 @@
+==============================================================================
+trace b8650a3dcbd64856a827840271fb1789   2026-11-25T18:59:38.939Z   cache=hit
+query:       What CGPA does an undergraduate need to stay off academic warning?
+collection:  rahbar  index_id=20ade7ea03b5  indexed_at=None
+embedding:   nomic-embed-text  version=nomic-embed-text@0a109f422b47
+filters:     null
+
+==============================================================================
+RETRIEVED (before rails; reranked order)
+==============================================================================
+  #1 0.8663  academic-rules-handbook-jun-2026-0107  doc=academic-rules-handbook-jun-2026 v=2026-06 superseded=None
+  #2 0.8239  academic-rules-handbook-jun-2026-0109  doc=academic-rules-handbook-jun-2026 v=2026-06 superseded=None
+  #3 0.8062  grading-page-0006  doc=grading-page v=2026 superseded=None
+  #4 0.7994  grading-page-0007  doc=grading-page v=2026 superseded=None
+  #5 0.7941  prospectus-2026-academic-rules-and-regulations-0019  doc=prospectus-2026-academic-rules-and-regulations v=2026 superseded=None
+
+(answered from the semantic cache: no prompt was built for this request)

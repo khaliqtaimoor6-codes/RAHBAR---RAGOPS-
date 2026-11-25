@@ -105,8 +105,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"guardrail:   {json.dumps(g, ensure_ascii=False)}")
 
     print(f"\n{bar}\nRETRIEVED (before rails; reranked order)\n{bar}")
-    for r in (rec.get("retrieval") or {}).get("retrieved") or []:
-        print(f"  #{r['rank']} {r['score']:.4f}  {r['chunk_id']}  doc={r.get('doc_id')} "
+    for i, r in enumerate((rec.get("retrieval") or {}).get("retrieved") or [], start=1):
+        print(f"  #{r.get('rank', i)} {r['score']:.4f}  {r['chunk_id']}  doc={r.get('doc_id')} "
               f"v={r.get('doc_version')} superseded={r.get('superseded')}")
 
     context = rec.get("context")

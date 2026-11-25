@@ -1,0 +1,1 @@
+{"logger": "rahbar.trace", "schema": "rahbar.trace/v1", "trace_id": "d2ca42d6cfde47c4be17de019ae17b53", "timestamp": "2026-11-25T18:58:58.637Z", "user_query": "

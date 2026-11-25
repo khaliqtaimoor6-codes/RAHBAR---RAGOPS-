@@ -68,6 +68,18 @@ def test_trace_tool_rebuilds_the_exact_prompt(settings: Settings, tracer: TraceW
     assert code == 0 and "MATCH" in out and "5.4 Minimum CGPA" in out
 
 
+def test_trace_tool_handles_a_cache_hit_record(tmp_path: Path,
+                                               capsys: pytest.CaptureFixture) -> None:
+    # A cache-hit record from the first cluster run: no context, no prompt, no ranks.
+    rec = {"logger": "rahbar.trace", "trace_id": "cafe01", "timestamp": "2026-11-25T18:59:38Z",
+           "user_query": "q", "cache": "hit", "collection": {"name": "rahbar"},
+           "embedding": {}, "retrieval": {"retrieved": [{"chunk_id": "c1", "score": 0.8}]},
+           "context": None, "prompt": None, "guardrails": []}
+    (tmp_path / "t.jsonl").write_text(json.dumps(rec) + chr(10), encoding="utf-8")
+    assert trace_show.main(["cafe01", "--traces", str(tmp_path)]) == 0
+    assert "semantic cache" in capsys.readouterr().out
+
+
 def test_injected_chunk_is_dropped_and_logged(settings: Settings, tracer: TraceWriter,
                                               tmp_path: Path) -> None:
     provider = ScriptedProvider(GOOD)
