@@ -25,7 +25,7 @@ spec:
     seccompProfile: {type: RuntimeDefault}
   containers:
     - name: shell
-      image: rahbar-indexer
+      image: rahbar-indexer:dev       # applied directly, not through an overlay
       imagePullPolicy: IfNotPresent
       command: ["python", "-c", "import time; time.sleep(6 * 3600)"]
       resources:

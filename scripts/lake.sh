@@ -12,7 +12,12 @@
 #                                            (eval/results/ingest/, traces/)
 set -euo pipefail
 NS=${NS:-rahbar}
-HERE=$(cd "$(dirname "$0")/.." && pwd)
+# Relative paths from the repo root: Windows kubectl cannot read Git Bash's /c/... paths,
+# and `kubectl cp` needs MSYS path conversion off so 'pod:/path' is left alone.
+SRC_DIR=$(pwd)
+cd "$(dirname "$0")/.."
+HERE=.
+export MSYS_NO_PATHCONV=1
 
 shell_up() {
   if ! kubectl -n "$NS" get pod lake-shell >/dev/null 2>&1; then
@@ -24,6 +29,7 @@ shell_up() {
 case "${1:-}" in
   upload)
     src=${2:?usage: lake.sh upload <dir>}
+    case "$src" in /*|?:*) ;; *) src="$(realpath --relative-to=. "$SRC_DIR/$src")" ;; esac
     shell_up
     name=$(basename "$src")
     kubectl -n "$NS" cp "$src" "lake-shell:/data/lake/inbox/$name"

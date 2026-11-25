@@ -41,12 +41,13 @@ spec:
             - {name: IS_PERSISTENT, value: "TRUE"}
             - {name: PERSIST_DIRECTORY, value: /data}
             - {name: ANONYMIZED_TELEMETRY, value: "FALSE"}
-          # Measured 58Mi and 1-3m idle holding 1,008 chunks; writes during indexing are
-          # brief. Limit 384Mi leaves room for the HNSW index to grow ~5x.
+          # A2: 58Mi idle with 1,008 chunks. A3 (docs/RAGOPS.md, F5): 106-107Mi with two
+          # collections (1,034 + 834 chunks), 3-24m CPU. Request 128Mi covers that; the
+          # 384Mi limit still leaves room for the HNSW index to grow ~3x.
           resources:
             requests:
               cpu: 25m
-              memory: 96Mi
+              memory: 128Mi
             limits:
               cpu: 500m
               memory: 384Mi

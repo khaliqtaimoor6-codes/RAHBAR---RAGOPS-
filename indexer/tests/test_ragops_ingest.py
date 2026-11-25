@@ -96,6 +96,10 @@ FEES = ("Fee Structure\n\n| Programme | Fee per credit hour |\n| BS Computer Sci
         "paid by the end of the second week is dropped from every course for that term.\n")
 
 
+def lake_root(p: Path) -> Path:
+    return p
+
+
 def md(path: Path, body: str, **meta: str) -> None:
     head = "".join(f"{k}: {v}\n" for k, v in meta.items())
     path.write_text(f"---\n{head}---\n{body}", encoding="utf-8")
@@ -235,6 +239,8 @@ def test_planted_problems_are_quarantined_with_reasons(env, tmp_path: Path) -> N
     settings, client, run, inbox, calls = env
     seed(inbox)
     run("r1")
+    # byte-for-byte copy under another file name (front matter and all, so same doc_id)
+    (inbox / "fees-bytes-copy.md").write_bytes((lake_root(tmp_path) / "current" / "fees.md").read_bytes())
     # exact duplicate of an indexed document, under another name
     md(inbox / "fees-copy.md", FEES, doc_id="fees-copy", title="Fees (copy)",
        source="https://example.edu/fees", doc_version="2026")
@@ -259,6 +265,8 @@ def test_planted_problems_are_quarantined_with_reasons(env, tmp_path: Path) -> N
     (inbox / "corrupt.pdf.meta.json").write_text(json.dumps(
         {"title": "c", "source": "s", "doc_version": "1"}), encoding="utf-8")
     lake, verdicts, stats = run("r2")
+    assert verdicts["fees~fees-bytes-copy"].failed == ["uniqueness"]
+    assert verdicts["fees~fees-bytes-copy"].action == "quarantine"
     assert verdicts["fees-copy"].failed == ["uniqueness"]
     assert "exact duplicate of fees" in verdicts["fees-copy"].checks[3].reason
     assert verdicts["fees-near"].failed == ["uniqueness"]

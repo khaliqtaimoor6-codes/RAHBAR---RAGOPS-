@@ -22,6 +22,7 @@ import json
 import os
 import sys
 import time
+from pathlib import Path
 from typing import Any
 
 from .config import IndexerSettings, get_settings
@@ -42,6 +43,17 @@ from .verify import (
 )
 
 FINGERPRINT_WORDS = 1000
+
+
+def peak_rss_mb() -> float | None:
+    """Peak resident memory of this process in MiB (Linux: ru_maxrss is in KiB). A Job
+    that finishes in seconds is gone before metrics-server samples it; this is not."""
+    try:
+        import resource
+
+        return round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1)
+    except Exception:
+        return None
 
 
 def log(msg: str, **fields: object) -> None:
@@ -142,9 +154,28 @@ def verify_and_update_lake(lake: Lake, settings: IndexerSettings, run_id: str,
     for cand in cands:
         existing = lake.docs.get(cand.doc_id)
         if existing and existing.sha256 == cand.sha256:
-            lake.drop_inbox_copy(cand)
-            verdicts.append(Verdict(cand.doc_id, cand.path.name, cand.origin, [],
-                                    action="unchanged"))
+            if Path(existing.file).name == cand.path.name or cand.origin == "mirror":
+                lake.drop_inbox_copy(cand)
+                verdicts.append(Verdict(cand.doc_id, cand.path.name, cand.origin, [],
+                                        action="unchanged"))
+                continue
+            # Same bytes under another file name: a copy (its front matter even carries
+            # the same doc_id), not a re-delivery of the same file. Found in Batch B: b03
+            # was a byte copy of b01 and the first version of this loop let it through as
+            # "unchanged".
+            dup = CheckResult("uniqueness", False,
+                              f"exact duplicate of {existing.doc_id} (same file hash, "
+                              f"different file name {cand.path.name})",
+                              {"duplicate_of": existing.doc_id, "kind": "exact-bytes"})
+            v = Verdict(cand.doc_id + "~" + cand.path.stem, cand.path.name, cand.origin,
+                        [CheckResult("quality", None, "not run: byte-identical to an "
+                                     "indexed document"),
+                         CheckResult("completeness", None, "not run: byte-identical"),
+                         CheckResult("recency", None, "not run: byte-identical"), dup],
+                        action="quarantine")
+            verdicts.append(v)
+            log("verified", doc_id=v.doc_id, action=v.action, failed=v.failed)
+            lake.quarantine(cand, run_id, v.as_dict())
             continue
         if cand.origin == "mirror" and (cand.doc_id in lake.tombstones
                                         or cand.sha256 in rejected):
@@ -278,10 +309,12 @@ def main() -> int:
         stats = reconcile(lake, settings, get_client(settings), embed, log=log)
         lake.save()
         stats["seconds"] = round(time.perf_counter() - started, 1)
+        stats["peak_rss_mb"] = peak_rss_mb()       # F5: the Job measures itself
         lake.write_report("ingest", run_id, {**stats, "controls": ops,
                                              "verification": report["summary"]})
         print_reconcile(stats)
         log("ingestion finished", run_id=run_id, seconds=stats["seconds"],
+            peak_rss_mb=stats["peak_rss_mb"],
             summary=json.loads(summary_line(stats)))
         if stats["orphan_chunks"]:
             log("orphan chunks left in the collection", count=stats["orphan_chunks"])
