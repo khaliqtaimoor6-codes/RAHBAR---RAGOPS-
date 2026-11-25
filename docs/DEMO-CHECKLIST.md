@@ -22,6 +22,15 @@ Leave that window open; use a second window for everything below.
 
 ## Screenshots
 
+Already taken from our cluster and in `docs/screenshots/` (and in the report appendix).
+To retake them all, keep your hands off the keyboard for ~3 minutes and run:
+```powershell
+.\scripts\capture_screenshots.ps1
+```
+Each shot is a real PowerShell window running the command below, captured as it is.
+Manual commands, if you prefer to take them yourself:
+
+
 | Label | Command | Shows |
 | --- | --- | --- |
 | A1 | `.\scripts\lake.ps1 report 20261125T1846` | Batch B verification table: pass/fail per check with reasons |

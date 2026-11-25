@@ -109,6 +109,16 @@ in [k8s/README.md](../k8s/README.md). The ingestion Job is now `job/ingest` (was
   reversed with `kubectl rollout undo` followed by a trace that shows the previous
   collection and embedding version.
 
+## The report
+
+`docs/report/RAHBAR-A3-Report.docx` is the final report. Taimoor's parts (A, D, F data
+side, short answers a/c/f, contribution row) and his screenshots in the appendix are done.
+Everything still to write is **highlighted yellow and starts with [ALI]**: fill those in
+Word, add your screenshots to the appendix (landscape pages), agree on the AI statement,
+fill both roll numbers, then File → Save As → PDF. The main text must stay within 8 pages
+(it is 4 now); the appendix does not count. `scripts/capture_screenshots.ps1` shows how
+the screenshots were taken from real terminal windows, if you want to do yours the same way.
+
 ## Things to keep in mind
 
 * Commit results under `eval/results/` and trace samples under `traces/` (the

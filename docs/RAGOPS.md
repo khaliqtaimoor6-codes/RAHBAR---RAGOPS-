@@ -229,7 +229,7 @@ Six questions (`docs/evidence/a3/D-sample-answers.json`):
 | Pod | CPU | Memory | Requests / limits set |
 | --- | --- | --- | --- |
 | api (×2) | 6–8m | 69–71 Mi | 50m / 128Mi → 500m / 256Mi |
-| chroma-0 | 3–24m | 106–107 Mi (1,034 + 834 chunks in two collections) | 25m / 96Mi → 500m / 384Mi |
+| chroma-0 | 2–24m | 106–107 Mi with two collections; **159 Mi** with three (1,032 + 834 + 1,262 chunks) | 25m / 192Mi → 500m / 384Mi |
 | redis | 24m | 9 Mi | (from A2) |
 | ingest Job | — | peak RSS **111 Mi** (embedding 1,262 chunks, 55 s); **85 Mi** (no-op nightly run, 4.4 s); OCR peak from A2: 186 Mi / 1411m | 250m / 256Mi → 1500m / 512Mi |
 
@@ -238,7 +238,7 @@ never caught by `kubectl top`; the Job therefore logs its own peak RSS (`peak_rs
 the `ingestion finished` line, `docs/evidence/a3/C-candidate-cs100-reconcile.txt`,
 `F5-ingest-nightly-noop.txt`). The 256Mi request covers the largest measured peak (OCR);
 the 512Mi limit is 2.7x it.
-Chroma's request was raised from 96Mi to 128Mi to cover the measured 107 Mi (k8s/base/chroma-statefulset.yaml).
+Chroma's request was raised from 96Mi to 192Mi to cover the measured 159 Mi with three collections (k8s/base/chroma-statefulset.yaml).
 
 ## Tests
 

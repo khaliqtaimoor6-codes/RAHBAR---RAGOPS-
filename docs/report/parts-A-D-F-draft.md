@@ -68,7 +68,7 @@ request); hostel → declined; capital of France → abstained at the relevance 
 | Workload | Measured | requests → limits |
 | --- | --- | --- |
 | api | 6–8m CPU, 69–71 Mi idle | 50m / 128Mi → 500m / 256Mi |
-| chroma | 3–24m, 106–107 Mi with 3 collections | 25m / 128Mi → 500m / 384Mi |
+| chroma | 2–24m, 159 Mi with 3 collections | 25m / 192Mi → 500m / 384Mi |
 | ingest Job | peak RSS 111 Mi (1,262 chunks embedded), 85 Mi (no-op); OCR peak 186 Mi (A2) | 250m / 256Mi → 1500m / 512Mi |
 
 ### Two defects found on the cluster (worth a line in the report)
