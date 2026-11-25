@@ -1,3 +1,4 @@
+# Set DOCKERHUB_USER below to the account in the repo variable DOCKERHUB_USERNAME.
 # Images from Docker Hub, pinned by commit SHA. cd.yml rewrites the three tags with
 #   kustomize edit set image rahbar-api=docker.io/<user>/rahbar-api:${GITHUB_SHA} ...
 # so "what is running?" is always one commit SHA, never :latest.
@@ -6,6 +7,6 @@ kind: Kustomization
 resources:
   - ../../base
 images:
-  - {name: rahbar-api, newName: docker.io/alihaiderbajwa/rahbar-api, newTag: "set-by-cd"}
-  - {name: rahbar-ui, newName: docker.io/alihaiderbajwa/rahbar-ui, newTag: "set-by-cd"}
-  - {name: rahbar-indexer, newName: docker.io/alihaiderbajwa/rahbar-indexer, newTag: "set-by-cd"}
+  - {name: rahbar-api, newName: docker.io/DOCKERHUB_USER/rahbar-api, newTag: "set-by-cd"}
+  - {name: rahbar-ui, newName: docker.io/DOCKERHUB_USER/rahbar-ui, newTag: "set-by-cd"}
+  - {name: rahbar-indexer, newName: docker.io/DOCKERHUB_USER/rahbar-indexer, newTag: "set-by-cd"}

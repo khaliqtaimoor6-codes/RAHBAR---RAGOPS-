@@ -1,7 +1,7 @@
 # RAHBAR: grounded answers about FAST-NUCES rules, on Kubernetes
 
-[![ci](https://github.com/AliHaiderBajwa/rahbar/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/AliHaiderBajwa/rahbar/actions/workflows/ci.yml)
-[![cd](https://github.com/AliHaiderBajwa/rahbar/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/AliHaiderBajwa/rahbar/actions/workflows/cd.yml)
+[![ci](https://github.com/khaliqtaimoor6-codes/RAHBAR---RAGOPS-/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/khaliqtaimoor6-codes/RAHBAR---RAGOPS-/actions/workflows/ci.yml)
+[![cd](https://github.com/khaliqtaimoor6-codes/RAHBAR---RAGOPS-/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/khaliqtaimoor6-codes/RAHBAR---RAGOPS-/actions/workflows/cd.yml)
 
 A 5th-semester student wants to know whether they can withdraw from a course this late,
 and the answer depends on which edition of the academic rules you read: the 2023 rules
@@ -57,7 +57,7 @@ You need Docker, minikube, kubectl, Python 3.12, `make`, [Ollama](https://ollama
 free [Groq API key](https://console.groq.com/keys). About 6 GB of RAM for minikube.
 
 ```bash
-git clone https://github.com/AliHaiderBajwa/rahbar.git && cd rahbar
+git clone https://github.com/khaliqtaimoor6-codes/RAHBAR---RAGOPS-.git rahbar && cd rahbar
 ```
 
 **1. Start the cluster** with Calico (the default CNI silently ignores NetworkPolicy),
