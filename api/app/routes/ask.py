@@ -21,7 +21,8 @@ def ask(body: AskRequest, request: Request) -> AskResponse | JSONResponse:
     try:
         index_id = state.retriever.current_index_id() if state.cache is not None else "none"
         response = answer_question(body.question, state.retriever, state.provider,
-                                   state.settings, cache=state.cache, index_id=index_id)
+                                   state.settings, cache=state.cache, index_id=index_id,
+                                   tracer=getattr(state, "tracer", None))
     except Exception as exc:
         # Retrieval itself failed (Chroma or the embedder is down). Readiness will pull
         # this pod out of the Service shortly; until then answer with a clear 503.

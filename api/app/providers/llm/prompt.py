@@ -12,6 +12,10 @@ import json
 
 from ...schemas import Answer, Passage
 
+# Recorded in every trace (D1). Bump it whenever SYSTEM or build_messages changes, so a
+# trace says which template produced it and the trace tool knows it can rebuild it.
+PROMPT_VERSION = "rahbar-answer/v1"
+
 SYSTEM = """You are RAHBAR, a question-answering assistant for FAST-NUCES students.
 You answer ONLY from the numbered <evidence> passages supplied with each question.
 

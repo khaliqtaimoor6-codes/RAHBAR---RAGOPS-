@@ -23,6 +23,7 @@ from .retrieval import get_retriever
 from .retrieval.base import PinMismatch
 from .routes import ask, health, metrics
 from .services.cache import make_cache
+from .services.trace import make_writer
 
 log = logging.getLogger("rahbar.api")
 
@@ -34,6 +35,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.settings = settings
     app.state.retriever = get_retriever(settings)
     app.state.provider = get_provider(settings)
+    app.state.tracer = make_writer()          # D1: one trace record per query
     app.state.cache = make_cache(settings.redis_host, settings.redis_port,
                                  settings.cache_threshold, settings.cache_ttl,
                                  settings.cache_max_entries)

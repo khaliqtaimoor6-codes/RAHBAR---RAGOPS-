@@ -141,11 +141,20 @@ class ChromaRetriever:
                 score=round(1.0 - float(dist), 4),          # cosine distance -> similarity
                 doc_version=str(meta.get("doc_version")) if meta.get("doc_version") else None,
                 superseded=bool(meta.get("superseded", False)),
+                doc_id=str(meta["doc_id"]) if meta.get("doc_id") else None,
+                injection_suspect=bool(meta.get("injection_suspect", False)),
             ))
         return out
 
     def retrieve(self, question: str, k: int, vector: list[float] | None = None,
                  include_superseded: bool = False) -> list[Passage]:
+        return self.retrieve_traced(question, k, vector, include_superseded)[0]
+
+    def retrieve_traced(self, question: str, k: int, vector: list[float] | None = None,
+                        include_superseded: bool = False
+                        ) -> tuple[list[Passage], dict[str, Any]]:
+        """retrieve(), plus what the trace record needs (D1): the filters applied, the
+        dense leg's order and the order after reciprocal-rank fusion (our re-ranker)."""
         vector = vector if vector is not None else self.embedder.embed(question)
         col = self._collection()
         meta = col.metadata or {}
@@ -156,10 +165,32 @@ class ChromaRetriever:
         filter_on = os.environ.get("SUPERSEDED_FILTER", "on") != "off"
         where = {"superseded": False} if filter_on and not include_superseded else None
         legs = [self._query(col, vector, k, where)]
-        if self.settings.hybrid:
-            for term in exact_terms(question):
-                try:
-                    legs.append(self._query(col, vector, k, where, contains=term))
-                except Exception as exc:   # a lexical leg must never fail the request
-                    log.warning("lexical leg failed", extra={"term": term, "error": str(exc)})
-        return rrf_merge(legs, k) if len(legs) > 1 else legs[0]
+        terms = exact_terms(question) if self.settings.hybrid else []
+        for term in terms:
+            try:
+                legs.append(self._query(col, vector, k, where, contains=term))
+            except Exception as exc:   # a lexical leg must never fail the request
+                log.warning("lexical leg failed", extra={"term": term, "error": str(exc)})
+        final = rrf_merge(legs, k) if len(legs) > 1 else legs[0]
+        info = {
+            "filters": {"where": where, "superseded_filter": filter_on,
+                        "include_superseded": include_superseded,
+                        "lexical_terms": terms},
+            "dense_order": [p.chunk_id for p in legs[0]],
+            "reranker": "rrf" if len(legs) > 1 else "none",
+            "reranked_order": [p.chunk_id for p in final],
+            "collection": self.collection_info(meta),
+        }
+        return final, info
+
+    def collection_info(self, meta: dict | None = None) -> dict[str, Any]:
+        """The collection's name and version, as the indexer stamped it."""
+        if meta is None:
+            meta = self._collection().metadata or {}
+        return {"name": self.settings.collection, "index_id": meta.get("index_id", "none"),
+                "indexed_at": meta.get("indexed_at"), "embed_model": meta.get("embed_model"),
+                "chunk_size": meta.get("chunk_size"), "chunk_overlap": meta.get("chunk_overlap"),
+                "chunks": meta.get("chunks")}
+
+    def embed_model_version(self) -> str:
+        return self.embedder.model_version()

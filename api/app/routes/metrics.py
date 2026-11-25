@@ -33,6 +33,30 @@ TOKENS_OUT = Histogram("rahbar_tokens_out", "Completion tokens per request",
                        buckets=(25, 50, 100, 200, 300, 500, 800, 1200))
 INDEX_CHUNKS = Gauge("rahbar_index_chunks", "Chunks in the live collection, seen by /readyz")
 
+# --- Assignment 03, D3 ----------------------------------------------------------------
+TOP1_SIMILARITY = Histogram(
+    "rahbar_top1_similarity", "Cosine similarity of the best retrieved chunk, per query",
+    buckets=(0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0))
+STAGE_SECONDS = Histogram(
+    "rahbar_stage_seconds", "Latency of each pipeline stage", ["stage"],
+    buckets=(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30))
+ANSWERS = Counter("rahbar_answers_total", "Answers served, by whether they abstained",
+                  ["abstained"])
+ABSTENTION_RATE = Gauge("rahbar_abstention_rate", "abstained / answered since this pod started")
+INJECTIONS = Counter("rahbar_injection_flagged_total",
+                     "Prompt-injection attempts caught by the rails", ["where", "action"])
+
+_answered = 0
+_abstained = 0
+
+
+def record_answer(abstained: bool) -> None:
+    global _answered, _abstained
+    _answered += 1
+    _abstained += int(abstained)
+    ANSWERS.labels(abstained=str(abstained).lower()).inc()
+    ABSTENTION_RATE.set(_abstained / _answered)
+
 _hits = 0
 _misses = 0
 

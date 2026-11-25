@@ -30,6 +30,10 @@ class Passage(BaseModel):
     # passage comes from when a user asks about an older version on purpose.
     doc_version: str | None = None
     superseded: bool = False
+    # Added (Assignment 03): which lake document the chunk belongs to, and whether the
+    # verification stage flagged that document's text as a possible prompt injection.
+    doc_id: str | None = None
+    injection_suspect: bool = False
 
 
 class Citation(BaseModel):
@@ -57,6 +61,7 @@ class RetrievedRef(BaseModel):
     page: int | None = None
     score: float
     doc_version: str | None = None
+    doc_id: str | None = None        # Added (Assignment 03)
 
 
 class AskResponse(BaseModel):
@@ -69,3 +74,5 @@ class AskResponse(BaseModel):
     provider: str
     # Added (ADR 0005): the UI shows a cache chip when this is true.
     cached: bool = False
+    # Added (Assignment 03, D1): the id of this answer's trace record; equals request_id.
+    trace_id: str | None = None

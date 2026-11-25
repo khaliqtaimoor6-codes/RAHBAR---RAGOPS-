@@ -57,6 +57,7 @@ class Settings:
     cache_max_entries: int = 256
 
     log_level: str = "INFO"
+    trace_dir: str = ""              # TRACE_DIR: where trace records are appended (D1/F4)
 
 
 def get_settings() -> Settings:
@@ -83,4 +84,5 @@ def get_settings() -> Settings:
         cache_ttl=_int("CACHE_TTL", 86400),
         cache_max_entries=_int("CACHE_MAX_ENTRIES", 256),
         log_level=os.environ.get("LOG_LEVEL", "INFO"),
+        trace_dir=os.environ.get("TRACE_DIR", ""),
     )

@@ -53,6 +53,21 @@ class StubRetriever:
                  include_superseded: bool = False) -> list[Passage]:
         return [p.model_copy() for p in self.passages[:k]]
 
+    def retrieve_traced(self, question: str, k: int, vector: list[float] | None = None,
+                        include_superseded: bool = False) -> tuple[list[Passage], dict]:
+        found = self.retrieve(question, k, vector, include_superseded)
+        order = [p.chunk_id for p in found]
+        return found, {"filters": {"where": None, "include_superseded": include_superseded,
+                                   "lexical_terms": []},
+                       "dense_order": order, "reranker": "none", "reranked_order": order,
+                       "collection": self.collection_info()}
+
+    def collection_info(self) -> dict:
+        return {"name": "stub", "index_id": "stub", "embed_model": None}
+
+    def embed_model_version(self) -> str:
+        return "stub"
+
     def index_info(self) -> IndexInfo:
         return IndexInfo(exists=True, count=len(self.passages), embed_model=None,
                          index_id="stub")
