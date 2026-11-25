@@ -19,6 +19,14 @@ DevOps) and Taimoor Khaliq (RAG core).
 
 ![RAHBAR answering a question with citations](docs/evidence/ui-screenshot.jpg)
 
+## Assignment 03: RAGOps
+
+This repository continues Assignment 02 with a RAGOps layer (verification and data lake,
+incremental updates, three-level testing, release gate, tracing, drift checks, all on
+Kubernetes). Start with [docs/RAGOPS.md](docs/RAGOPS.md) (what is built and the command
+for each part), [k8s/README.md](k8s/README.md) (fresh cluster to working pipeline) and
+[docs/HANDOFF-TEAMMATE.md](docs/HANDOFF-TEAMMATE.md) (who does what).
+
 ## Architecture
 
 ```mermaid
