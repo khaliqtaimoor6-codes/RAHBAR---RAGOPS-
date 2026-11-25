@@ -307,3 +307,63 @@ def test_candidate_collection_reconciles_from_the_lake(env) -> None:  # type: ig
     assert stats["docs_added"] == 2 and stats["orphan_chunks"] == 0
     assert stats["chunks_total"] > base["chunks_total"]     # smaller chunks, more of them
     assert client.cols["rahbar"].count() == base["chunks_total"]   # live index untouched
+
+
+def test_pdf_and_html_without_sidecar_get_derived_metadata(env, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """The live demo drops plain PDFs with no sidecar: title/version come from the file."""
+    from pipeline import lake as lake_mod
+
+    settings, client, run, inbox, calls = env
+    (inbox / "demo").mkdir()
+    (inbox / "demo" / "notice.pdf").write_bytes(b"%PDF-1.7 stub %%EOF")
+    (inbox / "demo" / "page.html").write_text(
+        "<html><head><title>Exam Seating Plan</title></head><body><h1>Seating</h1><p>"
+        + "Seats are allocated by roll number in the main hall for every paper. " * 6
+        + "</p></body></html>", encoding="utf-8")
+    monkeypatch.setattr(lake_mod, "pdf_info", lambda p: {"ModDate": "D:20261103120000+05'00'"})
+    body = ("Hostel Visiting Hours\n\nVisitors may meet residents in the common room "
+            "between 16:00 and 19:00 on weekends, after signing the register at the gate. "
+            "Overnight guests are not allowed under any circumstances.")
+    monkeypatch.setattr(ingest, "verify_one", _with_fake_pdf(ingest.verify_one, body))
+    lake, verdicts, _ = run("r1")
+    pdf = verdicts["notice"]
+    assert pdf.action == "index", pdf.as_dict()
+    assert "derived from the file" in pdf.checks[1].reason
+    assert lake.docs["notice"].doc_version == "2026-11"
+    assert lake.docs["notice"].title == "Hostel Visiting Hours"       # first heading line
+    assert lake.docs["notice"].source == "inbox:demo/notice.pdf"
+    html = verdicts["page"]                                          # no date in an HTML page
+    assert html.action == "quarantine" and "doc_version" in html.checks[1].reason
+
+
+def _with_fake_pdf(real, body):  # type: ignore[no-untyped-def]
+    """Run the real verify_one, but extract the stub PDF as `body`."""
+    from pipeline import extract as extract_mod
+    from pipeline.models import Document, Page
+
+    def wrapper(cand, *a, **k):  # type: ignore[no-untyped-def]
+        if cand.path.suffix != ".pdf":
+            return real(cand, *a, **k)
+        original = extract_mod.extract
+        extract_mod.extract = lambda path, v, s: Document(  # type: ignore[assignment]
+            source=cand.path.name, doc_version=v, superseded=s,
+            pages=[Page(source=cand.path.name, page=1, text=body)])
+        try:
+            return real(cand, *a, **k)
+        finally:
+            extract_mod.extract = original
+    return wrapper
+
+
+def test_saved_report_can_be_printed_again(env, capsys) -> None:  # type: ignore[no-untyped-def]
+    settings, client, run, inbox, calls = env
+    seed(inbox)
+    lake, _, _ = run("r1")
+    (lake.root / "reports" / "verify-r1.json").write_text(json.dumps({
+        "run_id": "r1", "summary": {"index": 2},
+        "documents": [ingest.Verdict("fees", "fees.md", "inbox", [], action="index").as_dict()]}),
+        encoding="utf-8")
+    assert ingest.show_report(lake, "latest") == 0
+    out = capsys.readouterr().out
+    assert "VERIFICATION REPORT  run=r1" in out
+    assert ingest.show_report(lake, "nope") == 1

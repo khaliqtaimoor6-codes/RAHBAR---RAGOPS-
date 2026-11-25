@@ -70,6 +70,17 @@ def front_matter(text: str) -> dict[str, str]:
     return meta
 
 
+def pdf_info(path: Path) -> dict[str, str]:
+    """The PDF's document-info dictionary (Title, CreationDate, ModDate ...), or {}."""
+    try:
+        import pdfplumber
+
+        with pdfplumber.open(str(path)) as pdf:
+            return {k: str(v) for k, v in (pdf.metadata or {}).items()}
+    except Exception:
+        return {}
+
+
 @dataclass
 class Candidate:
     """A file offered to the verification stage in this run."""
@@ -190,18 +201,41 @@ class Lake:
                                  sha256=sha256_bytes(path.read_bytes()), meta=meta))
         return out
 
-    @staticmethod
-    def _inbox_meta(path: Path, data: bytes) -> dict[str, str]:
-        """Metadata for a dropped file: Markdown/text front matter, or a sidecar
-        '<file>.meta.json' for PDFs and HTML. Missing keys stay missing: the
-        completeness check is what notices."""
+    def _inbox_meta(self, path: Path, data: bytes) -> dict[str, str]:
+        """Metadata for a dropped file, in this order:
+        1. a sidecar '<file>.meta.json' (any format);
+        2. Markdown/text: front matter only (a text file can always declare it, so a
+           missing key there is a real completeness failure);
+        3. PDF/HTML without a sidecar: derived from the file itself (PDF info dates and
+           Title, HTML <title>), source = its inbox path. Derived keys are listed under
+           `_derived` and shown in the verification report. Anything that cannot be
+           derived stays missing, and the completeness check notices."""
         sidecar = path.with_name(path.name + ".meta.json")
         if sidecar.exists():
             raw = json.loads(sidecar.read_text(encoding="utf-8"))
             return {k: str(v) for k, v in raw.items() if v not in (None, "")}
-        if path.suffix.lower() in {".md", ".txt"}:
+        suffix = path.suffix.lower()
+        if suffix in {".md", ".txt"}:
             return front_matter(data.decode("utf-8", "replace"))
-        return {}
+        meta: dict[str, str] = {"source": "inbox:" + path.relative_to(self.root / "inbox").as_posix()}
+        derived = ["source"]
+        if suffix == ".pdf":
+            info = pdf_info(path)
+            date = re.match(r"D:(\d{4})(\d{2})", info.get("ModDate") or info.get("CreationDate") or "")
+            if date:
+                meta["doc_version"] = f"{date.group(1)}-{date.group(2)}"
+                derived.append("doc_version")
+            title = (info.get("Title") or "").strip()
+            if title and not title.lower().startswith(("microsoft word", "untitled")):
+                meta["title"] = title
+                derived.append("title")
+        elif suffix in {".html", ".htm"}:
+            m = re.search(r"<title[^>]*>(.*?)</title>", data.decode("utf-8", "replace"), re.I | re.S)
+            if m and m.group(1).strip():
+                meta["title"] = " ".join(m.group(1).split())
+                derived.append("title")
+        meta["_derived"] = ",".join(derived)
+        return meta
 
     def control_lines(self, name: str) -> list[str]:
         path = self.root / "inbox" / name

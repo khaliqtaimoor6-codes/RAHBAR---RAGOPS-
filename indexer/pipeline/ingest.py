@@ -61,6 +61,16 @@ def log(msg: str, **fields: object) -> None:
                       "logger": "rahbar.ingest", "msg": msg, **fields}), flush=True)
 
 
+def first_heading(doc: Document) -> str:
+    """The first line of 2-15 words: a usable title for a PDF that declares none."""
+    for page in doc.pages[:2]:
+        for line in page.text.splitlines():
+            words = line.strip(" #*-|").split()
+            if 2 <= len(words) <= 15 and any(w[0].isalpha() for w in words):
+                return " ".join(words)
+    return ""
+
+
 def fingerprint(doc: Document, settings: IndexerSettings) -> list[float]:
     """One vector for the whole document (its first ~1000 words), for near-duplicates."""
     from .embed import embed
@@ -119,6 +129,11 @@ def verify_one(cand: Candidate, cands: list[Candidate], lake: Lake, seen: list[S
     except Exception as exc:                          # corrupt, truncated, unsupported
         error = f"{type(exc).__name__}: {str(exc)[:160]}"
 
+    if doc is not None and not cand.meta.get("title") and cand.meta.get("_derived"):
+        first = first_heading(doc)
+        if first:
+            cand.meta["title"] = first
+            cand.meta["_derived"] += ",title(first line)"
     quality = check_quality(doc, error, t)
     completeness = check_completeness(cand, doc)
     peers = [c for c in cands if c is not cand]
@@ -260,17 +275,50 @@ def print_reconcile(stats: dict[str, Any]) -> None:
     print(flush=True)
 
 
+def show_report(lake: Lake, run: str) -> int:
+    """Re-print a verification report from reports/verify-<run>.json. Jobs created from
+    the CronJob are garbage-collected after a few runs, and their logs with them; the
+    report on the lake volume stays."""
+    reports = sorted((lake.root / "reports").glob("verify-*.json"))
+    if run != "latest":
+        reports = [p for p in reports if p.stem.removeprefix("verify-").startswith(run)]
+    if not reports:
+        print(f"no verification report matches {run!r}; have: " + ", ".join(
+            p.stem for p in sorted((lake.root / "reports").glob("verify-*.json"))))
+        return 1
+    data = json.loads(reports[-1].read_text(encoding="utf-8"))
+    status_of = {"PASS": True, "FAIL": False, "SKIP": None}
+    verdicts = []
+    for d in data["documents"]:
+        checks = [CheckResult(name, status_of.get(c.get("result"), None), c.get("reason", ""))
+                  for name, c in d.get("checks", {}).items()]
+        v = Verdict(d["doc_id"], d["file"], d["origin"], checks, action=d["action"],
+                    injection_suspect=d.get("injection_suspect", False),
+                    injection_matches=d.get("injection_matches", []),
+                    supersedes=d.get("supersedes", []))
+        verdicts.append(v)
+    print(f"report: {reports[-1].name}   summary: {json.dumps(data.get('summary'))}")
+    print_verification_table(verdicts, data["run_id"])
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="RAHBAR ingestion with verification.")
     parser.add_argument("--reconcile-only", action="store_true",
                         help="skip verification; bring the collection in line with the lake")
     parser.add_argument("--no-mirror", action="store_true",
                         help="only look at the inbox, not the fetched public corpus")
+    parser.add_argument("--report", metavar="RUN", nargs="?", const="latest",
+                        help="print a saved verification report as a table and exit "
+                             "(read-only; RUN is a run id, a prefix of one, or 'latest')")
     parser.add_argument("--counts", action="store_true",
                         help="print chunks per doc_id in the collection and exit")
     args = parser.parse_args()
     settings = get_settings()
     from .store import get_client
+
+    if args.report:
+        return show_report(Lake(settings.lake_dir), args.report)
 
     if args.counts:
         from .reconcile import counts_by_doc, open_collection
@@ -294,14 +342,15 @@ def main() -> int:
             verdicts = verify_and_update_lake(lake, settings, run_id,
                                               include_mirror=not args.no_mirror)
         lake.save()
+        summary: dict[str, int] = {a: sum(v.action == a for v in verdicts) for a in
+                                   ("index", "archive", "quarantine", "unchanged", "skipped")}
         report = {"run_id": run_id, "collection": settings.collection,
                   "controls": ops, "documents": [v.as_dict() for v in verdicts],
-                  "summary": {a: sum(v.action == a for v in verdicts) for a in
-                              ("index", "archive", "quarantine", "unchanged", "skipped")}}
+                  "summary": summary}
         if verdicts:
             path = lake.write_report("verify", run_id, report)
             print_verification_table(verdicts, run_id)
-            log("verification report written", path=str(path), **report["summary"])
+            log("verification report written", path=str(path), **summary)
 
         from .embed import embed
         from .reconcile import reconcile, summary_line
@@ -311,7 +360,7 @@ def main() -> int:
         stats["seconds"] = round(time.perf_counter() - started, 1)
         stats["peak_rss_mb"] = peak_rss_mb()       # F5: the Job measures itself
         lake.write_report("ingest", run_id, {**stats, "controls": ops,
-                                             "verification": report["summary"]})
+                                             "verification": summary})
         print_reconcile(stats)
         log("ingestion finished", run_id=run_id, seconds=stats["seconds"],
             peak_rss_mb=stats["peak_rss_mb"],

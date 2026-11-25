@@ -56,7 +56,7 @@ def summarise(records: list[dict[str, Any]]) -> dict[str, Any]:
     n = len(records)
     top1 = [r["grounding"]["top1_score"] for r in records
             if (r.get("grounding") or {}).get("top1_score") is not None]
-    hist = Counter()
+    hist: Counter[str] = Counter()
     for v in top1:
         lo = 0.0
         for b in BUCKETS:
@@ -72,7 +72,7 @@ def summarise(records: list[dict[str, Any]]) -> dict[str, Any]:
     for r in records:
         for stage, ms in (r.get("latency_ms") or {}).items():
             stages.setdefault(stage, []).append(float(ms))
-    inj = Counter()
+    inj: Counter[str] = Counter()
     for r in records:
         for g in r.get("guardrails") or []:
             if g.get("rail") in ("retrieval_injection", "query_injection"):

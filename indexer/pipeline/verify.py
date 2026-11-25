@@ -153,7 +153,8 @@ def check_completeness(cand: Candidate, doc: Document | None) -> CheckResult:
     missing = [k for k in REQUIRED_META if not cand.meta.get(k)]
     pages = len(doc.pages) if doc else 0
     details: dict[str, Any] = {"missing": missing, "page_count": pages,
-                               "metadata": {k: cand.meta.get(k, "") for k in REQUIRED_META}}
+                               "metadata": {k: cand.meta.get(k, "") for k in REQUIRED_META},
+                               "derived": cand.meta.get("_derived", "")}
     if doc is None:
         return CheckResult("completeness", None, "not run: nothing was extracted", details)
     if pages == 0:
@@ -164,9 +165,10 @@ def check_completeness(cand: Candidate, doc: Document | None) -> CheckResult:
     cut = looks_truncated(cand, doc)
     if cut:
         return CheckResult("completeness", False, f"truncated: {cut}", details)
+    derived = f" (derived from the file: {cand.meta['_derived']})" if cand.meta.get("_derived") else ""
     return CheckResult("completeness", True,
                        f"source, title, doc_version={cand.meta['doc_version']}, "
-                       f"{pages} page(s); not truncated", details)
+                       f"{pages} page(s); not truncated{derived}", details)
 
 
 # --------------------------------------------------------------------------- recency

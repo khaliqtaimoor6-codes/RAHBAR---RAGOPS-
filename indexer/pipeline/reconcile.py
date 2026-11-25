@@ -181,10 +181,10 @@ def reconcile(lake: Lake, settings: IndexerSettings, client: Any, embed_fn: Embe
 
     # 2. Add, replace or re-label the rest.
     for doc_id, e in sorted(desired.items()):
-        s = state.get(doc_id)
-        if s and s["doc_sha"] == e.sha256 and s["cfg"] == cfg:
-            if bool(s["superseded"]) != e.superseded or bool(s["injection"]) != e.injection_suspect:
-                got = col.get(ids=s["ids"], include=["metadatas"])
+        cur: dict[str, Any] | None = state.get(doc_id)
+        if cur and cur["doc_sha"] == e.sha256 and cur["cfg"] == cfg:
+            if bool(cur["superseded"]) != e.superseded or bool(cur["injection"]) != e.injection_suspect:
+                got = col.get(ids=cur["ids"], include=["metadatas"])
                 metas = []
                 for m in got["metadatas"]:
                     m = dict(m or {})
@@ -204,8 +204,8 @@ def reconcile(lake: Lake, settings: IndexerSettings, client: Any, embed_fn: Embe
 
         chunks = _chunks_for(e, load_text(lake, e), settings)
         reuse: dict[str, list[float]] = {}
-        if s and s["cfg"] and s["cfg"].split("|")[0] == settings.embed_model:
-            old = col.get(ids=s["ids"], include=["embeddings", "metadatas"])
+        if cur and cur["cfg"] and cur["cfg"].split("|")[0] == settings.embed_model:
+            old = col.get(ids=cur["ids"], include=["embeddings", "metadatas"])
             for vec, meta in zip(old["embeddings"], old["metadatas"]):
                 if meta and meta.get("text_sha") is not None:
                     reuse[str(meta["text_sha"])] = [float(x) for x in vec]
@@ -215,22 +215,22 @@ def reconcile(lake: Lake, settings: IndexerSettings, client: Any, embed_fn: Embe
         vectors = [reuse.get(text_hash(c.text)) or fresh_by[text_hash(c.text)] for c in chunks]
         if vectors:
             dimension = len(vectors[0])
-        if s:
-            for i in range(0, len(s["ids"]), WRITE_BATCH):
-                col.delete(ids=s["ids"][i:i + WRITE_BATCH])
-            stats["chunks_deleted"] += len(s["ids"])
+        if cur:
+            for i in range(0, len(cur["ids"]), WRITE_BATCH):
+                col.delete(ids=cur["ids"][i:i + WRITE_BATCH])
+            stats["chunks_deleted"] += len(cur["ids"])
         for i in range(0, len(chunks), WRITE_BATCH):
             part = chunks[i:i + WRITE_BATCH]
             col.add(ids=[c.id for c in part], documents=[c.text for c in part],
                     embeddings=vectors[i:i + WRITE_BATCH],
                     metadatas=[chunk_metadata(c, e, cfg) for c in part])
-        stats["docs_replaced" if s else "docs_added"] += 1
+        stats["docs_replaced" if cur else "docs_added"] += 1
         stats["chunks_embedded"] += len(todo)
         stats["chunks_reused"] += len(chunks) - len(todo)
-        stats["per_doc"][doc_id] = {"action": "replaced" if s else "added",
+        stats["per_doc"][doc_id] = {"action": "replaced" if cur else "added",
                                     "chunks": len(chunks), "embedded": len(todo),
                                     "reused": len(chunks) - len(todo),
-                                    "deleted": len(s["ids"]) if s else 0}
+                                    "deleted": len(cur["ids"]) if cur else 0}
         log("indexed document", doc_id=doc_id, chunks=len(chunks), embedded=len(todo),
             reused=len(chunks) - len(todo), superseded=e.superseded)
 

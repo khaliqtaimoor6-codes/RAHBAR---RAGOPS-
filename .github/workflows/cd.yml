@@ -36,6 +36,10 @@ jobs:
 
   build-push:
     needs: [test]
+    # Publishing needs the repo variable DOCKERHUB_USERNAME and the secret DOCKERHUB_TOKEN
+    # (Settings -> Secrets and variables -> Actions). Until both exist, publish and deploy
+    # are skipped instead of failing every push; `test` still gates main.
+    if: ${{ vars.DOCKERHUB_USERNAME != '' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4

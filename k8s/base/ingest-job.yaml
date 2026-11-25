@@ -61,15 +61,16 @@ spec:
           args: []                      # ["--reconcile-only"] to rebuild from the lake only
           envFrom:
             - configMapRef: {name: rahbar-config}
-          # Assignment 02 measured the OCR peak at 186Mi / 1411m (kubectl-top-indexer.txt).
-          # Re-measured for the RAGOps Job in docs/RAGOPS.md (F5).
+          # F5 (docs/RAGOPS.md): peak RSS logged by the Job itself: 111Mi embedding 1,262
+          # chunks, 85Mi for a no-op nightly run; A2's OCR peak was 186Mi / 1411m. Request
+          # 256Mi covers the OCR peak; limit 512Mi = 2.7x it (OOMKilled -> exit 137, retry).
           resources:
             requests:
               cpu: 250m
               memory: 256Mi
             limits:
               cpu: "1500m"
-              memory: 768Mi
+              memory: 512Mi
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true

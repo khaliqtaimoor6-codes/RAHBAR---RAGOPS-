@@ -27,6 +27,11 @@ PDFs, verifies, and indexes (~20 min on a laptop CPU). Until it finishes the api
 Running but 0/1 READY (no collection yet). Later runs reuse the lake and embed only what
 changed.
 
+Re-applying after the first run prints `The Job "ingest" is invalid ... field is
+immutable`: a finished Job cannot be changed. Everything else is applied. To re-run
+ingestion use `scripts/lake.sh ingest` (a new Job from the CronJob, which does carry the
+changes); to replace the Job object itself, `kubectl -n rahbar delete job ingest` first.
+
 ## Check
 
 ```bash

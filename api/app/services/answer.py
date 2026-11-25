@@ -107,7 +107,7 @@ def answer_question(question: str, retriever: Retriever, provider: LLMProvider,
         m.INJECTIONS.labels(where="query", action="flagged").inc()
 
     embed_info = {"model": settings.embed_model,
-                  "version": _safe(lambda: retriever.embed_model_version(), "unknown")}
+                  "version": _safe(lambda: getattr(retriever, "embed_model_version")(), "unknown")}
 
     # 3. Embed once; the vector serves the cache and the retriever.
     t0 = time.perf_counter()
