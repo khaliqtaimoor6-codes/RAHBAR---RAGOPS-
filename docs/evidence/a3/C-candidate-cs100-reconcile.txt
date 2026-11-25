@@ -1,0 +1,58 @@
+{"ts": "2026-11-25T19:38:05Z", "logger": "rahbar.ingest", "msg": "ingestion starting", "run_id": "20261125T193805Z", "collection": "rahbar-cand-cs100", "embed_model": "nomic-embed-text", "lake": "/data/lake", "reconcile_only": true, "pod": "ingest-cand-cs100-mwg8r"}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 234, "dimension": 768, "seconds": 11.1}
+{"ts": "2026-11-25T19:38:21Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "academic-rules-handbook-jun-2026", "chunks": 234, "embedded": 234, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 121, "dimension": 768, "seconds": 3.4}
+{"ts": "2026-11-25T19:38:25Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "annual-report-2019-20", "chunks": 121, "embedded": 121, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 483, "dimension": 768, "seconds": 13.5}
+{"ts": "2026-11-25T19:38:42Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "annual-report-2023-24", "chunks": 483, "embedded": 483, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 5, "dimension": 768, "seconds": 0.3}
+{"ts": "2026-11-25T19:38:42Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "b01-midterm-exam-notice-2026", "chunks": 5, "embedded": 5, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 5, "dimension": 768, "seconds": 0.2}
+{"ts": "2026-11-25T19:38:42Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "b02-library-borrowing-rules", "chunks": 5, "embedded": 5, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 5, "dimension": 768, "seconds": 0.2}
+{"ts": "2026-11-25T19:38:43Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "b05-lab-policy-revised-draft", "chunks": 5, "embedded": 5, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 4, "dimension": 768, "seconds": 0.1}
+{"ts": "2026-11-25T19:38:43Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "b09-fee-structure-2027-28", "chunks": 4, "embedded": 4, "reused": 0, "superseded": true}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 3, "dimension": 768, "seconds": 0.1}
+{"ts": "2026-11-25T19:38:44Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "b10-attendance-notice-injected", "chunks": 3, "embedded": 3, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 29, "dimension": 768, "seconds": 0.8}
+{"ts": "2026-11-25T19:38:45Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "faculty-entrepreneurship-and-technical-start-ups-policy", "chunks": 29, "embedded": 29, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 12, "dimension": 768, "seconds": 0.3}
+{"ts": "2026-11-25T19:38:46Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "fee-structure-page", "chunks": 12, "embedded": 12, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 12, "dimension": 768, "seconds": 0.4}
+{"ts": "2026-11-25T19:38:46Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "grading-page", "chunks": 12, "embedded": 12, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 61, "dimension": 768, "seconds": 1.7}
+{"ts": "2026-11-25T19:38:49Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "prospectus-2026-academic-rules-and-regulations", "chunks": 61, "embedded": 61, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 157, "dimension": 768, "seconds": 4.4}
+{"ts": "2026-11-25T19:38:54Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "student-handbook-jun-2026", "chunks": 157, "embedded": 157, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 131, "dimension": 768, "seconds": 3.4}
+{"ts": "2026-11-25T19:38:58Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "undergraduate-academic-rules-aug-2023", "chunks": 131, "embedded": 131, "reused": 0, "superseded": true}
+=== INCREMENTAL UPDATE  collection=rahbar-cand-cs100  index_id=d17203523de6 ===
+  docs_added                 14
+  docs_replaced              0
+  docs_metadata_updated      0
+  docs_removed               0
+  docs_unchanged             0
+  chunks_embedded            1262
+  chunks_reused              0
+  chunks_deleted             0
+  chunks_metadata_updated    0
+  chunks_total               1262
+  orphan_chunks              0
+  chunks by doc_id (from Chroma):
+    academic-rules-handbook-jun-2026                     234
+    annual-report-2019-20                                121
+    annual-report-2023-24                                483
+    b01-midterm-exam-notice-2026                         5
+    b02-library-borrowing-rules                          5
+    b05-lab-policy-revised-draft                         5
+    b09-fee-structure-2027-28                            4
+    b10-attendance-notice-injected                       3
+    faculty-entrepreneurship-and-technical-start-ups-policy 29
+    fee-structure-page                                   12
+    grading-page                                         12
+    prospectus-2026-academic-rules-and-regulations       61
+    student-handbook-jun-2026                            157
+    undergraduate-academic-rules-aug-2023                131
+
+{"ts": "2026-11-25T19:39:00Z", "logger": "rahbar.ingest", "msg": "ingestion finished", "run_id": "20261125T193805Z", "seconds": 55.0, "peak_rss_mb": 111.4, "summary": {"docs_added": 14, "docs_replaced": 0, "docs_metadata_updated": 0, "docs_removed": 0, "docs_unchanged": 0, "chunks_embedded": 1262, "chunks_reused": 0, "chunks_deleted": 0, "orphan_chunks": 0}}

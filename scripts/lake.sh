@@ -7,6 +7,7 @@
 #   scripts/lake.sh delete <doc_id>          queue a document for deletion
 #   scripts/lake.sh restore <doc_id>         queue a rollback to an archived version
 #   scripts/lake.sh ingest                   run the ingestion Job now and follow its log
+#   scripts/lake.sh report [run]             re-print a verification report (default: latest)
 #   scripts/lake.sh ls [path]                list a lake folder (default: the top level)
 #   scripts/lake.sh pull                     copy reports and traces into the repo
 #                                            (eval/results/ingest/, traces/)
@@ -48,6 +49,11 @@ case "${1:-}" in
     kubectl -n "$NS" logs -f "job/$job" -c ingest
     kubectl -n "$NS" wait --for=condition=complete "job/$job" --timeout=3600s
     ;;
+  report)
+    # Re-print a saved verification report (default: the latest run). Read-only.
+    shell_up
+    kubectl -n "$NS" exec lake-shell -- python -m pipeline.ingest --report "${2:-latest}"
+    ;;
   ls)
     shell_up
     kubectl -n "$NS" exec lake-shell -- ls -la "/data/lake/${2:-}"
@@ -60,5 +66,5 @@ case "${1:-}" in
     echo "reports -> eval/results/ingest/, traces -> traces/cluster/"
     ;;
   *)
-    sed -n '2,13p' "$0"; exit 2 ;;
+    sed -n "2,13p" "$0"; exit 2 ;;
 esac

@@ -1,0 +1,54 @@
+{"ts": "2026-11-25T19:53:48Z", "logger": "rahbar.ingest", "msg": "ingestion starting", "run_id": "20261125T195348Z", "collection": "rahbar", "embed_model": "nomic-embed-text", "lake": "/data/lake", "reconcile_only": false, "pod": "ingest-1795636422-w6fml"}
+{"ts": "2026-11-25T19:53:48Z", "logger": "rahbar.indexer.extract", "msg": "extracted", "source": "c01-convocation-notice.pdf", "pages": 1, "ocr_pages": 0, "empty_pages": 0}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 1, "dimension": 768, "seconds": 4.4}
+{"ts": "2026-11-25T19:53:53Z", "logger": "rahbar.ingest", "msg": "verified", "doc_id": "c01-convocation-notice", "action": "index", "failed": [], "injection_suspect": false}
+{"ts": "2026-11-25T19:53:53Z", "logger": "rahbar.indexer.extract", "msg": "extracted", "source": "c02-laptop-loan-scheme.pdf", "pages": 1, "ocr_pages": 0, "empty_pages": 0}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 1, "dimension": 768, "seconds": 0.1}
+{"ts": "2026-11-25T19:53:53Z", "logger": "rahbar.ingest", "msg": "verified", "doc_id": "c02-laptop-loan-scheme", "action": "index", "failed": [], "injection_suspect": false}
+{"ts": "2026-11-25T19:53:53Z", "logger": "rahbar.indexer.extract", "msg": "extracted", "source": "c03-cafeteria-timings.html", "pages": 1, "ocr_pages": 0, "empty_pages": 0}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 1, "dimension": 768, "seconds": 0.1}
+{"ts": "2026-11-25T19:53:53Z", "logger": "rahbar.ingest", "msg": "verified", "doc_id": "c03-cafeteria-timings", "action": "quarantine", "failed": ["completeness"], "injection_suspect": false}
+
+=== VERIFICATION REPORT  run=20261125T195348Z  checked=3  unchanged=9  skipped=0 ===
+doc_id                                       quality  complete  recency  unique  inject  action
+c01-convocation-notice                       PASS     PASS      PASS     PASS    -       INDEX
+c02-laptop-loan-scheme                       PASS     PASS      PASS     PASS    -       INDEX
+c03-cafeteria-timings                        PASS     FAIL      PASS     PASS    -       QUARANTINE
+      - completeness: missing required metadata: doc_version
+
+{"ts": "2026-11-25T19:53:53Z", "logger": "rahbar.ingest", "msg": "verification report written", "path": "/data/lake/reports/verify-20261125T195348Z.json", "index": 2, "archive": 0, "quarantine": 1, "unchanged": 9, "skipped": 0}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 1, "dimension": 768, "seconds": 0.1}
+{"ts": "2026-11-25T19:53:55Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "c01-convocation-notice", "chunks": 1, "embedded": 1, "reused": 0, "superseded": false}
+{"logger": "rahbar.indexer.embed", "msg": "embedded", "model": "nomic-embed-text", "chunks": 1, "dimension": 768, "seconds": 0.1}
+{"ts": "2026-11-25T19:53:55Z", "logger": "rahbar.ingest", "msg": "indexed document", "doc_id": "c02-laptop-loan-scheme", "chunks": 1, "embedded": 1, "reused": 0, "superseded": false}
+=== INCREMENTAL UPDATE  collection=rahbar  index_id=f4c2ff9a3277 ===
+  docs_added                 2
+  docs_replaced              0
+  docs_metadata_updated      0
+  docs_removed               0
+  docs_unchanged             14
+  chunks_embedded            2
+  chunks_reused              0
+  chunks_deleted             0
+  chunks_metadata_updated    0
+  chunks_total               1032
+  orphan_chunks              0
+  chunks by doc_id (from Chroma):
+    academic-rules-handbook-jun-2026                     214
+    annual-report-2019-20                                96
+    annual-report-2023-24                                370
+    b01-midterm-exam-notice-2026                         5
+    b02-library-borrowing-rules                          5
+    b05-lab-policy-revised-draft                         5
+    b09-fee-structure-2027-28                            4
+    b10-attendance-notice-injected                       3
+    c01-convocation-notice                               1
+    c02-laptop-loan-scheme                               1
+    faculty-entrepreneurship-and-technical-start-ups-policy 26
+    fee-structure-page                                   9
+    grading-page                                         10
+    prospectus-2026-academic-rules-and-regulations       48
+    student-handbook-jun-2026                            112
+    undergraduate-academic-rules-aug-2023                123
+
+{"ts": "2026-11-25T19:53:56Z", "logger": "rahbar.ingest", "msg": "ingestion finished", "run_id": "20261125T195348Z", "seconds": 7.9, "peak_rss_mb": 96.2, "summary": {"docs_added": 2, "docs_replaced": 0, "docs_metadata_updated": 0, "docs_removed": 0, "docs_unchanged": 14, "chunks_embedded": 2, "chunks_reused": 0, "chunks_deleted": 0, "orphan_chunks": 0}}

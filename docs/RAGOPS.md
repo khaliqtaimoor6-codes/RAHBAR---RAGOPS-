@@ -61,6 +61,21 @@ Every chunk carries `doc_id, family, title, doc_version, superseded, doc_sha, te
 chunk_cfg, injection_suspect`. A run that changes anything stamps a new `index_id` on the
 collection, which namespaces the API's semantic cache, so no stale answer is served.
 
+### Metadata for files dropped without any
+
+Markdown/text must declare front matter. A PDF or HTML page without a
+`<file>.meta.json` sidecar gets metadata derived from the file itself: `source` = its inbox
+path, `doc_version` from the PDF's ModDate/CreationDate, `title` from the PDF Title or
+the HTML `<title>`, else the first line of 2-15 words. Derived keys are named in the
+completeness reason. Anything that cannot be derived (an HTML page has no date) stays
+missing and fails completeness. Rehearsed with `data/demo_batch_c/`
+(`scripts/make_demo_batch.py`): 2 plain PDFs indexed, 1 HTML page quarantined for
+`doc_version` (`docs/evidence/a3/A-ingest-demo-batch-c-rehearsal.txt`).
+
+`scripts/lake.sh report [run]` (or `.\scripts\lake.ps1 report [run]`) re-prints any saved
+verification report as a table; Jobs and their logs are garbage-collected, the reports on
+the lake volume are not. The demo steps are in [DEMO-CHECKLIST.md](DEMO-CHECKLIST.md).
+
 ### Batch B (`data/batch_b/`, made by `scripts/make_batch_b.py`)
 
 12 synthetic documents written by us. Expected outcome:
@@ -138,6 +153,7 @@ Raw logs: `docs/evidence/a3/`. Machine-readable reports: `eval/results/ingest/`
 | 4 | delete `b12-transcript-request-procedure` | — | — | 0 | chunks for b12: **4 → 0**, `orphan_chunks = 0` | 4.0 s |
 | 5 | restore `fee-structure-page` (rollback) | — | — | **0** | 13 chunks relabelled; 2027-28 archived, 2026-27 current | 2.7 s |
 | C | candidate collection `rahbar-cand-cs300` (`--reconcile-only`, CHUNK_SIZE 300) | — | 14 docs | 834 | live `rahbar` untouched; no re-download, no re-OCR | 34 s |
+| C | candidate collection `rahbar-cand-cs100` (CHUNK_SIZE 100, overlap 20) | — | 14 docs | 1262 | likely the weaker candidate: use it for the gate-fails demo | 55 s |
 
 ### Batch B verification (A1)
 
@@ -215,12 +231,14 @@ Six questions (`docs/evidence/a3/D-sample-answers.json`):
 | api (×2) | 6–8m | 69–71 Mi | 50m / 128Mi → 500m / 256Mi |
 | chroma-0 | 3–24m | 106–107 Mi (1,034 + 834 chunks in two collections) | 25m / 96Mi → 500m / 384Mi |
 | redis | 24m | 9 Mi | (from A2) |
-| ingest Job | — | — | 250m / 256Mi → 1500m / 768Mi |
+| ingest Job | — | peak RSS **111 Mi** (embedding 1,262 chunks, 55 s); **85 Mi** (no-op nightly run, 4.4 s); OCR peak from A2: 186 Mi / 1411m | 250m / 256Mi → 1500m / 512Mi |
 
-The candidate rebuild finished in 34 s, faster than metrics-server's sampling interval,
-so no Job sample was caught. The Job now logs its own peak RSS (`peak_rss_mb` in the
-`ingestion finished` line); the A2 measurement of the OCR peak was 186 Mi / 1411m.
-Chroma's request (96Mi) is now below its measured 107 Mi: raise to 128Mi.
+metrics-server samples about once a minute, so a Job that finishes in under a minute is
+never caught by `kubectl top`; the Job therefore logs its own peak RSS (`peak_rss_mb` in
+the `ingestion finished` line, `docs/evidence/a3/C-candidate-cs100-reconcile.txt`,
+`F5-ingest-nightly-noop.txt`). The 256Mi request covers the largest measured peak (OCR);
+the 512Mi limit is 2.7x it.
+Chroma's request was raised from 96Mi to 128Mi to cover the measured 107 Mi (k8s/base/chroma-statefulset.yaml).
 
 ## Tests
 

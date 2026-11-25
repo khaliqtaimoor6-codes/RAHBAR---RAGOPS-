@@ -1,0 +1,6 @@
+# chroma-0 was restarted (StatefulSet rollout after the F5 memory change), then:
+chroma-0   1/1   Running   0     30s
+rahbar-cand-cs100 1262 chunks index_id=d17203523de6
+rahbar-cand-cs300 834 chunks index_id=e7fc7d3a6b7d
+rahbar 1030 chunks index_id=20ade7ea03b5
+readyz {"status": "ready", "checks": {"chroma": "ok", "collection": "ok", "embed_model": "ok", "redis": "ok"}}

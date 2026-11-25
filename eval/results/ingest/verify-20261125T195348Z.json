@@ -1,0 +1,261 @@
+{
+ "run_id": "20261125T195348Z",
+ "collection": "rahbar",
+ "controls": [],
+ "documents": [
+  {
+   "doc_id": "undergraduate-academic-rules-aug-2023",
+   "file": "undergraduate-academic-rules-aug-2023.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "academic-rules-handbook-jun-2026",
+   "file": "academic-rules-handbook-jun-2026.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "prospectus-2026-academic-rules-and-regulations",
+   "file": "prospectus-2026-academic-rules-and-regulations.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "student-handbook-jun-2026",
+   "file": "student-handbook-jun-2026.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "annual-report-2019-20",
+   "file": "annual-report-2019-20.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "annual-report-2023-24",
+   "file": "annual-report-2023-24.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "fee-structure-page",
+   "file": "fee-structure-page.html",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "grading-page",
+   "file": "grading-page.html",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "faculty-entrepreneurship-and-technical-start-ups-policy",
+   "file": "faculty-entrepreneurship-and-technical-start-ups-policy.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "c01-convocation-notice",
+   "file": "c01-convocation-notice.pdf",
+   "origin": "inbox",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "84 words over 1 page(s); clean-character ratio 1.0",
+     "words": 84,
+     "chars": 411,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 0.9865,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026-11, 1 page(s); not truncated (derived from the file: source,doc_version,title(first line))",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "inbox:demo_batch_c/c01-convocation-notice.pdf",
+      "title": "Convocation Notice 2026",
+      "doc_version": "2026-11"
+     },
+     "derived": "source,doc_version,title(first line)"
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'c01-convocation-notice'",
+     "family": "c01-convocation-notice",
+     "doc_version": "2026-11"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest b01-midterm-exam-notice-2026 at cosine 0.7878",
+     "nearest": "b01-midterm-exam-notice-2026",
+     "cosine": 0.7878,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "c02-laptop-loan-scheme",
+   "file": "c02-laptop-loan-scheme.pdf",
+   "origin": "inbox",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "69 words over 1 page(s); clean-character ratio 1.0",
+     "words": 69,
+     "chars": 332,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026-11, 1 page(s); not truncated (derived from the file: source,doc_version,title(first line))",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "inbox:demo_batch_c/c02-laptop-loan-scheme.pdf",
+      "title": "Laptop Loan Scheme",
+      "doc_version": "2026-11"
+     },
+     "derived": "source,doc_version,title(first line)"
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'c02-laptop-loan-scheme'",
+     "family": "c02-laptop-loan-scheme",
+     "doc_version": "2026-11"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest b02-library-borrowing-rules at cosine 0.8104",
+     "nearest": "b02-library-borrowing-rules",
+     "cosine": 0.8104,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "c03-cafeteria-timings",
+   "file": "c03-cafeteria-timings.html",
+   "origin": "inbox",
+   "action": "quarantine",
+   "failed": [
+    "completeness"
+   ],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "53 words over 1 page(s); clean-character ratio 1.0",
+     "words": 53,
+     "chars": 251,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "FAIL",
+     "reason": "missing required metadata: doc_version",
+     "missing": [
+      "doc_version"
+     ],
+     "page_count": 1,
+     "metadata": {
+      "source": "inbox:demo_batch_c/c03-cafeteria-timings.html",
+      "title": "Cafeteria Timings",
+      "doc_version": ""
+     },
+     "derived": "source,title"
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'c03-cafeteria-timings'",
+     "family": "c03-cafeteria-timings",
+     "doc_version": ""
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest b05-lab-policy-revised-draft at cosine 0.6966",
+     "nearest": "b05-lab-policy-revised-draft",
+     "cosine": 0.6966,
+     "threshold": 0.985
+    }
+   }
+  }
+ ],
+ "summary": {
+  "index": 2,
+  "archive": 0,
+  "quarantine": 1,
+  "unchanged": 9,
+  "skipped": 0
+ }
+}
