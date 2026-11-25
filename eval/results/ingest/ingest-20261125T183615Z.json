@@ -1,0 +1,102 @@
+{
+ "collection": "rahbar",
+ "chunk_cfg": "nomic-embed-text|150|30|structure",
+ "docs_unchanged": 0,
+ "docs_added": 9,
+ "docs_replaced": 0,
+ "docs_metadata_updated": 0,
+ "docs_removed": 0,
+ "chunks_embedded": 1008,
+ "chunks_reused": 0,
+ "chunks_deleted": 0,
+ "chunks_metadata_updated": 0,
+ "per_doc": {
+  "academic-rules-handbook-jun-2026": {
+   "action": "added",
+   "chunks": 214,
+   "embedded": 214,
+   "reused": 0,
+   "deleted": 0
+  },
+  "annual-report-2019-20": {
+   "action": "added",
+   "chunks": 96,
+   "embedded": 96,
+   "reused": 0,
+   "deleted": 0
+  },
+  "annual-report-2023-24": {
+   "action": "added",
+   "chunks": 370,
+   "embedded": 370,
+   "reused": 0,
+   "deleted": 0
+  },
+  "faculty-entrepreneurship-and-technical-start-ups-policy": {
+   "action": "added",
+   "chunks": 26,
+   "embedded": 26,
+   "reused": 0,
+   "deleted": 0
+  },
+  "fee-structure-page": {
+   "action": "added",
+   "chunks": 9,
+   "embedded": 9,
+   "reused": 0,
+   "deleted": 0
+  },
+  "grading-page": {
+   "action": "added",
+   "chunks": 10,
+   "embedded": 10,
+   "reused": 0,
+   "deleted": 0
+  },
+  "prospectus-2026-academic-rules-and-regulations": {
+   "action": "added",
+   "chunks": 48,
+   "embedded": 48,
+   "reused": 0,
+   "deleted": 0
+  },
+  "student-handbook-jun-2026": {
+   "action": "added",
+   "chunks": 112,
+   "embedded": 112,
+   "reused": 0,
+   "deleted": 0
+  },
+  "undergraduate-academic-rules-aug-2023": {
+   "action": "added",
+   "chunks": 123,
+   "embedded": 123,
+   "reused": 0,
+   "deleted": 0
+  }
+ },
+ "index_id": "34ce8605ca63",
+ "chunks_total": 1008,
+ "chunks_by_doc_id": {
+  "academic-rules-handbook-jun-2026": 214,
+  "annual-report-2019-20": 96,
+  "annual-report-2023-24": 370,
+  "faculty-entrepreneurship-and-technical-start-ups-policy": 26,
+  "fee-structure-page": 9,
+  "grading-page": 10,
+  "prospectus-2026-academic-rules-and-regulations": 48,
+  "student-handbook-jun-2026": 112,
+  "undergraduate-academic-rules-aug-2023": 123
+ },
+ "orphan_chunks": 0,
+ "missing_docs": [],
+ "seconds": 370.4,
+ "controls": [],
+ "verification": {
+  "index": 8,
+  "archive": 1,
+  "quarantine": 0,
+  "unchanged": 0,
+  "skipped": 0
+ }
+}

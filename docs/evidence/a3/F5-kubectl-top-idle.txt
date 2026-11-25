@@ -1,0 +1,7 @@
+POD                      NAME     CPU(cores)   MEMORY(bytes)   
+api-75dfb884d9-qhhk4     api      6m           71Mi            
+api-75dfb884d9-qjwl7     api      8m           69Mi            
+chroma-0                 chroma   24m          106Mi           
+lake-shell               shell    4m           5Mi             
+redis-79cc6fbcc4-sjv4r   redis    24m          9Mi             
+ui-b5d86f46f-5vc5k       ui       1m           10Mi            

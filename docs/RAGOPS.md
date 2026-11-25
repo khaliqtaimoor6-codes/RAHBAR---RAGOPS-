@@ -120,19 +120,86 @@ to its trace.
 | F2 ingestion with verification | Job `ingest`, CronJob `ingest` (nightly, `concurrencyPolicy: Forbid`, plus a lake lock) | `k8s/base/ingest-job.yaml`, `ingest-cronjob.yaml` |
 | F2 only one writer | api code never writes; NetworkPolicy admits only `app=api` / `app=indexer` to chroma; lake-shell pod has no network | `k8s/base/networkpolicy.yaml` |
 | F4 traces on stdout and a volume | PVC `rahbar-traces` mounted at `/traces` in the api | `k8s/base/api-deployment.yaml` |
-| F5 resources | ingest Job / api / chroma requests and limits | 🟡 re-measure with `kubectl top` on our cluster |
+| F5 resources | ingest Job / api / chroma requests and limits | measured, see Results |
 
-## Results
+## Results (our minikube cluster, 25 Nov 2026)
 
-🟡 Not run on our cluster yet. After the first full run, copy the reports in with
-`scripts/lake.sh pull` and put the numbers here and in the report:
+Raw logs: `docs/evidence/a3/`. Machine-readable reports: `eval/results/ingest/`
+(`verify-<run>.json`, `ingest-<run>.json`). Trace sample: `traces/cluster/`.
 
-- first ingestion: documents indexed / archived / quarantined, chunks embedded
-- second ingestion on the unchanged corpus: `chunks_embedded = 0`
-- Batch B verification table
-- delete: chunks for the doc_id before/after, `orphan_chunks = 0`
-- restore: `superseded` flipped, 0 chunks embedded; a trace afterwards
-- `kubectl top` numbers for F5
+### A: ingestion runs
+
+| Run | What | Verified | Indexed / archived / quarantined | Chunks embedded | Other | Time |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | first run, public corpus (9 docs) | 9 | 8 / 1 / 0 | **1008** | 2023 rules archived by recency (2026 handbook is newer, same family); 24 pages OCR'd | 370 s |
+| 2 | same corpus again | 0 (9 unchanged) | — | **0** | `index_id` unchanged, so the cache stays valid | 3.3 s |
+| 3 | Batch B | 11 (+10 unchanged) | 6 / 0 / 5, fee page relabelled `superseded` | **26** | 9 chunks metadata-only | — |
+| 3b | b03 re-sent after the fix below | 1 | 0 / 0 / 1 | 0 | — | 3.5 s |
+| 4 | delete `b12-transcript-request-procedure` | — | — | 0 | chunks for b12: **4 → 0**, `orphan_chunks = 0` | 4.0 s |
+| 5 | restore `fee-structure-page` (rollback) | — | — | **0** | 13 chunks relabelled; 2027-28 archived, 2026-27 current | 2.7 s |
+| C | candidate collection `rahbar-cand-cs300` (`--reconcile-only`, CHUNK_SIZE 300) | — | 14 docs | 834 | live `rahbar` untouched; no re-download, no re-OCR | 34 s |
+
+### Batch B verification (A1)
+
+| Doc | quality | complete | recency | unique | Action | Reason |
+| --- | --- | --- | --- | --- | --- | --- |
+| b01 midterm notice | PASS | PASS | PASS | PASS | index | |
+| b02 library rules | PASS | PASS | PASS | PASS | index | |
+| b03 midterm COPY | SKIP | SKIP | SKIP | **FAIL** | quarantine | exact duplicate of b01 (same file hash, different file name) |
+| b04 library reformatted | PASS | PASS | PASS | **FAIL** | quarantine | exact duplicate of b02 (same text) |
+| b05 lab draft | PASS | PASS | PASS | PASS | index | arrived first (name order) |
+| b06 final notice | PASS | **FAIL** | PASS | PASS | quarantine | text ends mid-sentence |
+| b07 scholarship PDF | **FAIL** | SKIP | PASS | PASS | quarantine | extraction failed: `PdfminerException: Unexpected EOF` |
+| b08 sports | PASS | **FAIL** | PASS | PASS | quarantine | missing source, title, doc_version |
+| b09 fee 2027-28 | PASS | PASS | PASS | PASS | index | supersedes `fee-structure-page` (archived) |
+| b10 attendance | PASS | PASS | PASS | PASS | index + FLAG | injection: "Ignore all previous instructions" |
+| b11 lab policy | PASS | PASS | PASS | **FAIL** | quarantine | near-duplicate of b05, cosine **0.9997** |
+| b12 transcript | PASS | PASS | PASS | PASS | index | |
+
+Count by check: uniqueness 3, completeness 2, quality 1 (+1 newer version handled by
+recency, +1 injection flagged). Every planted problem was caught.
+
+**Found and fixed on the cluster.** In the first Batch B run, b03 (a byte copy of b01,
+front matter included, so it carried b01's `doc_id`) was reported as "unchanged" and
+silently dropped instead of being reported as a duplicate. The loop now treats "same
+bytes, same doc_id, different file name" as an exact duplicate (`ingest.py`, with a
+test); run 3b shows it quarantined.
+
+**Near-duplicates: first arrival wins.** Files are processed in name order, so the draft
+(b05) was accepted and the original (b11) quarantined. Detection is symmetric; which copy
+survives is an ordering policy. A better policy would prefer the document with the newer
+`doc_version` or the longer text.
+
+**Why NEAR_DUP_THRESHOLD = 0.985.** Document-fingerprint cosines between genuinely
+different documents in our corpus: highest 0.9606 (Annual Report 2019-20 vs 2023-24),
+then 0.9124 (b06 vs b01, same template), all others ≤ 0.862. The planted near-duplicate
+scored 0.9997. 0.985 sits in the gap with margin on both sides.
+
+### D: traces (first queries, before the Groq key was set)
+
+- `trace_show` on the attendance question (`docs/evidence/a3/D2-trace-show-injection.txt`):
+  prompt hash recorded = rebuilt (**MATCH**); embedding `nomic-embed-text@0a109f422b47`;
+  collection `rahbar@20ade7ea03b5`; filter `{"superseded": false}`.
+- D4: the 3 chunks of b10 were dropped by the retrieval rail (one matched the pattern,
+  two because the whole document was flagged at ingest; doc-level is the stricter
+  choice, and drops the document's harmless clauses too).
+- `trace_summary` (`D3-trace-summary.txt`): embed p95 18 s on the very first query (Ollama
+  loading the model from cold), ~67 ms after that; retrieve p50 25 ms; rails < 1 ms.
+- Answers were the safe fallback (no LLM key yet); re-run once the key is set.
+
+### F5: resources (`kubectl top`, idle, after ingestion)
+
+| Pod | CPU | Memory | Requests / limits set |
+| --- | --- | --- | --- |
+| api (×2) | 6–8m | 69–71 Mi | 50m / 128Mi → 500m / 256Mi |
+| chroma-0 | 3–24m | 106–107 Mi (1,034 + 834 chunks in two collections) | 25m / 96Mi → 500m / 384Mi |
+| redis | 24m | 9 Mi | (from A2) |
+| ingest Job | — | — | 250m / 256Mi → 1500m / 768Mi |
+
+The candidate rebuild finished in 34 s, faster than metrics-server's sampling interval,
+so no Job sample was caught. The Job now logs its own peak RSS (`peak_rss_mb` in the
+`ingestion finished` line); the A2 measurement of the OCR peak was 186 Mi / 1411m.
+Chroma's request (96Mi) is now below its measured 107 Mi: raise to 128Mi.
 
 ## Tests
 

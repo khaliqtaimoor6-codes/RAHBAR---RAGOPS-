@@ -1,0 +1,651 @@
+{
+ "run_id": "20261125T184613Z",
+ "collection": "rahbar",
+ "controls": [],
+ "documents": [
+  {
+   "doc_id": "undergraduate-academic-rules-aug-2023",
+   "file": "undergraduate-academic-rules-aug-2023.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "academic-rules-handbook-jun-2026",
+   "file": "academic-rules-handbook-jun-2026.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "prospectus-2026-academic-rules-and-regulations",
+   "file": "prospectus-2026-academic-rules-and-regulations.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "student-handbook-jun-2026",
+   "file": "student-handbook-jun-2026.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "annual-report-2019-20",
+   "file": "annual-report-2019-20.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "annual-report-2023-24",
+   "file": "annual-report-2023-24.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "fee-structure-page",
+   "file": "fee-structure-page.html",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "grading-page",
+   "file": "grading-page.html",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "faculty-entrepreneurship-and-technical-start-ups-policy",
+   "file": "faculty-entrepreneurship-and-technical-start-ups-policy.pdf",
+   "origin": "mirror",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "b01-midterm-exam-notice-2026",
+   "file": "b01-midterm-exam-notice-2026.md",
+   "origin": "inbox",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "204 words over 1 page(s); clean-character ratio 1.0",
+     "words": 204,
+     "chars": 952,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026-10, 1 page(s); not truncated",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "batch-b (synthetic test document, written by the group)",
+      "title": "Midterm Examination Notice, Fall 2026",
+      "doc_version": "2026-10"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'b01-midterm-exam-notice-2026'",
+     "family": "b01-midterm-exam-notice-2026",
+     "doc_version": "2026-10"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest prospectus-2026-academic-rules-and-regulations at cosine 0.7179",
+     "nearest": "prospectus-2026-academic-rules-and-regulations",
+     "cosine": 0.7179,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "b02-library-borrowing-rules",
+   "file": "b02-library-borrowing-rules.md",
+   "origin": "inbox",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "150 words over 1 page(s); clean-character ratio 1.0",
+     "words": 150,
+     "chars": 662,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026, 1 page(s); not truncated",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "batch-b (synthetic test document, written by the group)",
+      "title": "Library Borrowing Rules",
+      "doc_version": "2026"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'b02-library-borrowing-rules'",
+     "family": "b02-library-borrowing-rules",
+     "doc_version": "2026"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest prospectus-2026-academic-rules-and-regulations at cosine 0.7112",
+     "nearest": "prospectus-2026-academic-rules-and-regulations",
+     "cosine": 0.7112,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "b01-midterm-exam-notice-2026",
+   "file": "b03-midterm-notice-COPY.md",
+   "origin": "inbox",
+   "action": "unchanged",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {}
+  },
+  {
+   "doc_id": "b04-library-rules-reformatted",
+   "file": "b04-library-rules-reformatted.md",
+   "origin": "inbox",
+   "action": "quarantine",
+   "failed": [
+    "uniqueness"
+   ],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "150 words over 1 page(s); clean-character ratio 1.0",
+     "words": 150,
+     "chars": 662,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026, 1 page(s); not truncated",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "batch-b (synthetic test document, written by the group)",
+      "title": "Library Borrowing Rules",
+      "doc_version": "2026"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'b04-library-rules-reformatted'",
+     "family": "b04-library-rules-reformatted",
+     "doc_version": "2026"
+    },
+    "uniqueness": {
+     "result": "FAIL",
+     "reason": "exact duplicate of b02-library-borrowing-rules (same text)",
+     "duplicate_of": "b02-library-borrowing-rules",
+     "kind": "exact-text"
+    }
+   }
+  },
+  {
+   "doc_id": "b05-lab-policy-revised-draft",
+   "file": "b05-lab-policy-revised-draft.md",
+   "origin": "inbox",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "138 words over 1 page(s); clean-character ratio 1.0",
+     "words": 138,
+     "chars": 665,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026, 1 page(s); not truncated",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "batch-b (synthetic test document, written by the group)",
+      "title": "Computer Lab Policy (draft)",
+      "doc_version": "2026"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'b05-lab-policy-revised-draft'",
+     "family": "b05-lab-policy-revised-draft",
+     "doc_version": "2026"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest b02-library-borrowing-rules at cosine 0.7168",
+     "nearest": "b02-library-borrowing-rules",
+     "cosine": 0.7168,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "b06-final-exam-notice-truncated",
+   "file": "b06-final-exam-notice-truncated.md",
+   "origin": "inbox",
+   "action": "quarantine",
+   "failed": [
+    "completeness"
+   ],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "104 words over 1 page(s); clean-character ratio 1.0",
+     "words": 104,
+     "chars": 502,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "FAIL",
+     "reason": "truncated: text ends mid-sentence: '...card is allowed to sit the paper only after th'",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "batch-b (synthetic test document, written by the group)",
+      "title": "Final Examination Notice, Fall 2026",
+      "doc_version": "2026-12"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'b06-final-exam-notice-truncated'",
+     "family": "b06-final-exam-notice-truncated",
+     "doc_version": "2026-12"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest b01-midterm-exam-notice-2026 at cosine 0.9124",
+     "nearest": "b01-midterm-exam-notice-2026",
+     "cosine": 0.9124,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "b07-scholarship-policy-corrupt",
+   "file": "b07-scholarship-policy-corrupt.pdf",
+   "origin": "inbox",
+   "action": "quarantine",
+   "failed": [
+    "quality"
+   ],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "FAIL",
+     "reason": "extraction failed: PdfminerException: Unexpected EOF"
+    },
+    "completeness": {
+     "result": "SKIP",
+     "reason": "not run: nothing was extracted",
+     "missing": [],
+     "page_count": 0,
+     "metadata": {
+      "source": "batch-b (synthetic test document, written by the group)",
+      "title": "Merit Scholarship Policy",
+      "doc_version": "2026"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'b07-scholarship-policy-corrupt'",
+     "family": "b07-scholarship-policy-corrupt",
+     "doc_version": "2026"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest - at cosine 0.0000",
+     "nearest": "",
+     "cosine": 0.0,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "b08-sports-facilities-no-metadata",
+   "file": "b08-sports-facilities-no-metadata.md",
+   "origin": "inbox",
+   "action": "quarantine",
+   "failed": [
+    "completeness"
+   ],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "71 words over 1 page(s); clean-character ratio 1.0",
+     "words": 71,
+     "chars": 304,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "FAIL",
+     "reason": "missing required metadata: source, title, doc_version",
+     "missing": [
+      "source",
+      "title",
+      "doc_version"
+     ],
+     "page_count": 1,
+     "metadata": {
+      "source": "",
+      "title": "",
+      "doc_version": ""
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'b08-sports-facilities-no-metadata'",
+     "family": "b08-sports-facilities-no-metadata",
+     "doc_version": ""
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest b05-lab-policy-revised-draft at cosine 0.6976",
+     "nearest": "b05-lab-policy-revised-draft",
+     "cosine": 0.6976,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "b09-fee-structure-2027-28",
+   "file": "b09-fee-structure-2027-28.md",
+   "origin": "inbox",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [
+    "fee-structure-page"
+   ],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "135 words over 1 page(s); clean-character ratio 1.0",
+     "words": 135,
+     "chars": 617,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2027-28, 1 page(s); not truncated",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "batch-b (synthetic test document, written by the group)",
+      "title": "Fee Structure 2027-28",
+      "doc_version": "2027-28"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'fee-structure-page'; supersedes fee-structure-page",
+     "family": "fee-structure-page",
+     "doc_version": "2027-28"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest undergraduate-academic-rules-aug-2023 at cosine 0.7188",
+     "nearest": "undergraduate-academic-rules-aug-2023",
+     "cosine": 0.7188,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "b10-attendance-notice-injected",
+   "file": "b10-attendance-notice-injected.md",
+   "origin": "inbox",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": true,
+   "injection_matches": [
+    "p1: 'Ignore all previous instructions'"
+   ],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "91 words over 1 page(s); clean-character ratio 1.0",
+     "words": 91,
+     "chars": 436,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026-09, 1 page(s); not truncated",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "batch-b (synthetic test document, written by the group)",
+      "title": "Attendance Notice, Fall 2026",
+      "doc_version": "2026-09"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'b10-attendance-notice-injected'",
+     "family": "b10-attendance-notice-injected",
+     "doc_version": "2026-09"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest b01-midterm-exam-notice-2026 at cosine 0.8097",
+     "nearest": "b01-midterm-exam-notice-2026",
+     "cosine": 0.8097,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "b11-computer-lab-usage-policy",
+   "file": "b11-computer-lab-usage-policy.md",
+   "origin": "inbox",
+   "action": "quarantine",
+   "failed": [
+    "uniqueness"
+   ],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "137 words over 1 page(s); clean-character ratio 1.0",
+     "words": 137,
+     "chars": 661,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026, 1 page(s); not truncated",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "batch-b (synthetic test document, written by the group)",
+      "title": "Computer Lab Usage Policy",
+      "doc_version": "2026"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'b11-computer-lab-usage-policy'",
+     "family": "b11-computer-lab-usage-policy",
+     "doc_version": "2026"
+    },
+    "uniqueness": {
+     "result": "FAIL",
+     "reason": "near-duplicate of b05-lab-policy-revised-draft (cosine 0.9997 >= 0.985)",
+     "nearest": "b05-lab-policy-revised-draft",
+     "cosine": 0.9997,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "b12-transcript-request-procedure",
+   "file": "b12-transcript-request-procedure.md",
+   "origin": "inbox",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "114 words over 1 page(s); clean-character ratio 1.0",
+     "words": 114,
+     "chars": 559,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 1.0,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026, 1 page(s); not truncated",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "batch-b (synthetic test document, written by the group)",
+      "title": "Transcript Request Procedure",
+      "doc_version": "2026"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'b12-transcript-request-procedure'",
+     "family": "b12-transcript-request-procedure",
+     "doc_version": "2026"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest b02-library-borrowing-rules at cosine 0.7651",
+     "nearest": "b02-library-borrowing-rules",
+     "cosine": 0.7651,
+     "threshold": 0.985
+    }
+   }
+  }
+ ],
+ "summary": {
+  "index": 6,
+  "archive": 0,
+  "quarantine": 5,
+  "unchanged": 10,
+  "skipped": 0
+ }
+}

@@ -1,0 +1,439 @@
+{
+ "run_id": "20261125T183615Z",
+ "collection": "rahbar",
+ "controls": [],
+ "documents": [
+  {
+   "doc_id": "undergraduate-academic-rules-aug-2023",
+   "file": "undergraduate-academic-rules-aug-2023.pdf",
+   "origin": "mirror",
+   "action": "archive",
+   "failed": [
+    "recency"
+   ],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "4856 words over 26 page(s); clean-character ratio 1.0",
+     "words": 4856,
+     "chars": 25749,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 0.9824,
+     "replacement_chars": 0,
+     "empty_pages": 1,
+     "pages": 26
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2023-08, 26 page(s); not truncated",
+     "missing": [],
+     "page_count": 26,
+     "metadata": {
+      "source": "http://nu.edu.pk/public/downloads/Academic-Rules-Undergrad-Aug-2023.pdf",
+      "title": "Undergraduate Academic Rules (Aug 2023)",
+      "doc_version": "2023-08"
+     }
+    },
+    "recency": {
+     "result": "FAIL",
+     "reason": "superseded: newer version academic-rules-handbook-jun-2026 (2026-06, same batch)",
+     "family": "undergraduate-academic-rules",
+     "doc_version": "2023-08"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest - at cosine 0.0000",
+     "nearest": "",
+     "cosine": 0.0,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "academic-rules-handbook-jun-2026",
+   "file": "academic-rules-handbook-jun-2026.pdf",
+   "origin": "mirror",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "9212 words over 58 page(s); clean-character ratio 0.9999",
+     "words": 9212,
+     "chars": 49024,
+     "clean_char_ratio": 0.9999,
+     "wordlike_ratio": 0.9857,
+     "replacement_chars": 0,
+     "empty_pages": 3,
+     "pages": 58
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026-06, 58 page(s); not truncated",
+     "missing": [],
+     "page_count": 58,
+     "metadata": {
+      "source": "https://nu.edu.pk/public/downloads/Academic_Rules_Handbook_2026.pdf",
+      "title": "Academic Rules Handbook (Jun 2026)",
+      "doc_version": "2026-06"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'undergraduate-academic-rules'",
+     "family": "undergraduate-academic-rules",
+     "doc_version": "2026-06"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest - at cosine 0.0000",
+     "nearest": "",
+     "cosine": 0.0,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "prospectus-2026-academic-rules-and-regulations",
+   "file": "prospectus-2026-academic-rules-and-regulations.pdf",
+   "origin": "mirror",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "3399 words over 5 page(s); clean-character ratio 0.9998",
+     "words": 3399,
+     "chars": 17362,
+     "clean_char_ratio": 0.9998,
+     "wordlike_ratio": 0.9853,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 5
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026, 5 page(s); not truncated",
+     "missing": [],
+     "page_count": 5,
+     "metadata": {
+      "source": "https://nu.edu.pk/Admissions/ProspectusUpload/Academic%20Rules%20and%20Regulations.pdf",
+      "title": "Prospectus 2026 - Academic Rules and Regulations",
+      "doc_version": "2026"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'prospectus-2026-academic-rules-and-regulations'",
+     "family": "prospectus-2026-academic-rules-and-regulations",
+     "doc_version": "2026"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest undergraduate-academic-rules-aug-2023 at cosine 0.8229",
+     "nearest": "undergraduate-academic-rules-aug-2023",
+     "cosine": 0.8229,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "student-handbook-jun-2026",
+   "file": "student-handbook-jun-2026.pdf",
+   "origin": "mirror",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "10642 words over 64 page(s); clean-character ratio 1.0",
+     "words": 10642,
+     "chars": 58565,
+     "clean_char_ratio": 1.0,
+     "wordlike_ratio": 0.9899,
+     "replacement_chars": 0,
+     "empty_pages": 2,
+     "pages": 64
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026-06, 64 page(s); not truncated",
+     "missing": [],
+     "page_count": 64,
+     "metadata": {
+      "source": "https://nu.edu.pk/public/downloads/Student_Handbook_2026.pdf",
+      "title": "Student Handbook (Jun 2026)",
+      "doc_version": "2026-06"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'student-handbook-jun-2026'",
+     "family": "student-handbook-jun-2026",
+     "doc_version": "2026-06"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest academic-rules-handbook-jun-2026 at cosine 0.8618",
+     "nearest": "academic-rules-handbook-jun-2026",
+     "cosine": 0.8618,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "annual-report-2019-20",
+   "file": "annual-report-2019-20.pdf",
+   "origin": "mirror",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "7238 words over 33 page(s); clean-character ratio 0.9982",
+     "words": 7238,
+     "chars": 41501,
+     "clean_char_ratio": 0.9982,
+     "wordlike_ratio": 0.989,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 33
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2019-20, 33 page(s); not truncated",
+     "missing": [],
+     "page_count": 33,
+     "metadata": {
+      "source": "https://nu.edu.pk/public/downloads/AnnualReportForm/Annual%20Report%202019-20.pdf",
+      "title": "Annual Report 2019-20",
+      "doc_version": "2019-20"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'annual-report-2019-20'",
+     "family": "annual-report-2019-20",
+     "doc_version": "2019-20"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest student-handbook-jun-2026 at cosine 0.8377",
+     "nearest": "student-handbook-jun-2026",
+     "cosine": 0.8377,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "annual-report-2023-24",
+   "file": "annual-report-2023-24.pdf",
+   "origin": "mirror",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "31525 words over 85 page(s); clean-character ratio 0.9995",
+     "words": 31525,
+     "chars": 169791,
+     "clean_char_ratio": 0.9995,
+     "wordlike_ratio": 0.9851,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 85
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2023-24, 85 page(s); not truncated",
+     "missing": [],
+     "page_count": 85,
+     "metadata": {
+      "source": "https://nu.edu.pk/public/downloads/AnnualReportForm/Annual%20Report%202023-24.pdf",
+      "title": "Annual Report 2023-24",
+      "doc_version": "2023-24"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'annual-report-2023-24'",
+     "family": "annual-report-2023-24",
+     "doc_version": "2023-24"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest annual-report-2019-20 at cosine 0.9606",
+     "nearest": "annual-report-2019-20",
+     "cosine": 0.9606,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "fee-structure-page",
+   "file": "fee-structure-page.html",
+   "origin": "mirror",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "631 words over 1 page(s); clean-character ratio 0.9997",
+     "words": 631,
+     "chars": 3067,
+     "clean_char_ratio": 0.9997,
+     "wordlike_ratio": 0.9615,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026-27, 1 page(s); not truncated",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "https://www.nu.edu.pk/Admissions/FeeStructure",
+      "title": "Fee Structure page",
+      "doc_version": "2026-27"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'fee-structure-page'",
+     "family": "fee-structure-page",
+     "doc_version": "2026-27"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest prospectus-2026-academic-rules-and-regulations at cosine 0.7276",
+     "nearest": "prospectus-2026-academic-rules-and-regulations",
+     "cosine": 0.7276,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "grading-page",
+   "file": "grading-page.html",
+   "origin": "mirror",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "924 words over 1 page(s); clean-character ratio 0.9997",
+     "words": 924,
+     "chars": 3913,
+     "clean_char_ratio": 0.9997,
+     "wordlike_ratio": 0.9753,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 1
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2026, 1 page(s); not truncated",
+     "missing": [],
+     "page_count": 1,
+     "metadata": {
+      "source": "https://www.nu.edu.pk/Student/Grading",
+      "title": "Grading page",
+      "doc_version": "2026"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'grading-page'",
+     "family": "grading-page",
+     "doc_version": "2026"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest prospectus-2026-academic-rules-and-regulations at cosine 0.8474",
+     "nearest": "prospectus-2026-academic-rules-and-regulations",
+     "cosine": 0.8474,
+     "threshold": 0.985
+    }
+   }
+  },
+  {
+   "doc_id": "faculty-entrepreneurship-and-technical-start-ups-policy",
+   "file": "faculty-entrepreneurship-and-technical-start-ups-policy.pdf",
+   "origin": "mirror",
+   "action": "index",
+   "failed": [],
+   "injection_suspect": false,
+   "injection_matches": [],
+   "supersedes": [],
+   "checks": {
+    "quality": {
+     "result": "PASS",
+     "reason": "1755 words over 8 page(s); clean-character ratio 0.9998",
+     "words": 1755,
+     "chars": 9852,
+     "clean_char_ratio": 0.9998,
+     "wordlike_ratio": 0.978,
+     "replacement_chars": 0,
+     "empty_pages": 0,
+     "pages": 8
+    },
+    "completeness": {
+     "result": "PASS",
+     "reason": "source, title, doc_version=2022-05, 8 page(s); not truncated",
+     "missing": [],
+     "page_count": 8,
+     "metadata": {
+      "source": "https://nu.edu.pk/OricResources/ResearchPolicies/27.pdf?20220530",
+      "title": "Faculty Entrepreneurship and Technical Start-ups Policy",
+      "doc_version": "2022-05"
+     }
+    },
+    "recency": {
+     "result": "PASS",
+     "reason": "latest version of 'faculty-entrepreneurship-and-technical-start-ups-policy'",
+     "family": "faculty-entrepreneurship-and-technical-start-ups-policy",
+     "doc_version": "2022-05"
+    },
+    "uniqueness": {
+     "result": "PASS",
+     "reason": "unique; nearest academic-rules-handbook-jun-2026 at cosine 0.7740",
+     "nearest": "academic-rules-handbook-jun-2026",
+     "cosine": 0.774,
+     "threshold": 0.985
+    }
+   }
+  }
+ ],
+ "summary": {
+  "index": 8,
+  "archive": 1,
+  "quarantine": 0,
+  "unchanged": 0,
+  "skipped": 0
+ }
+}

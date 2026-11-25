@@ -1,0 +1,42 @@
+{"ts": "2026-11-25T18:48:27Z", "logger": "rahbar.ingest", "msg": "ingestion starting", "run_id": "20261125T184827Z", "collection": "rahbar", "embed_model": "nomic-embed-text", "lake": "/data/lake", "reconcile_only": false, "pod": "ingest-batch-b-recheck-jfd6w"}
+{"ts": "2026-11-25T18:48:27Z", "logger": "rahbar.ingest", "msg": "verified", "doc_id": "b01-midterm-exam-notice-2026~b03-midterm-notice-COPY", "action": "quarantine", "failed": ["uniqueness"]}
+
+=== VERIFICATION REPORT  run=20261125T184827Z  checked=1  unchanged=9  skipped=0 ===
+doc_id                                       quality  complete  recency  unique  inject  action
+b01-midterm-exam-notice-2026~b03-midterm-not SKIP     SKIP      SKIP     FAIL    -       QUARANTINE
+      - quality: not run: byte-identical to an indexed document
+      - completeness: not run: byte-identical
+      - recency: not run: byte-identical
+      - uniqueness: exact duplicate of b01-midterm-exam-notice-2026 (same file hash, different file name b03-midterm-notice-COPY.md)
+
+{"ts": "2026-11-25T18:48:27Z", "logger": "rahbar.ingest", "msg": "verification report written", "path": "/data/lake/reports/verify-20261125T184827Z.json", "index": 0, "archive": 0, "quarantine": 1, "unchanged": 9, "skipped": 0}
+=== INCREMENTAL UPDATE  collection=rahbar  index_id=4ca5564c1500 ===
+  docs_added                 0
+  docs_replaced              0
+  docs_metadata_updated      0
+  docs_removed               0
+  docs_unchanged             15
+  chunks_embedded            0
+  chunks_reused              0
+  chunks_deleted             0
+  chunks_metadata_updated    0
+  chunks_total               1034
+  orphan_chunks              0
+  chunks by doc_id (from Chroma):
+    academic-rules-handbook-jun-2026                     214
+    annual-report-2019-20                                96
+    annual-report-2023-24                                370
+    b01-midterm-exam-notice-2026                         5
+    b02-library-borrowing-rules                          5
+    b05-lab-policy-revised-draft                         5
+    b09-fee-structure-2027-28                            4
+    b10-attendance-notice-injected                       3
+    b12-transcript-request-procedure                     4
+    faculty-entrepreneurship-and-technical-start-ups-policy 26
+    fee-structure-page                                   9
+    grading-page                                         10
+    prospectus-2026-academic-rules-and-regulations       48
+    student-handbook-jun-2026                            112
+    undergraduate-academic-rules-aug-2023                123
+
+{"ts": "2026-11-25T18:48:31Z", "logger": "rahbar.ingest", "msg": "ingestion finished", "run_id": "20261125T184827Z", "seconds": 3.5, "summary": {"docs_added": 0, "docs_replaced": 0, "docs_metadata_updated": 0, "docs_removed": 0, "docs_unchanged": 15, "chunks_embedded": 0, "chunks_reused": 0, "chunks_deleted": 0, "orphan_chunks": 0}}

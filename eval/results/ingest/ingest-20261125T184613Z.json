@@ -1,0 +1,91 @@
+{
+ "collection": "rahbar",
+ "chunk_cfg": "nomic-embed-text|150|30|structure",
+ "docs_unchanged": 8,
+ "docs_added": 6,
+ "docs_replaced": 0,
+ "docs_metadata_updated": 1,
+ "docs_removed": 0,
+ "chunks_embedded": 26,
+ "chunks_reused": 0,
+ "chunks_deleted": 0,
+ "chunks_metadata_updated": 9,
+ "per_doc": {
+  "b01-midterm-exam-notice-2026": {
+   "action": "added",
+   "chunks": 5,
+   "embedded": 5,
+   "reused": 0,
+   "deleted": 0
+  },
+  "b02-library-borrowing-rules": {
+   "action": "added",
+   "chunks": 5,
+   "embedded": 5,
+   "reused": 0,
+   "deleted": 0
+  },
+  "b05-lab-policy-revised-draft": {
+   "action": "added",
+   "chunks": 5,
+   "embedded": 5,
+   "reused": 0,
+   "deleted": 0
+  },
+  "b09-fee-structure-2027-28": {
+   "action": "added",
+   "chunks": 4,
+   "embedded": 4,
+   "reused": 0,
+   "deleted": 0
+  },
+  "b10-attendance-notice-injected": {
+   "action": "added",
+   "chunks": 3,
+   "embedded": 3,
+   "reused": 0,
+   "deleted": 0
+  },
+  "b12-transcript-request-procedure": {
+   "action": "added",
+   "chunks": 4,
+   "embedded": 4,
+   "reused": 0,
+   "deleted": 0
+  },
+  "fee-structure-page": {
+   "action": "metadata",
+   "superseded": true
+  }
+ },
+ "index_id": "4ca5564c1500",
+ "chunks_total": 1034,
+ "chunks_by_doc_id": {
+  "academic-rules-handbook-jun-2026": 214,
+  "annual-report-2019-20": 96,
+  "annual-report-2023-24": 370,
+  "b01-midterm-exam-notice-2026": 5,
+  "b02-library-borrowing-rules": 5,
+  "b05-lab-policy-revised-draft": 5,
+  "b09-fee-structure-2027-28": 4,
+  "b10-attendance-notice-injected": 3,
+  "b12-transcript-request-procedure": 4,
+  "faculty-entrepreneurship-and-technical-start-ups-policy": 26,
+  "fee-structure-page": 9,
+  "grading-page": 10,
+  "prospectus-2026-academic-rules-and-regulations": 48,
+  "student-handbook-jun-2026": 112,
+  "undergraduate-academic-rules-aug-2023": 123
+ },
+ "orphan_chunks": 0,
+ "missing_docs": [],
+ "seconds": 5.5,
+ "controls": [],
+ "verification": {
+  "index": 6,
+  "archive": 0,
+  "quarantine": 5,
+  "unchanged": 10,
+  "skipped": 0
+ }
+}
