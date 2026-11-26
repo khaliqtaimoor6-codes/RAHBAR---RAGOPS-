@@ -41,6 +41,7 @@ $shots = @(
   @("D2-2", "kubectl -n rahbar exec deploy/api -- python -m app.tools.trace_show __TRACE__ | Select-Object -Skip 44 -First 27", 230, 40, 13),
   @("D2-3", "kubectl -n rahbar exec deploy/api -- python -m app.tools.trace_show __TRACE__ | Select-Object -Skip 71", 230, 62, 13),
   @("D3",   "kubectl -n rahbar exec deploy/api -- python -m app.tools.trace_summary --since 6h", 110, 30, 20),
+  @("B",    "kubectl -n rahbar logs job/eval | Select-Object -Last 26", 210, 34, 16),
   @("F1",   "kubectl -n rahbar get all,pvc,configmap,cronjob,job", 165, 66, 13),
   @("F2",   "kubectl -n rahbar logs job/ingest -c ingest | Select-Object -Last 30", 210, 44, 14),
   @("F5",   "kubectl top pods -n rahbar --containers", 90, 14, 20)
