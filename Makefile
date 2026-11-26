@@ -45,6 +45,8 @@ images: ## build the three images and load them into minikube
 	docker build -t rahbar-api:$(TAG) api
 	docker build -t rahbar-indexer:$(TAG) --build-context corpus=corpus --build-context fixtures=eval/fixtures indexer
 	docker build -t rahbar-ui:$(TAG) ui
+	docker build -t rahbar-eval:$(TAG) eval
+	minikube image load rahbar-eval:$(TAG)
 	minikube image load rahbar-api:$(TAG)
 	minikube image load rahbar-indexer:$(TAG)
 	minikube image load rahbar-ui:$(TAG)

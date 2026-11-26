@@ -40,7 +40,18 @@ kubectl -n ingress-nginx wait --for=condition=complete job --all --timeout=120s 
 
 if [ "$MODE" = "--import" ]; then
   log "importing locally built images"
-  k3d image import -c rahbar "$API_IMAGE" "$UI_IMAGE" "$INDEXER_IMAGE"
+  # k3d prints an import error but exits 0, and the pods then sit in ImagePullBackOff
+  # with the real cause hidden. Check that every image arrived; if not, stream each one
+  # straight into the node's containerd, which prints the actual error.
+  k3d image import -c rahbar "$API_IMAGE" "$UI_IMAGE" "$INDEXER_IMAGE" || true
+  for img in "$API_IMAGE" "$UI_IMAGE" "$INDEXER_IMAGE"; do
+    if ! docker exec k3d-rahbar-server-0 crictl inspecti "docker.io/library/$img" >/dev/null 2>&1; then
+      echo "k3d image import did not deliver $img; importing directly"
+      docker save "$img" | docker exec -i k3d-rahbar-server-0 ctr -n k8s.io images import -
+    fi
+    docker exec k3d-rahbar-server-0 crictl inspecti "docker.io/library/$img" >/dev/null       || { echo "image $img is not in the cluster"; exit 1; }
+  done
+  echo "all images present in the cluster"
 fi
 
 log "apply the ci overlay, images pinned by tag"

@@ -63,7 +63,8 @@ case "${1:-}" in
     mkdir -p "$HERE/eval/results/ingest" "$HERE/traces"
     kubectl -n "$NS" cp lake-shell:/data/lake/reports "$HERE/eval/results/ingest"
     kubectl -n "$NS" cp lake-shell:/traces "$HERE/traces/cluster"
-    echo "reports -> eval/results/ingest/, traces -> traces/cluster/"
+    kubectl -n "$NS" cp lake-shell:/results "$HERE/eval/results/suite"
+    echo "reports -> eval/results/ingest/, suite -> eval/results/suite/, traces -> traces/cluster/"
     ;;
   *)
     sed -n "2,13p" "$0"; exit 2 ;;

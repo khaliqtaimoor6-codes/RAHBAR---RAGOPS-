@@ -41,6 +41,7 @@ data:
   # Temperature 0.2: facts and JSON want a near-deterministic decoder; 0.2 rather than 0
   # keeps a little variety in phrasing without letting the model wander off the evidence.
   TEMPERATURE: "0.2"
+  LLM_SEED: "1234"                          # Part B stochasticity: seeded Groq calls
   LLM_TIMEOUT: "30"
   MAX_TOKENS: "700"
   # --- semantic cache (section 3.3) ---------------------------------------------------

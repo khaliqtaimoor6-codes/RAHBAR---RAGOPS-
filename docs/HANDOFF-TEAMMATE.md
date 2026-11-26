@@ -9,17 +9,31 @@ both of us must be able to explain every part at the demo, so read
 
 | Part | Owner | Status |
 | --- | --- | --- |
-| A1 verification, A2 incremental update, Batch B | Taimoor | code + tests done; cluster run pending |
-| D1–D4 traces, trace tool, metrics, guardrail logging | Taimoor | code + tests done; cluster run pending |
-| F1 PVCs, F2 ingestion Job + CronJob, F4 traces on stdout + volume | Taimoor | manifests done |
-| F5 resources for api / chroma / ingest Job | Taimoor | measure on the cluster |
-| **B** offline testing at three levels | **Ali** | to do |
+| A1 verification, A2 incremental update, Batch B | Taimoor | done, run on the cluster |
+| **B** golden set (34), three-level suite, stochasticity | Taimoor | done, run on the cluster (`eval/results/suite/`) |
+| D1–D4 traces, trace tool, metrics, guardrail logging | Taimoor | done |
+| **D5** root cause from one trace (a02) | Taimoor | done (RAGOPS.md, Part B) |
+| F1 PVCs, F2 ingestion Job + CronJob, **F2 eval Job**, F4, F5 | Taimoor | done |
+| B hand work: review ≥8 synthetic questions, label ≥8 judge verdicts | **both** | to do (`eval/REVIEW-SYNTHETIC.md`) |
 | **C** change experiment + release gate | **Ali** | to do |
 | **E** drift and coverage checking | **Ali** | to do |
-| **F2 (eval part)** eval Job + gate thresholds as a ConfigMap | **Ali** | to do |
+| **F2 gate part**: gate thresholds as a ConfigMap, eval Job exits non-zero on failure | **Ali** | to do (hook below) |
 | **F3** controlled release: candidate Deployment/Service/collection, rollout, undo | **Ali** | to do |
-| **D5** root cause from one trace | **Ali** (needs a Part B failure) | to do |
-| G report | both: each writes the sections for their parts | to do |
+| G report | both | Taimoor's sections done; yours are yellow [ALI] |
+
+**How we work in git:** your branch (`ali` or `ali/part-c`) → pull request into `dev`
+(CI runs on `dev`) → `dev` → `main` by pull request when CI is green. Small commits, one
+change each, with the reason in the message.
+
+**For Part C:** the eval Job already produces every metric the gate needs:
+`eval/results/suite/ragops-<ts>.json` → `runs[0].component.clean["recall@5"]`,
+`runs[0].end_to_end.faithfulness`, `latency_p95_ms`, `abstention_correct_unanswerable`.
+Run it against the candidate by setting `API_URL` in `k8s/eval-job.yaml` to the candidate's
+Service. Write `eval/gate.py` (reads the result JSON and thresholds from a ConfigMap,
+exits 1 on failure) and call it at the end of the Job. Candidate collections
+`rahbar-cand-cs300` and `rahbar-cand-cs100` are already built on Taimoor's cluster.
+Mind the Groq free tier: a full two-run suite uses most of a day's tokens for
+`openai/gpt-oss-20b`; use `RUNS=1` while developing and `--rejudge` to re-score.
 
 ## Setup on your laptop
 

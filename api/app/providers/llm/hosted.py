@@ -7,6 +7,7 @@ the error messages below carry the status code and the provider's message only.
 
 from __future__ import annotations
 
+import os
 import time
 
 import httpx
@@ -39,6 +40,11 @@ class HostedProvider(JsonChatProvider):
             # itself is in the system prompt, and Pydantic validates the result anyway.
             "response_format": {"type": "json_object"},
         }
+        # LLM_SEED (Assignment 03, Part B stochasticity): Groq accepts an OpenAI-style
+        # `seed`; with it, repeated calls are as repeatable as the provider allows.
+        seed = os.environ.get("LLM_SEED", "").strip()
+        if seed.isdigit():
+            payload["seed"] = int(seed)
         headers = {"Authorization": f"Bearer {self.settings.llm_api_key}"}
         waited = 0.0
         while True:

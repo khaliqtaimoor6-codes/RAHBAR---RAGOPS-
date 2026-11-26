@@ -110,7 +110,7 @@ body.push(table([1500, 4300, 2046, 1900], ["Stage", "What our pipeline does", "F
   ["Verify", "Quality, completeness, recency, uniqueness per document, plus an advisory injection flag; failures go to `quarantine/<run>/` with a reason file; one JSON report per run.", "`indexer/pipeline/verify.py`, `ingest.py`", "No check of facts across documents."],
   ["Update data lake", "`current/`, `archive/<family>/<version>/`, `deleted/<run>/`, registry, cached extracted text (no re-OCR).", "`indexer/pipeline/lake.py`", "No retention policy for quarantine/deleted."],
   ["Update retrieval sources", "Reconcile Chroma with the registry: embed only new or changed chunks, metadata-only archive/restore, delete by `doc_id`; a new `index_id` invalidates the cache.", "`indexer/pipeline/reconcile.py`", "Not atomic across documents within one run."],
-  ["Offline testing", todoCell("golden set, three-level suite, release gate"), todoCell("eval/…"), todoCell("…")],
+  ["Offline testing", "34-question golden set; module, component and end-to-end metrics; two seeded runs; runs as a Kubernetes Job and writes a timestamped result file.", "`eval/ragops_suite.py`, `k8s/eval-job.yaml`", "Release gate (Part C)."],
   ["Live testing", "One trace per query (stdout + volume), `/metrics`, a summary over a time window, a tool that rebuilds the prompt of any trace.", "`api/app/services/trace.py`, `api/app/tools/`", "No alerting; metrics are pulled by hand."],
   ["Check coverage", todoCell("live-query log, coverage vs golden set"), todoCell("…"), todoCell("…")],
 ]));
@@ -158,9 +158,27 @@ body.push(gap());
 body.push(P("Two defects were found on the cluster and fixed with tests: (1) a byte-for-byte copy under another file name carried the original's `doc_id` in its front matter and was treated as \"unchanged\" instead of a duplicate (b03 in the first Batch B run); (2) the trace tool crashed on traces of cache hits."));
 
 body.push(H2("4.3 Part B: offline testing at three levels"));
-body.push(TODO("golden set (≥25: answerable/unanswerable/hard, human vs synthetic), module level (paraphrase vs unrelated cosine, gap, ms/chunk, determinism), component level (recall@3/5, MRR, nDCG@5, noise test), end-to-end (faithfulness + judge agreement, abstention, citation validity, latency p50/p95), stochasticity (two seeded runs)."));
+body.push(P("**Golden set** (`eval/golden.jsonl`): 34 questions, 28 answerable with ground-truth document and page, 6 unanswerable, 16 hard (version, exact term, injection, paraphrase, multi-chunk, Batch B). 21 were written by hand by the group in Assignment 02 (labelled human), 13 are new (labelled synthetic). A retrieved chunk is relevant when its document is a ground-truth document and its page a ground-truth page. One command runs the suite as a Job (`kubectl apply -f k8s/eval-job.yaml`) and writes `eval/results/suite/ragops-<timestamp>.json` plus a summary table; component metrics use a retrieval-only endpoint (no LLM), end-to-end calls bypass the semantic cache, and the faithfulness judge reads each answer's exact context from its trace."));
+body.push(table([1500, 3946, 1500, 1500, 1300], ["Level", "Metric", "Run 1", "Run 2", "Diff"], [
+  ["module", "paraphrase / unrelated mean cosine (15 + 15 pairs)", "0.786 / 0.460", "0.786 / 0.460", "0"],
+  ["module", "gap", "0.326", "0.326", "0"],
+  ["module", "ms per chunk (one request; batched 28.1)", "41.9", "48.5", "+6.6"],
+  ["module", "determinism: max abs diff, same text twice", "0.0", "0.0", "0"],
+  ["component", "recall@3 / recall@5", "0.911 / 0.964", "0.911 / 0.964", "0"],
+  ["component", "MRR / nDCG@5", "0.830 / 0.838", "0.830 / 0.838", "0"],
+  ["component", "with seeded typos: recall@5 / MRR", "0.929 / 0.839", "0.929 / 0.839", "0"],
+  ["end-to-end", "faithfulness (LLM judge; answers judged)", "1.0 (25/28)", "1.0 (24/26)", "0"],
+  ["end-to-end", "abstention correct on unanswerable", "0.833", "0.833", "0"],
+  ["end-to-end", "false abstention on answerable", "0.036", "0.107", "+0.071"],
+  ["end-to-end", "citations in retrieved / to a ground-truth doc", "1.0 / 0.870", "1.0 / 0.873", "+0.003"],
+  ["end-to-end", "expected string in answer", "0.857", "0.714", "−0.143"],
+  ["end-to-end", "latency p50 / p95 (ms)", "8,191 / 13,681", "8,934 / 13,662", "+744 / −19"],
+], 16));
+body.push(gap());
+body.push(P("Typos cost 3.6 points of recall@5. The only full retrieval miss is g11 (the Lahore graduates table lost in extraction, Assignment 02); in run 2 the model answered it with a wrong number from the garbled table, which the faithfulness judge cannot catch because that number is in the context. **Stochasticity:** with seed 1234 everywhere, embeddings and retrieval were identical across runs; all variation came from generation: the hosted model returned invalid JSON once in run 1 and three times in run 2, the safe fallback turned those into abstentions, and latency follows Groq's load and free-tier rate limits. Four defects in the suite were found on the cluster and fixed (judge model 404, JSON-mode rejections, reasoning tokens exhausting the judge's budget, an expected-string match that failed on \"six\" vs \"6\"); faithfulness and the expected-string rate are re-scored from the saved answers with the fixed judge (`--rejudge`)."));
+body.push(TODO("judge agreement: label ≥ 8 of the 12 answers in judge-hand-labels-20261126T104001Z.csv by hand, run eval/judge_agreement.py, put the figure here; and mark the ≥ 8 synthetic questions you reviewed (eval/REVIEW-SYNTHETIC.md)."));
 body.push(H2("4.4 Part C: change experiment and release gate"));
-body.push(TODO("baseline vs candidate on all three levels, gate thresholds and their justification, one failing and one passing candidate, the release decision. Candidate collections `rahbar-cand-cs300` (chunk 300, 834 chunks) and `rahbar-cand-cs100` (chunk 100, 1,262 chunks) are already built on the cluster."));
+body.push(TODO("baseline vs candidate on all three levels, gate thresholds and their justification, one failing and one passing candidate, the release decision. Candidate collections `rahbar-cand-cs300` (chunk 300, 834 chunks) and `rahbar-cand-cs100` (chunk 100, 1,262 chunks) are already built on the cluster; run the eval Job against the candidate's Service and gate on its result file."));
 
 body.push(H2("4.5 Part D: observability and traceability"));
 body.push(table([3800, 1100, 4846], ["Question", "Answered", "Behaviour"], [
@@ -177,7 +195,7 @@ body.push(bullet("**D1** every query writes one JSON line (stdout and the `rahba
 body.push(bullet("**D2** `app.tools.trace_show <id>` rebuilds the prompt from the recorded context and compares its SHA-256 with the recorded one: MATCH."));
 body.push(bullet("**D3** `/metrics` exposes `rahbar_top1_similarity`, `rahbar_abstention_rate`, `rahbar_cache_hit_ratio`, `rahbar_stage_seconds{stage}` and `rahbar_injection_flagged_total`; `app.tools.trace_summary --since 6h` summarises the log (16 traces: top-1 p50 0.755, abstention 0.44, cache hit 0.25, embed p50 65 ms, generate p50 480 ms, total p95 10.0 s, dominated by the first, cold embedding)."));
 body.push(bullet("**D4** the retrieval rail drops chunks that read like instructions or whose document was flagged at ingest; each action is a `guardrails` entry in the trace. With Batch B's injected notice, 3 chunks were dropped and the answer stayed \"No\"."));
-body.push(TODO("D5: one wrong or abstained answer from Part B, root cause from its trace only, 5 lines."));
+body.push(P("**D5 root cause from the trace only.** a02 (\"bus routes and transport fee\", labelled unanswerable) was answered in both runs. Its trace (`21e2196d`) shows: (1) four annual-report chunks titled \"Islamabad Campus\" and \"Karachi Campus\" from the transport pages (2023-24 p.78, 2019-20 p.32) describing mini-buses and pick-and-drop; (2) top-1 similarity 0.6685, 0.0085 above the 0.66 relevance floor, so the model was called; (3) the answer and both citations match those chunks and the prompt hash matches; (4) so the ground truth is wrong, not the pipeline: the corpus does describe the bus service and only the fee is missing; (5) we keep the Assignment 02 set unchanged, record a02 as partially answerable, and add a fee-only abstention question in Part E."));
 
 body.push(H2("4.6 Part E: drift and coverage"));
 body.push(TODO("live query log (≥40), coverage vs golden set with a justified threshold, uncovered topics, drift after Batch B (the fee answers now come from the 2027-28 version until rolled back), ≥6 new golden questions and the coverage before/after."));
@@ -186,7 +204,8 @@ body.push(H2("4.7 Part F: Kubernetes"));
 body.push(table([2700, 7046], ["Item", "Object / evidence"], [
   ["F1 deploy", "Deployment `api` (2 replicas on the laptop), StatefulSet `chroma` with `volumeClaimTemplates`, Service `api`; PVC `rahbar-lake` holds the lake, quarantine and archive and survives restarts."],
   ["F2 ingestion", "Job `ingest` and nightly CronJob `ingest` (`concurrencyPolicy: Forbid`, plus a lock file in the lake); the only writer to Chroma (NetworkPolicy admits only `app=api` and `app=indexer`)."],
-  ["F2 evaluation, gate ConfigMap", todoCell("eval Job, result file on a volume, failing exit on gate failure, threshold change without rebuild")],
+  ["F2 evaluation", "Job `eval` (`kubectl apply -f k8s/eval-job.yaml`) runs the Part B suite against the api Service, reads traces read-only, writes the result file to PVC `rahbar-results`; NetworkPolicy lets it reach only the api, Ollama and the judge."],
+  ["F2 gate ConfigMap", todoCell("thresholds as a ConfigMap, eval Job exits non-zero when the gate fails, threshold change without rebuild")],
   ["F3 controlled release", todoCell("candidate Deployment + Service + collection, gate, rolling update with maxUnavailable 0, rollout undo, trace showing the previous collection and embedding version")],
   ["F4 observability", "Trace lines in `kubectl logs` and on the `rahbar-traces` volume; `/metrics` through `kubectl port-forward`."],
 ]));
@@ -195,7 +214,7 @@ body.push(table([1700, 4300, 3746], ["Workload (F5)", "Measured", "requests → 
   ["api", "5–8m CPU, 69–95 Mi", "50m / 128Mi → 500m / 256Mi"],
   ["chroma", "2–24m CPU, 159 Mi with 3 collections", "25m / 192Mi → 500m / 384Mi"],
   ["ingest Job", "peak RSS 111 Mi embedding 1,262 chunks, 85 Mi no-op; OCR peak 186 Mi / 1411m (A2)", "250m / 256Mi → 1500m / 512Mi"],
-  ["eval Job", todoCell("measure"), todoCell("set")],
+  ["eval Job", "I/O-bound (waits on the api); requests set conservatively", "50m / 64Mi → 500m / 256Mi"],
 ]));
 body.push(gap());
 body.push(P("A Job that finishes in under a minute is never sampled by metrics-server, so the ingestion Job logs its own peak RSS."));
@@ -203,17 +222,17 @@ body.push(P("A Job that finishes in under a minute is never sampled by metrics-s
 // ---- G4
 body.push(H1("5. Short answers"));
 body.push(P("**(a)** Uniqueness caught the most problems in Batch B (3 of 7: a byte copy, a re-wrapped text copy, a near-duplicate); completeness caught 2, quality 1, and recency handled the newer fee page. At first we missed the byte copy that reused the original's `doc_id` (fixed). We would still not catch a new, well-formed, unique document that is wrong or contradicts another policy; a contradiction check (NLI or an LLM) over documents on the same topic would. Which copy of a near-duplicate survives depends on arrival order; preferring the newer `doc_version` would fix that."));
-body.push(TODO("(b) a module-level metric that looked fine while a component or end-to-end metric did not, or why we did not see one."));
+body.push(P("**(b)** The module level looked perfect: a paraphrase/unrelated gap of 0.33 and bit-identical embeddings across runs. The end-to-end level did not: abstention on unanswerable questions was 0.83 (a02 answered from the transport pages) and false abstention rose from 0.036 to 0.107 between runs because the hosted model sometimes returned invalid JSON. Component level was in between: recall@5 0.96, but g11 had no relevant chunk at all, a stage-A extraction loss the embedding test cannot see."));
 body.push(P("**(c)** We archive superseded versions: their chunks stay indexed with `superseded=true` and retrieval filters them out unless a question asks for an older edition. Deleting them would break rollback (a restore relabels 13 chunks in 2.7 s with no re-embedding; after a delete it means re-fetching and re-embedding), questions about older editions (the 2023 withdrawal rule was answered from the archive), and audits of old traces whose chunk ids would point at nothing. Operator deletions move the file to `deleted/<run>/`, so even those are recoverable."));
-body.push(TODO("(d) the metric we trust least, and why."));
+body.push(P("**(d)** We trust the expected-string rate least: it marked correct answers wrong in the first run (\"six years\" vs \"6 years\", \"100 %\" vs \"100%\"), and even after normalising it still fails on wording (\"not allowed\" vs \"prohibited\"), so we report it but never gate on it. Faithfulness comes second: the judge is the same model family as the generator, it could not score a few answers, and it passes a wrong number that appears in the context (g11), so we check it against our own labels."));
 body.push(TODO("(e) the hardest idea of the paper to apply and what we changed. Taimoor's half: verification needs metadata the public PDFs do not carry, so we derive it from the file and record that it was derived; and the paper's single update step became two (lake registry, then reconcile each collection)."));
 body.push(P("**(f)** Job `ingest` (with the CronJob's `concurrencyPolicy: Forbid` and a lake lock) is the only writer to the vector store, enforced by NetworkPolicy `chroma-from-api-and-indexer`. PVC `rahbar-lake` holds the data lake, quarantine, archive and reports. StatefulSet `chroma` with its volume holds the retrieval sources. ConfigMap `rahbar-config` holds the verification thresholds, `NEAR_DUP_THRESHOLD`, `INJECTION_ACTION` and the embedding pin `EMBED_MODEL`. PVC `rahbar-traces` plus stdout give traceability. The api's readiness probe refuses traffic when the index was built with another embedding model. Secret `rahbar-secret` holds the LLM key, created from the command line."));
 
 // ---- contribution + AI
 body.push(H1("6. Contribution and AI statement"));
 body.push(table([2400, 7346], ["Member", "Work"], [
-  ["Taimoor Khaliq", "Part A (verification stage, data lake, incremental update, Batch B), Part D1–D4 (trace record, trace tool, metrics and summary, injection rail), Part F1, F2 ingestion, F4, F5 (PVCs, ingestion Job and CronJob, traces on stdout and a volume, measured resources), repository setup, cluster runs and evidence for these parts."],
-  ["Ali Haider Bajwa", todoCell("Parts B, C, E, D5, F2 evaluation Job and gate ConfigMap, F3 controlled release.")],
+  ["Taimoor Khaliq", "Part A (verification stage, data lake, incremental update, Batch B); Part B (golden set, three-level suite, stochasticity runs); Part D (trace record, trace tool, metrics and summary, injection rail, D5 root cause); Part F1, F2 (ingestion Job and CronJob, eval Job), F4, F5; CI fixes (UI CVEs, k3d image import); repository and branch workflow; cluster runs and evidence for these parts."],
+  ["Ali Haider Bajwa", todoCell("Parts C, E, F2 gate ConfigMap, F3 controlled release; review of synthetic questions and judge labels (with Taimoor).")],
 ]));
 body.push(gap());
 body.push(new Paragraph({ spacing: { after: 100 }, children: [
@@ -226,6 +245,7 @@ const _push = body.push.bind(body);
 body.push = (...items) => appendix.push(...items);
 body.push(H1("Appendix: screenshots"));
 body.push(P("Each screenshot is a real PowerShell window on our laptop, running the command shown against our minikube cluster (captured with `scripts/capture_screenshots.ps1`)."));
+body.push(...shot("B", "B.png", "Evaluation summary, all three levels, two seeded runs: logs of the completed eval Job (`kubectl logs job/eval`). Expected-string 0.75/0.61 here is the first scoring; 0.857/0.714 in 4.3 after the matcher fix."));
 body.push(...shot("A1", "A1.png", "Verification report for Batch B: pass/fail per check with reasons (`scripts/lake.ps1 report`)."));
 body.push(...shot("A1b", "A1b.png", "The byte copy b03 quarantined after the fix."));
 body.push(...shot("A2", "A2.png", "Second ingestion on the unchanged corpus: 0 chunks embedded, 0 orphans, chunks per doc_id."));
@@ -237,7 +257,7 @@ body.push(...shot("D3", "D3.png", "Trace summary over a time window."));
 body.push(...shot("F1", "F1.png", "`kubectl get all,pvc,configmap,cronjob,job` for our namespace."));
 body.push(...shot("F2", "F2.png", "Logs of a completed ingestion Job."));
 body.push(...shot("F5", "F5.png", "`kubectl top` for the measured resources."));
-body.push(TODO("B: evaluation summary (three levels). C: gate failing and gate passing. E: coverage before and after. F: logs of a completed evaluation Job; the gate result changing after a ConfigMap edit; `kubectl rollout status` and `kubectl rollout undo` with a trace afterwards."));
+body.push(TODO("C: gate failing and gate passing. E: coverage before and after. F: the gate result changing after a ConfigMap edit; kubectl rollout status and kubectl rollout undo with a trace afterwards."));
 
 // ---------------------------------------------------------------- document
 function footer() {
