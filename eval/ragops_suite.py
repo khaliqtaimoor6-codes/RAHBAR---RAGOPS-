@@ -317,7 +317,10 @@ def e2e_level(client: httpx.Client, api: str, golden: list[dict[str, Any]], judg
             if cites and gt_docs else None
         rows.append(row)
         time.sleep(pace)
+    return summarise_e2e(rows), rows
 
+
+def summarise_e2e(rows: list[dict[str, Any]]) -> dict[str, Any]:
     answered = [r for r in rows if r["answered"]]
     judged = [r for r in answered if (r.get("judge") or {}).get("supported") is not None]
     unans = [r for r in rows if not r["answerable"]]
@@ -338,7 +341,7 @@ def e2e_level(client: httpx.Client, api: str, golden: list[dict[str, Any]], judg
         "latency_p50_ms": pct(lat, 0.5), "latency_p95_ms": pct(lat, 0.95),
         "fallbacks": sum(1 for r in rows if r["fallback"]),
     }
-    return summary, rows
+    return summary
 
 
 # ------------------------------------------------------------------------------- main
@@ -402,6 +405,37 @@ def table(runs: list[dict[str, Any]]) -> str:
     return head + "\n".join(lines) + "\n"
 
 
+def rejudge(path: Path, args: argparse.Namespace) -> int:
+    """Re-score a saved result: the same answers (nothing is asked again), the current
+    judge and expected-string matcher, the exact contexts read back from the traces.
+    Writes <name>-rejudged.json/.md next to the original, which is kept."""
+    result = json.loads(path.read_text(encoding="utf-8"))
+    judge = Judge(args.judge_base_url, args.judge_key, args.judge_model, args.seed)
+    traces = Path(args.traces)
+    for i, run in enumerate(result["runs"], start=1):
+        print(f"[rejudge] run {i}: {len(run['answers'])} answers", flush=True)
+        for row in run["answers"]:
+            row["expect_hit"] = expect_hit(row.get("expect"), row["answer"])
+            rec = find_trace(traces, row["trace_id"], 0) or {}
+            context = "\n\n".join(f"[{c['source']} p.{c.get('page')}] {c['text']}"
+                                   for c in (rec.get("context") or []))
+            if row["answered"] and context:
+                row["judge"] = judge(context, row["question"], row["answer"])
+                time.sleep(1)
+        run["end_to_end"] = summarise_e2e(run["answers"])
+    result["rejudged"] = {"from": path.name, "judge_model": args.judge_model,
+                          "at": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")}
+    out = path.with_name(path.stem + "-rejudged.json")
+    out.write_text(json.dumps(result, indent=1, ensure_ascii=False), encoding="utf-8")
+    summary = table(result["runs"])
+    path.with_name(path.stem + "-rejudged.md").write_text(
+        f"# RAHBAR offline suite {result['timestamp']} (re-judged)\n\ncollection: "
+        f"{result['collection']}\ngolden: {result['golden']}\n\n{summary}", encoding="utf-8")
+    print(summary)
+    print(f"wrote {out}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     env = os.environ.get
     ap = argparse.ArgumentParser(description="RAHBAR offline test suite (Part B).")
@@ -419,10 +453,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--judge-base-url", default=env("HOSTED_BASE_URL", "https://api.groq.com/openai/v1"))
     ap.add_argument("--judge-model", default=env("JUDGE_MODEL") or env("LLM_MODEL", "openai/gpt-oss-20b"),
                     help="default: the answering model (LLM_MODEL from the ConfigMap)")
+    ap.add_argument("--rejudge", default=env("REJUDGE", ""),
+                    help="re-score a saved ragops-<ts>.json instead of running the suite")
     ap.add_argument("--only", default=env("ONLY", ""), help="comma-separated golden ids (debugging)")
     args = ap.parse_args(argv)
     args.judge_key = env("LLM_API_KEY", "")
 
+    if args.rejudge:
+        return rejudge(Path(args.rejudge), args)
     golden = load_golden(Path(args.golden))
     if args.only:
         golden = [q for q in golden if q["id"] in set(args.only.split(","))]
