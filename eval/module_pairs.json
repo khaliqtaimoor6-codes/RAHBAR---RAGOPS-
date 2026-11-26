@@ -1,0 +1,37 @@
+{
+  "_about": "Part B module level. Paraphrase pairs say the same thing in different words; unrelated pairs are about different topics from the same domain (so the gap is not inflated by an obviously off-topic sentence). Written for Assignment 03 (synthetic).",
+  "paraphrase": [
+    ["What CGPA keeps me off academic warning?", "Which cumulative GPA do I need so that I am not put on probation?"],
+    ["Until when can I withdraw from a course?", "What is the last date to drop a subject and get a W grade?"],
+    ["How many courses can I repeat in summer?", "Is there a limit on the number of subjects I can retake in the summer semester?"],
+    ["Is attendance compulsory for every lecture?", "Do I have to be present in all classes of a course?"],
+    ["How much is the admission fee?", "What do I pay once when I am admitted to the university?"],
+    ["How many grade points is a B+?", "What is the point value of a B plus grade?"],
+    ["What is the maximum duration of a bachelor's degree?", "How many years at most can I take to finish my undergraduate degree?"],
+    ["Can I use ChatGPT in my programming lab?", "Are generative AI tools allowed in lab courses?"],
+    ["What happens if my CGPA is below 2.00 for three semesters?", "If my cumulative GPA stays under two for three terms in a row, what is the consequence?"],
+    ["How do I get my final exam rechecked?", "What is the procedure to apply for re-evaluation of a final paper?"],
+    ["What SGPA puts me on the Rector's List?", "Which semester GPA is needed for the Rector's honours list?"],
+    ["How many books can I borrow from the library?", "What is the borrowing limit for library books?"],
+    ["What is the fine for a late library book?", "How much do I pay per day if I return a book late?"],
+    ["Can I take my phone into the exam hall?", "Are mobile phones allowed during examinations?"],
+    ["When are the midterm exams held?", "In which week of the semester do midterms take place?"]
+  ],
+  "unrelated": [
+    ["What CGPA keeps me off academic warning?", "How many guests can a graduate bring to the convocation?"],
+    ["Until when can I withdraw from a course?", "What is the tuition fee per credit hour for BS programs?"],
+    ["How many courses can I repeat in summer?", "Who can set up a technical start-up as a faculty member?"],
+    ["Is attendance compulsory for every lecture?", "How many students graduated from the Lahore campus?"],
+    ["How much is the admission fee?", "Can I use ChatGPT in my programming lab?"],
+    ["How many grade points is a B+?", "When are the midterm exams held?"],
+    ["What is the maximum duration of a bachelor's degree?", "What is the fine for a late library book?"],
+    ["Can I use ChatGPT in my programming lab?", "What is the late registration charge?"],
+    ["What happens if my CGPA is below 2.00 for three semesters?", "Who can borrow a laptop under the loan scheme?"],
+    ["How do I get my final exam rechecked?", "Are food and drinks allowed in the computer labs?"],
+    ["What SGPA puts me on the Rector's List?", "How long does an urgent transcript request take?"],
+    ["How many books can I borrow from the library?", "What is the normal course load in a semester?"],
+    ["What is the fine for a late library book?", "How many weeks of teaching are in a semester?"],
+    ["Can I take my phone into the exam hall?", "What does the faculty start-up policy say about intellectual property?"],
+    ["When are the midterm exams held?", "Is the admission fee refundable?"]
+  ]
+}
