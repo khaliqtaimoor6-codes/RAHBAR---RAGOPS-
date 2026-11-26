@@ -1,0 +1,13 @@
+id,trace_id,question,answer,judge_supported,human_label
+g01,819195c141eb4707af5dbb6de1b3fd7e,What CGPA does an undergraduate need to stay off academic warning?,An undergraduate student must maintain a CGPA of at least 2.00 to stay off academic warning.,True,
+g02,738771fb8b9a475d87af22e952eaf475,What happens if my CGPA stays below 2.00 for three semesters in a row?,"If your CGPA stays below 2.00 for three consecutive semesters, your warning count reaches three and your admission at the University is automatically closed.",True,
+g03,1bb1d1893aba47e5a8c63b87d03d69f3,How many courses is the normal course load in a regular semester?,5 courses,True,
+g04,2c6052cbec044651955d9ad7a2e79d6d,How many courses can I repeat in the summer semester?,You can repeat a maximum of 2 courses in the summer semester.,True,
+g05,9e9d4cc3b2be4ebfae6f3f1736a908b9,"If I apply for rechecking of my final exam, do I get the rechecking fee back?",Yes – the rechecking fee will be refunded if the rechecking results in an increase in your marks.,True,
+g06,a33808828ff849d58a93caa295a4841a,Am I allowed to use ChatGPT or other generative AI tools in lab courses like Programming Fundamentals?,"No, you are not allowed to use ChatGPT or other generative AI tools in lab courses such as Programming Fundamentals unless the lab instructor explicitly permits it.",True,
+g07,6f06863e506f441e8901e0a1b7419eff,"How much is the admission fee, and is it refundable?","The admission fee is Rs 30,000 and it is non‑refundable.",True,
+g08,a2ee160c3ce6428f974118a8dc4e6899,How many grade points is a B+ worth?,3.33,True,
+g09,b0804b6f361d4ae9bb3cc4cdc6094447,What is the maximum time allowed to complete a bachelor's degree?,"The maximum time allowed to complete a bachelor’s degree is six years, extendable for one additional year with the approval of Statutory Bodies.",True,
+g10,692c45ad27cf46feaf4110f77df64178,What SGPA do I need to be included in the Rector's List of Honors?,You need an SGPA of 4.00 (with at least 30 credit hours) to be included in the Rector’s List of Honors.,True,
+g12,2bfdc202ca0a472f9297e6c1a1519cbb,How long must a faculty member have worked full-time at NUCES to be eligible to set up a technical start-up?,A faculty member must have worked full‑time at NUCES for more than 1 year.,True,
+v01,c274a03bcfb74491823cfe6b99d3af0e,What is the deadline to withdraw from a course?,The deadline to withdraw from a course is the last day of the makeup week of every semester.,True,

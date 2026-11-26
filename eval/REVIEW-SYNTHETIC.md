@@ -1,0 +1,54 @@
+# Two pieces of hand work the assignment requires (Part B)
+
+Both must be done by a group member. Nothing here can be filled in by a script or an AI.
+
+## 1. Review the 13 synthetic golden questions (≥ 8 required)
+
+For each question in `eval/build_golden.py` → `SYNTHETIC`:
+
+1. Open the document it points to (`relevant[].source`, `kubectl -n rahbar exec lake-shell -- cat /data/lake/current/<file>` for Batch B / demo files; the PDFs from `corpus/MANIFEST.md`).
+2. Check that the **clause/page really answers the question**, and that **`expect`** is what the document says.
+3. For the `abstain` ones, check that **no document answers it** (search the lake for the key words).
+4. Set `"reviewed": "<your name>"` for that question in `SYNTHETIC` (instead of `False`), fix anything wrong, then rebuild:
+   ```powershell
+   .venv\Scripts\python eval\build_golden.py
+   ```
+
+| id | question (short) | checked by | notes |
+| --- | --- | --- | --- |
+| a03 | pets on campus | | |
+| a04 | cafeteria lunch price | | |
+| a05 | 2022 World Cup | | |
+| a06 | student car parking fee | | |
+| h01 | GPA under two for three terms | | |
+| h02 | warning CGPA + three semesters | | |
+| h03 | cap on summer retakes | | |
+| h04 | library books, how many / how long | | |
+| h05 | late library book fine | | |
+| h06 | Fall 2026 midterm dates | | |
+| h07 | smart watch in a midterm | | |
+| h08 | convocation guests | | |
+| h09 | laptop loan eligibility + late charge | | |
+
+Known issue found by the suite (D5): **a02** (an Assignment 02 human question, "bus routes
+and transport fee") is labelled unanswerable, but the annual reports' transport pages
+(2023-24 p.78, 2019-20 p.32) do describe the bus service; only the fee is missing. Do not
+edit it in `golden.yaml` (Assignment 02's set is only extended); record it and add a
+fee-only abstain question in Part E.
+
+## 2. Label ≥ 8 judge verdicts by hand (faithfulness agreement)
+
+`eval/results/suite/judge-hand-labels-20261126T104001Z.csv` has 12 answers with the judge's
+verdict. For each row:
+
+1. Show the exact context the model saw:
+   ```powershell
+   kubectl -n rahbar exec deploy/api -- python -m app.tools.trace_show <trace_id>
+   ```
+2. Read the answer. Is **every** claim in it stated in that context? Write `yes` or `no`
+   in `human_label` (leave `judge_supported` alone).
+3. Then:
+   ```powershell
+   .venv\Scripts\python eval\judge_agreement.py eval\results\suite\judge-hand-labels-20261126T104001Z.csv
+   ```
+   and put the agreement figure in the report (section 4.3).

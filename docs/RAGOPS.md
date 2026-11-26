@@ -1,9 +1,9 @@
 # RAGOps layer (Assignment 03): what is built, where, and how to run it
 
-This file tracks Assignment 03 work in this repository. It covers **Part A** (data
-management), **Part D** (observability and traceability) and the **data side of Part F**
-(PVCs, ingestion Job/CronJob, traces on a volume). Parts B, C, E, the eval Job and the
-controlled release (F2 eval, F3) are in [HANDOFF-TEAMMATE.md](HANDOFF-TEAMMATE.md).
+This file tracks Assignment 03 work in this repository: **Part A** (data management),
+**Part B** (offline testing at three levels) with the **eval Job**, **Part D**
+(observability and traceability, including D5) and the **data side of Part F**. Parts C, E
+and F3 are in [HANDOFF-TEAMMATE.md](HANDOFF-TEAMMATE.md).
 
 Status legend: ✅ code + unit tests done · 🟡 code done, needs a cluster run for results ·
 ⬜ not started
@@ -16,7 +16,7 @@ Status legend: ✅ code + unit tests done · 🟡 code done, needs a cluster run
 | Verify | 4 checks per document (quality, completeness, recency, uniqueness) + injection flag; failures to `quarantine/<run>/` with a reason file; one report per run | `indexer/pipeline/verify.py`, `ingest.py` | ✅ 🟡 |
 | Update data lake | `current/`, `archive/<family>/<version>/`, `deleted/`, registry, extracted-text cache | `indexer/pipeline/lake.py` | ✅ |
 | Update retrieval sources | Reconcile Chroma with the lake: embed only new/changed chunks, metadata-only archive/restore, delete by doc_id | `indexer/pipeline/reconcile.py` | ✅ 🟡 |
-| Offline testing | Golden set, 3-level suite, gate | teammate (Part B/C) | ⬜ |
+| Offline testing | Golden set (34), three-level suite, two seeded runs, as a Job | `eval/ragops_suite.py`, `k8s/eval-job.yaml` | ✅ (gate: Part C) |
 | Live testing / monitoring | One trace per query, metrics, summary script, trace tool | `api/app/services/trace.py`, `api/app/tools/` | ✅ 🟡 |
 | Check coverage | Live-query coverage vs golden set | teammate (Part E) | ⬜ |
 
@@ -106,6 +106,87 @@ scripts/lake.sh restore fee-structure-page && scripts/lake.sh ingest            
 scripts/lake.sh pull                                   # reports -> eval/results/ingest/
 ```
 
+## Part B: offline testing at three levels
+
+**Golden set** `eval/golden.jsonl` (built by `eval/build_golden.py`): 34 questions; 28
+answerable with ground-truth `doc_id` and page(s), 6 unanswerable, 16 hard (version,
+exact-term, injection, paraphrase, multi-chunk, Batch B/demo documents). 21 are the
+group's hand-written Assignment 02 questions (`human`), 13 are new (`synthetic`,
+`reviewed: false` until a member checks them: see `eval/REVIEW-SYNTHETIC.md`). Pages come
+from an export of the live index (`eval/index_sections.json`); g11 and g12, whose headings
+are not chunk labels, use the pages documented in PIPELINE.md.
+
+**Suite** `eval/ragops_suite.py`, one command, as a Job:
+
+```bash
+kubectl -n rahbar delete job eval --ignore-not-found; kubectl apply -f k8s/eval-job.yaml
+kubectl -n rahbar logs -f job/eval        # summary table at the end
+scripts/lake.sh pull                      # -> eval/results/suite/ragops-<ts>.json/.md
+```
+
+A chunk is relevant when its `doc_id` is a ground-truth document and its page is a
+ground-truth page. The component level calls `POST /api/retrieve` (retrieval only, no LLM);
+the end-to-end level calls `/api/ask` with `X-RAHBAR-Cache: bypass`, and the judge reads
+each answer's exact context from its trace. Both runs use seed 1234 (typos, `LLM_SEED`,
+judge).
+
+### Results (run `20261126T104001Z`, collection `rahbar@f4c2ff9a3277`, 18 min)
+
+| Level | Metric | Run 1 | Run 2 | Diff |
+| --- | --- | --- | --- | --- |
+| module | paraphrase mean cosine (15 pairs) | 0.7864 | 0.7864 | 0 |
+| module | unrelated mean cosine (15 pairs) | 0.4600 | 0.4600 | 0 |
+| module | gap | 0.3264 | 0.3264 | 0 |
+| module | ms per chunk (one request / batched) | 41.9 / 28.1 | 48.5 / — | +6.6 |
+| module | determinism: max abs diff, same text twice | 0.0 | 0.0 | 0 |
+| component | recall@3 / recall@5 | 0.911 / 0.964 | 0.911 / 0.964 | 0 |
+| component | MRR / nDCG@5 | 0.830 / 0.838 | 0.830 / 0.838 | 0 |
+| component | with typos: recall@5 / MRR | 0.929 / 0.839 | same | 0 |
+| end-to-end | faithfulness (judged answers) | 1.0 (25/28) | 1.0 (24/26) | 0 |
+| end-to-end | abstention correct on unanswerable | 0.833 | 0.833 | 0 |
+| end-to-end | false abstention on answerable | 0.036 | 0.107 | +0.071 |
+| end-to-end | citations in retrieved / to a ground-truth doc | 1.0 / 0.870 | 1.0 / 0.873 | +0.003 |
+| end-to-end | expected string in answer | 0.857 | 0.714 | −0.143 |
+| end-to-end | latency p50 / p95 (ms) | 8,191 / 13,681 | 8,934 / 13,662 | |
+
+Faithfulness and the expected-string rate are from the re-judged file
+(`ragops-20261126T104001Z-rejudged-1.json`, same answers, fixed judge and matcher).
+
+**Reading the numbers**
+- Typos (one swapped letter pair in about a third of the longer words, 28 questions) cost 3.6 points of recall@5 and 2.4 of nDCG@5; MRR is unchanged within 0.01.
+- The only full retrieval miss is **g11** (Lahore graduates table): the extraction loss
+  documented in Assignment 02. In run 2 the model answered "53", a wrong number from the
+  garbled table, which faithfulness does not catch (the number *is* in the context).
+- **Stochasticity**: embeddings and retrieval are bit-identical across the two runs
+  (determinism 0.0, same ranks). All variation is in generation: with `LLM_SEED`, the
+  temperature 0.2 model still returned invalid JSON 1 time in run 1 and 3 times in run 2;
+  the safe fallback turned those into abstentions (false abstention 0.036 → 0.107) and
+  their expected strings into misses. Latency varies with Groq's load and rate limiting
+  (p50 ~8–9 s includes the pacing waits of the free tier).
+- Latency p50 of ~8 s is dominated by the hosted model; retrieval itself is ~25–70 ms.
+
+**Found and fixed while running it on the cluster**: the judge model first returned 404 and
+crashed the run; Groq then rejected 5 judge replies as invalid JSON (faithfulness was over
+23 of 28); 3 more came back unparsable because gpt-oss spends part of max_tokens on
+reasoning; and the expected-string match failed on "six" vs "6" and "100 %" vs "100%".
+Each is its own commit with the evidence.
+
+**Still by hand (both members):** review ≥ 8 synthetic questions and label ≥ 8 judge
+verdicts, then `eval/judge_agreement.py` gives the agreement (`eval/REVIEW-SYNTHETIC.md`).
+
+### D5: root cause from the trace only (a02, answered though labelled unanswerable)
+
+Trace `21e2196d` ("What are the university bus routes and how much is the transport fee?"):
+1. Retrieved 4 annual-report chunks titled "Islamabad Campus"/"Karachi Campus" from the
+   transport pages (2023-24 p.78, 2019-20 p.32), describing mini-buses and pick-and-drop.
+2. Top-1 similarity 0.6685, 0.0085 above `RELEVANCE_FLOOR` 0.66, so the model was called.
+3. The answer and both citations match those chunks; the prompt hash matches the trace.
+4. Cause: the **ground truth is wrong**, not the pipeline. The corpus does cover the bus
+   service; only the fee is missing. Assignment 02 assumed the annual reports say nothing
+   about transport.
+5. Fix: keep golden.yaml unchanged (it is only extended), record a02 as partially
+   answerable, and add a fee-only abstain question in Part E.
+
 ## Part D: observability and traceability
 
 | Item | What | Where |
@@ -114,7 +195,7 @@ scripts/lake.sh pull                                   # reports -> eval/results
 | D2 trace tool | Rebuilds the exact prompt for a trace id and checks it against the recorded SHA-256 | `python -m app.tools.trace_show <id>` |
 | D3 metrics | `/metrics`: `rahbar_top1_similarity`, `rahbar_abstention_rate`, `rahbar_cache_hit_ratio`, `rahbar_stage_seconds{stage}`, `rahbar_injection_flagged_total`; the script summarises the trace log over a window | `api/app/routes/metrics.py`, `python -m app.tools.trace_summary --since 1h` |
 | D4 guardrail logging | Retrieval rail drops (or flags) instruction-like chunks and chunks flagged at ingest; the question is scanned too; every action is a `guardrails` entry in the trace | `api/app/services/rails.py` |
-| D5 root cause | needs a wrong/abstained answer from Part B | teammate, with `trace_show` |
+| D5 root cause | a02 from the Part B run, from its trace only | see Part B above |
 
 ```bash
 kubectl -n rahbar logs deploy/api | grep rahbar.trace | tail -1          # F4: traces on stdout

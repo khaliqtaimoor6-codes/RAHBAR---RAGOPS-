@@ -230,9 +230,14 @@ class Judge:
 
     def __call__(self, context: str, question: str, answer: str) -> dict[str, Any]:
         payload = {"model": self.model, "temperature": 0, "seed": self.seed,
-                   "response_format": {"type": "json_object"}, "max_tokens": 300,
+                   "response_format": {"type": "json_object"}, "max_tokens": 1200,
                    "messages": [{"role": "user",
                                  "content": JUDGE_PROMPT % (context[:6000], question, answer)}]}
+        if "gpt-oss" in self.model:
+            # a reasoning model: its thinking counts against max_tokens, and at 300 it
+            # sometimes left no room for the JSON
+            payload["reasoning_effort"] = "low"
+        parse_retry = True
         for attempt in range(6):
             r = self.client.post(self.url, json=payload,
                                  headers={"Authorization": f"Bearer {self.key}"})
@@ -257,6 +262,9 @@ class Judge:
                 return {"supported": bool(out.get("supported")),
                         "unsupported_claims": out.get("unsupported_claims") or []}
             except (ValueError, KeyError):
+                if parse_retry:                       # one more try: replies vary
+                    parse_retry = False
+                    continue
                 return {"supported": None, "unsupported_claims": ["judge output not JSON"]}
         return {"supported": None, "unsupported_claims": ["judge rate-limited"]}
 
