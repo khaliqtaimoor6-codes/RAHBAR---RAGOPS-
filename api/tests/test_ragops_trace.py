@@ -129,3 +129,54 @@ def test_summary_reports_the_d3_metrics(settings: Settings, tracer: TraceWriter,
     assert s["injection"]["events"] == {"query_injection:flagged": 1,
                                         "retrieval_injection:dropped": 1}
     assert "p95" in s["latency_ms"]["total"]
+
+
+# --- Part B hooks: cache bypass and retrieval-only endpoint -----------------------------
+
+def _client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):  # type: ignore[no-untyped-def]
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+    monkeypatch.setenv("TRACE_DIR", str(tmp_path))
+    monkeypatch.setenv("TRACE_STDOUT", "false")
+    return TestClient(app)
+
+
+def test_retrieve_endpoint_returns_refs_without_a_model_call(monkeypatch: pytest.MonkeyPatch,
+                                                             tmp_path: Path) -> None:
+    with _client(monkeypatch, tmp_path) as c:
+        r = c.post("/api/retrieve", json={"question": "What CGPA avoids warning?"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["retrieved"] and {"chunk_id", "source", "page", "score"} <= set(body["retrieved"][0])
+    assert not list(tmp_path.glob("*.jsonl")) or all(
+        not f.read_text(encoding="utf-8").strip() for f in tmp_path.glob("*.jsonl"))
+
+
+def test_cache_bypass_header_is_accepted(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    with _client(monkeypatch, tmp_path) as c:
+        r = c.post("/api/ask", json={"question": "What CGPA avoids warning?"},
+                   headers={"X-RAHBAR-Cache": "bypass"})
+    assert r.status_code == 200 and r.json()["cached"] is False
+    [rec] = records(tmp_path)
+    assert rec["cache"] == "skip"
+
+
+def test_hosted_provider_sends_seed_when_set(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.config import Settings
+    from app.providers.llm.hosted import HostedProvider
+
+    sent = {}
+
+    class Resp:
+        status_code = 200
+        headers: dict = {}
+
+        def json(self):  # type: ignore[no-untyped-def]
+            return {"choices": [{"message": {"content": "{}"}}], "usage": {}}
+
+    monkeypatch.setenv("LLM_SEED", "7")
+    p = HostedProvider(Settings(hosted_base_url="http://x", llm_api_key="k"))
+    monkeypatch.setattr(p.client, "post", lambda url, json, headers: sent.update(json) or Resp())
+    p.complete([{"role": "user", "content": "hi"}])
+    assert sent["seed"] == 7
