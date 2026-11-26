@@ -39,9 +39,12 @@ spec:
       volumeMounts:
         - {name: lake, mountPath: /data/lake}
         - {name: traces, mountPath: /traces}
+        - {name: results, mountPath: /results}
   volumes:
     - name: lake
       persistentVolumeClaim: {claimName: rahbar-lake}
     - name: traces
       persistentVolumeClaim: {claimName: rahbar-traces}
+    - name: results
+      persistentVolumeClaim: {claimName: rahbar-results}
   restartPolicy: Never
