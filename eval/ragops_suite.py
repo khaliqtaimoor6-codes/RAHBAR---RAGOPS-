@@ -220,13 +220,21 @@ class Judge:
             if r.status_code == 429:
                 time.sleep(min(float(r.headers.get("retry-after", "5") or 5), 30) + attempt)
                 continue
+            if r.status_code == 400 and "validate JSON" in r.text and "response_format" in payload:
+                # Found in the first cluster run: Groq rejects a reply that is not valid
+                # JSON in JSON mode (5 of 28 answers went unjudged). Ask again without JSON
+                # mode and read the first {...} object from the text.
+                payload = {k: v for k, v in payload.items() if k != "response_format"}
+                continue
             if r.status_code != 200:
                 # e.g. 404 for a model name the provider no longer serves: record the
                 # answer as not judged instead of aborting the whole run
                 return {"supported": None,
                         "unsupported_claims": [f"judge HTTP {r.status_code}: {r.text[:120]}"]}
             try:
-                out = json.loads(r.json()["choices"][0]["message"]["content"])
+                text = r.json()["choices"][0]["message"]["content"] or ""
+                m = re.search(r"\{.*\}", text, re.S)
+                out = json.loads(m.group(0) if m else text)
                 return {"supported": bool(out.get("supported")),
                         "unsupported_claims": out.get("unsupported_claims") or []}
             except (ValueError, KeyError):
