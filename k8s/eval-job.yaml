@@ -38,7 +38,7 @@ spec:
             - {name: RUNS, value: "2"}                # stochasticity: two seeded runs
             - {name: SEED, value: "1234"}
             - {name: PACE_SECONDS, value: "4"}        # Groq free tier
-            - {name: JUDGE_MODEL, value: "llama-3.1-8b-instant"}
+            # JUDGE_MODEL unset: the judge uses LLM_MODEL from the ConfigMap.
             - name: LLM_API_KEY                       # the faithfulness judge
               valueFrom:
                 secretKeyRef: {name: rahbar-secret, key: LLM_API_KEY, optional: true}

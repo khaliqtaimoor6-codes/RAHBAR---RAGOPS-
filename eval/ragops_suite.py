@@ -220,7 +220,11 @@ class Judge:
             if r.status_code == 429:
                 time.sleep(min(float(r.headers.get("retry-after", "5") or 5), 30) + attempt)
                 continue
-            r.raise_for_status()
+            if r.status_code != 200:
+                # e.g. 404 for a model name the provider no longer serves: record the
+                # answer as not judged instead of aborting the whole run
+                return {"supported": None,
+                        "unsupported_claims": [f"judge HTTP {r.status_code}: {r.text[:120]}"]}
             try:
                 out = json.loads(r.json()["choices"][0]["message"]["content"])
                 return {"supported": bool(out.get("supported")),
@@ -387,7 +391,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--pace", type=float, default=float(env("PACE_SECONDS", "4")),
                     help="seconds between /api/ask calls (free-tier rate limits)")
     ap.add_argument("--judge-base-url", default=env("HOSTED_BASE_URL", "https://api.groq.com/openai/v1"))
-    ap.add_argument("--judge-model", default=env("JUDGE_MODEL", "llama-3.1-8b-instant"))
+    ap.add_argument("--judge-model", default=env("JUDGE_MODEL") or env("LLM_MODEL", "openai/gpt-oss-20b"),
+                    help="default: the answering model (LLM_MODEL from the ConfigMap)")
     ap.add_argument("--only", default=env("ONLY", ""), help="comma-separated golden ids (debugging)")
     args = ap.parse_args(argv)
     args.judge_key = env("LLM_API_KEY", "")
