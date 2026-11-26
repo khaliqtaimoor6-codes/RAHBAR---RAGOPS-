@@ -1,143 +1,196 @@
-# Assignment 03: work split and handoff
+# Assignment 03: handoff to Ali
 
-Repo: <https://github.com/khaliqtaimoor6-codes/RAHBAR---RAGOPS-> (Assignment 02 code is
-the first commit, imported unchanged). Assignment 03 needs commits from both of us, and
-both of us must be able to explain every part at the demo, so read
-[RAGOPS.md](RAGOPS.md) for the parts below that are already done.
+Repo: <https://github.com/khaliqtaimoor6-codes/RAHBAR---RAGOPS-> (the Assignment 02 code is
+the first commit). The assignment needs commits from both of us, and both of us must be
+able to explain every part at the demo, so read [RAGOPS.md](RAGOPS.md) for the parts that
+are done before you start.
 
-## Who does what
+## Where things stand
 
 | Part | Owner | Status |
 | --- | --- | --- |
-| A1 verification, A2 incremental update, Batch B | Taimoor | done, run on the cluster |
-| **B** golden set (34), three-level suite, stochasticity | Taimoor | done, run on the cluster (`eval/results/suite/`) |
-| D1–D4 traces, trace tool, metrics, guardrail logging | Taimoor | done |
-| **D5** root cause from one trace (a02) | Taimoor | done (RAGOPS.md, Part B) |
-| F1 PVCs, F2 ingestion Job + CronJob, **F2 eval Job**, F4, F5 | Taimoor | done |
-| B hand work: review ≥8 synthetic questions, label ≥8 judge verdicts | **both** | to do (`eval/REVIEW-SYNTHETIC.md`) |
-| **C** change experiment + release gate | **Ali** | to do |
-| **E** drift and coverage checking | **Ali** | to do |
-| **F2 gate part**: gate thresholds as a ConfigMap, eval Job exits non-zero on failure | **Ali** | to do (hook below) |
-| **F3** controlled release: candidate Deployment/Service/collection, rollout, undo | **Ali** | to do |
-| G report | both | Taimoor's sections done; yours are yellow [ALI] |
+| **A** verification, incremental update, Batch B | Taimoor | ✅ done, run on the cluster |
+| **B** golden set (34), three-level suite, two seeded runs | Taimoor | ✅ done, results in `eval/results/suite/` |
+| **D1–D4** traces, trace tool, metrics, guardrail logging | Taimoor | ✅ done |
+| **D5** root cause from one trace | Taimoor | ✅ done (a02, RAGOPS.md → Part B) |
+| **F1, F2 (ingestion + eval Jobs), F4, F5** | Taimoor | ✅ done |
+| CI (lint, tests, manifests, build, Trivy, e2e on k3d) | Taimoor | ✅ green on `dev` and `main` |
+| **B hand work**: review ≥ 8 synthetic questions, label ≥ 8 judge verdicts | **both** | ⬜ `eval/REVIEW-SYNTHETIC.md` |
+| **C1** one pipeline change, baseline vs candidate, all three levels | **Ali** | ⬜ |
+| **C2** release gate: thresholds in a config file, script exits pass/fail | **Ali** | ⬜ |
+| **F2 (gate part)** thresholds as a ConfigMap; eval Job fails when the gate fails | **Ali** | ⬜ |
+| **E1–E4** live query log, coverage, drift, close the gap | **Ali** | ⬜ |
+| **F3** candidate Deployment + Service + collection, rollout, undo | **Ali** | ⬜ |
+| **G** report | both | Taimoor's sections written; yours are **yellow `[ALI]`** |
 
-**How we work in git:** your branch (`ali` or `ali/part-c`) → pull request into `dev`
-(CI runs on `dev`) → `dev` → `main` by pull request when CI is green. Small commits, one
-change each, with the reason in the message.
+## How we work in git
 
-**For Part C:** the eval Job already produces every metric the gate needs:
-`eval/results/suite/ragops-<ts>.json` → `runs[0].component.clean["recall@5"]`,
-`runs[0].end_to_end.faithfulness`, `latency_p95_ms`, `abstention_correct_unanswerable`.
-Run it against the candidate by setting `API_URL` in `k8s/eval-job.yaml` to the candidate's
-Service. Write `eval/gate.py` (reads the result JSON and thresholds from a ConfigMap,
-exits 1 on failure) and call it at the end of the Job. Candidate collections
-`rahbar-cand-cs300` and `rahbar-cand-cs100` are already built on Taimoor's cluster.
-Mind the Groq free tier: a full two-run suite uses most of a day's tokens for
-`openai/gpt-oss-20b`; use `RUNS=1` while developing and `--rejudge` to re-score.
-
-## Setup on your laptop
+`main` only changes through a pull request from `dev`, and `dev` only through pull
+requests from our own branches. CI runs on every push to `dev` and on every pull request
+into `main`.
 
 ```bash
 git clone https://github.com/khaliqtaimoor6-codes/RAHBAR---RAGOPS-.git rahbar && cd rahbar
-git checkout -b ali/part-b-c-e          # open a PR into main when a part works
-make install && make test               # 28 + 46 tests, no cluster needed
+git checkout -b ali origin/dev            # your branch, from dev
+# ... small commits, one change each, the reason in the message ...
+git push -u origin ali
 ```
 
-Cluster: `make cluster` (now 3 GB / 2 CPUs), Ollama on the host with
-`OLLAMA_HOST=0.0.0.0` and `ollama pull nomic-embed-text`, `make images`, then the steps
-in [k8s/README.md](../k8s/README.md). The ingestion Job is now `job/ingest` (was
-`job/indexer`); `make index` runs it again.
+Then on GitHub: **pull request `ali` → `dev`**, merge when it looks right, check that CI on
+`dev` is green, and open a **pull request `dev` → `main`**. Before each new piece of work:
+`git fetch && git merge origin/dev` on your branch. Taimoor works on `taimoor` the same way.
 
-## What you can build on
+## Setup on your laptop (once)
 
-* **`trace_id` in every `/api/ask` response.** Join each eval answer to its trace.
-  Traces have `latency_ms` per stage (for p50/p95), `grounding.top1_score`, `context` (the
-  exact chunks the model saw, for the faithfulness judge) and `collection` /
-  `embedding.version` (for F3: after `rollout undo`, a new trace must show the previous
-  collection and embedding version).
-* **`retrieved[].doc_id`** in the response: recall@k / MRR / nDCG by document.
-* **Candidate collections for Part C / F3**: a reconcile of the same lake into another
-  collection, with other settings. No re-download, no re-OCR (the lake caches extracted
-  text):
+You need Docker, kubectl, Python 3.12, [Ollama](https://ollama.com) and a free
+[Groq API key](https://console.groq.com/keys) (copy it from the popup when you create it:
+Groq never shows it again).
+
+```bash
+python -m venv .venv && .venv/bin/pip install -r api/requirements-dev.txt -r indexer/requirements-dev.txt
+(cd api && ../.venv/bin/pytest -q) && (cd indexer && ../.venv/bin/pytest -q)   # 50 + 30 tests, no cluster
+ollama pull nomic-embed-text              # embeddings only (~270 MB); answers come from Groq
+```
+
+**Cluster: minikube** (what Taimoor uses):
+```bash
+minikube start --driver=docker --cni=calico --memory=3072 --cpus=2 --disk-size=12g
+minikube addons enable metrics-server && minikube addons enable ingress
+make images                               # api, indexer, ui, eval -> loaded into minikube
+```
+**or k3d** (if minikube does not fit in your RAM): `make k3d-up k3d-images`, and use
+`k8s/overlays/k3d` instead of `k8s/overlays/dev` below.
+
+Pods reach Ollama on the host at `host.minikube.internal:11434`; Ollama can stay on its
+default `127.0.0.1`.
+
+**Deploy:**
+```bash
+kubectl apply -f k8s/base/namespace.yaml
+# the Groq key: save it in a file with no newline, then
+kubectl -n rahbar create secret generic rahbar-secret --from-file=LLM_API_KEY=groq.txt
+rm groq.txt
+kubectl apply -k k8s/overlays/dev
+kubectl -n rahbar wait --for=condition=complete job/ingest --timeout=60m   # ~6 min: download, OCR, verify, index
+kubectl -n rahbar rollout status deploy/api
+```
+Then bring your cluster to the same state as Taimoor's (Batch B ingested, fee page rolled
+back), so your numbers are comparable with Part B's:
+```bash
+scripts/lake.sh upload data/batch_b && scripts/lake.sh ingest
+scripts/lake.sh restore fee-structure-page && scripts/lake.sh ingest
+scripts/lake.sh upload data/demo_batch_c && scripts/lake.sh ingest
+```
+On Windows use `.\scripts\lake.ps1 ...` from PowerShell (plain `bash` there is WSL's, which
+has no kubectl config).
+
+## Your parts, and what is already there for them
+
+### C1: one change, baseline vs candidate
+- Pick the change. Suggested: chunk size 150 → 300 (a passing-looking candidate) and
+  150 → 100 or `TOP_K` 5 → 1 (a deliberately bad one).
+- Build the candidate's collection from the lake (no re-download, no re-OCR):
   ```bash
-  kubectl -n rahbar create job ingest-cand --from=cronjob/ingest --dry-run=client -o yaml \
-    | yq '.spec.template.spec.containers[0].args = ["--reconcile-only"]
-          | .spec.template.spec.containers[0].env = [{"name":"CHROMA_COLLECTION","value":"rahbar-cand"},
-                                                     {"name":"CHUNK_SIZE","value":"300"}]' \
-    | kubectl apply -f -
+  kubectl -n rahbar create job ingest-cand-cs300 --from=cronjob/ingest --dry-run=client -o json \
+    | python -c "import json,sys; j=json.load(sys.stdin); c=j['spec']['template']['spec']['containers'][0]; \
+  c['args']=['--reconcile-only']; c['env']=[{'name':'CHROMA_COLLECTION','value':'rahbar-cand-cs300'}, \
+  {'name':'CHUNK_SIZE','value':'300'},{'name':'CHUNK_OVERLAP','value':'50'}]; \
+  j['spec']['template']['spec']['initContainers']=[]; print(json.dumps(j))" | kubectl apply -f -
   ```
-  (or write `k8s/release/candidate-ingest-job.yaml` with those two env vars; env wins
-  over envFrom). Then the candidate Deployment `api-candidate` sets
-  `CHROMA_COLLECTION=rahbar-cand` and gets its own Service. An embedding-model change
-  must use a new collection name: reconcile refuses to mix models in one collection.
-* **Batch B for E3**: `scripts/lake.sh upload data/batch_b && scripts/lake.sh ingest`.
-  It archives the 2026-27 fee page (b09 is a newer version), adds 6 documents and
-  quarantines 6. Golden questions about fees should change answer (2027-28 numbers):
-  that is the drift to report. `scripts/lake.sh restore fee-structure-page` rolls it back.
-* **Injected document for D4/B**: b10 (attendance notice). Ask "Is attendance optional?"
-  after Batch B: the trace's `guardrails` shows `retrieval_injection ... dropped`.
-* **Root cause for D5**: `kubectl -n rahbar exec deploy/api -- python -m
-  app.tools.trace_show <trace_id>` prints the chunks, versions, filters and the exact
-  prompt for one answer.
+  Better: commit it as `k8s/release/candidate-ingest-job.yaml`. An embedding-model change
+  needs a new collection name; reconcile refuses to mix models in one collection.
+- The candidate api: a copy of the `api` Deployment named `api-candidate`, with
+  `CHROMA_COLLECTION=rahbar-cand-cs300` (and the changed setting) as env, its own Service,
+  and the NetworkPolicies extended to it (`app: api-candidate`, or keep the label `app: api`
+  plus a `track: candidate` label and select on that).
+- Run the suite against it: in `k8s/eval-job.yaml` set `API_URL` to the candidate's
+  Service. Baseline = the same Job against `http://api:8000`.
 
-## Your parts in detail (from the assignment)
+### C2 + F2 gate: thresholds as a ConfigMap, the eval Job fails when the gate fails
+- The result file has everything the gate needs:
+  `runs[0].component.clean["recall@5"]`, `runs[0].end_to_end.faithfulness`,
+  `runs[0].end_to_end.latency_p95_ms`, `runs[0].end_to_end.abstention_correct_unanswerable`
+  (and the same for the baseline's file).
+- Write `eval/gate.py`: read the candidate's and the baseline's result JSON and the
+  thresholds (e.g. recall@5 may drop ≤ 2 points, faithfulness ≥ a value you justify, p95 ≤
+  a value you justify, abstention ≥ baseline), print pass/fail per rule, exit 1 on failure.
+- Put the thresholds in a ConfigMap (`k8s/gate-config.yaml`), mount it into the eval Job,
+  and call the gate at the end of `eval/ragops_suite.py` (or as a second container step).
+  Show: one candidate fails, one passes, and editing the ConfigMap flips the result without
+  rebuilding the image.
+- Part B's numbers to start from (Taimoor's cluster, run `20261126T104001Z`): recall@5
+  0.964, MRR 0.830, faithfulness 1.0 (25/28 judged), abstention on unanswerable 0.833,
+  p95 13.7 s.
 
-### Part B (`eval/`)
-- `eval/golden.jsonl`: ≥25 questions; ≥15 answerable with ground-truth `doc_id` and page,
-  ≥5 unanswerable (must abstain: hostel, transport, off-topic), ≥5 hard (paraphrased,
-  multi-chunk, or from Batch B). ≥8 written by hand, each labelled `human`/`synthetic`,
-  ≥8 synthetic ones reviewed by hand. `eval/golden.yaml` from Assignment 02 (21 questions)
-  is a starting point.
-- Module level: ≥15 paraphrase pairs vs ≥15 unrelated pairs through Ollama
-  (`POST /api/embed`, model `nomic-embed-text`, prefix `search_query: `): mean cosine
-  each, the gap, ms per chunk, determinism (same text twice, max abs difference).
-- Component level: recall@3, recall@5, MRR, nDCG@5; noise test (≥3 irrelevant docs via
-  the inbox, or typos in queries) and the change per metric.
-- End-to-end: faithfulness (LLM judge on `context` from the trace, ≥8 hand labels and
-  the agreement rate), abstention correctness, citation validity, latency p50/p95.
-- Stochasticity: fixed seeds, run twice, difference per metric, explain the rest
-  (temperature 0.2, Groq nondeterminism).
-- One command writes `eval/results/<timestamp>.json` + a summary table.
+### E1–E4: drift and coverage
+- E1: ≥ 40 queries "as if from users": ~28 in the golden set's domain, ≥ 12 off-topic.
+  Put them in `eval/live_queries.jsonl` and send them through `/api/ask`: they land in the
+  traces, which are the live query log.
+- E2: for each live query, the most similar golden question (embed both with
+  `nomic-embed-text` through Ollama, `search_query: ` prefix; the suite's `Embedder` class
+  does this). Report the share above a threshold you justify, list the uncovered queries by
+  topic.
+- E3: Batch B is already on Taimoor's cluster; on a fresh cluster ingest it, re-run the
+  suite, and report what changed and why (fees switch to 2027-28 until the rollback;
+  library/exam/lab questions become answerable).
+- E4: ≥ 6 new golden questions from the uncovered topics (add them to
+  `eval/build_golden.py`, labelled synthetic or human), re-run coverage, show it rises; a
+  script exits non-zero below your threshold. Include a **fee-only transport question**
+  as a new abstain case: D5 showed a02's "bus routes" half is answerable.
 
-### Part C
-- C1 one change (suggest chunk size 150 → 300, or top-k 5 → 3) on baseline vs candidate,
-  all three levels.
-- C2 `eval/gate.yaml` thresholds (recall@5 drop ≤ 2 points, faithfulness ≥ x, p95 ≤ y,
-  abstention ≥ baseline), a script that exits pass/fail; one failing candidate (a bad one
-  is fine, e.g. top_k=1) and one passing.
+### F3: controlled release
+- The candidate from C runs as `api-candidate` with its own Service and collection; the
+  eval Job runs against it; if the gate passes, roll the live `api` Deployment to the
+  candidate's settings (`maxUnavailable: 0` is already set) and watch
+  `kubectl rollout status deploy/api`.
+- Show a candidate stopped by the gate (never rolled out), and a bad release reversed with
+  `kubectl rollout undo deploy/api`, then a new trace showing the previous collection and
+  embedding version: every trace has `collection.name`, `collection.index_id` and
+  `embedding.version`:
+  ```bash
+  kubectl -n rahbar logs deploy/api | grep rahbar.trace | tail -1
+  kubectl -n rahbar exec deploy/api -- python -m app.tools.trace_show <trace_id>
+  ```
 
-### Part E
-- E1 ≥40 live queries (≈28 in domain, ≥12 off-topic), E2 coverage against the golden set
-  with a justified threshold, uncovered queries grouped into topics, E3 drift after
-  Batch B, E4 ≥6 new golden questions, coverage rises, a script exits non-zero below the
-  threshold.
+### Hand work (both of us): `eval/REVIEW-SYNTHETIC.md`
+Review ≥ 8 of the 13 synthetic questions against the documents, and label ≥ 8 of the 12
+answers in `eval/results/suite/judge-hand-labels-20261126T104001Z.csv` by hand; then
+`python eval/judge_agreement.py <csv>` gives the agreement figure for the report.
 
-### F2 (eval) and F3
-- `k8s/eval-job.yaml` (`kubectl apply -f k8s/eval-job.yaml`): runs the suite against the
-  api Service, writes the result file to a volume (`rahbar-traces` or a new
-  `rahbar-results` PVC), exits non-zero when the gate fails. Thresholds in a ConfigMap;
-  show that editing it changes the outcome without rebuilding the image.
-- F3: `api-candidate` Deployment + Service + own collection; eval Job against it; if the
-  gate passes, roll the live `api` Deployment (`maxUnavailable: 0` is already set) and
-  watch `kubectl rollout status`; show a candidate stopped by the gate, and a bad release
-  reversed with `kubectl rollout undo` followed by a trace that shows the previous
-  collection and embedding version.
+## Tools you will use
+
+| What | Command |
+| --- | --- |
+| run the Part B suite | `kubectl -n rahbar delete job eval --ignore-not-found; kubectl apply -f k8s/eval-job.yaml` |
+| quick run while developing | add env `RUNS=1` and `ONLY=g01,a05,h04` to the Job |
+| re-score a saved run (no questions asked again) | env `REJUDGE=/results/ragops-<ts>.json` |
+| copy results / traces / reports into the repo | `scripts/lake.sh pull` |
+| retrieval only, no LLM | `POST /api/retrieve {"question": ...}` |
+| skip the semantic cache | header `X-RAHBAR-Cache: bypass` on `/api/ask` |
+| print the exact prompt of any answer | `kubectl -n rahbar exec deploy/api -- python -m app.tools.trace_show <id>` |
+| metrics over a window | `kubectl -n rahbar exec deploy/api -- python -m app.tools.trace_summary --since 1h` |
+| report screenshots from real terminal windows (Windows) | `.\scripts\capture_screenshots.ps1` (add your shots to its table) |
+
+## Things that will bite you
+
+- **Groq free tier**: one full two-run suite uses most of a day's tokens for
+  `openai/gpt-oss-20b`. Develop with `RUNS=1` and `ONLY=...`; use `REJUDGE` to re-score;
+  run the full baseline and candidate suites once each, on different days if needed. When
+  the quota is gone, the judge and the answers degrade into "rate-limited"/fallbacks: check
+  `fallbacks` and `faithfulness_judged` in the result before trusting a run.
+- **A finished Job cannot be re-applied** (`field is immutable`): delete it first, or use
+  `kubectl create job --from=cronjob/ingest <new-name>` for ingestion.
+- Every number in the report must come from our own runs, and the result files must be
+  committed (`eval/results/`, `traces/`).
+- The README must give the exact command for each part A–F: A, B, D, F are in RAGOPS.md;
+  add C and E there.
 
 ## The report
 
-`docs/report/RAHBAR-A3-Report.docx` is the final report. Taimoor's parts (A, D, F data
-side, short answers a/c/f, contribution row) and his screenshots in the appendix are done.
-Everything still to write is **highlighted yellow and starts with [ALI]**: fill those in
-Word, add your screenshots to the appendix (landscape pages), agree on the AI statement,
-fill both roll numbers, then File → Save As → PDF. The main text must stay within 8 pages
-(it is 4 now); the appendix does not count. `scripts/capture_screenshots.ps1` shows how
-the screenshots were taken from real terminal windows, if you want to do yours the same way.
-
-## Things to keep in mind
-
-* Commit results under `eval/results/` and trace samples under `traces/` (the
-  assignment asks for both). `scripts/lake.sh pull` copies the ingestion reports and the
-  cluster's traces into the repo.
-* Every number in the report must come from our own runs.
-* The README must list the exact command for each part A–F. Parts A, D and F (data side)
-  are in RAGOPS.md; add yours there or in the README.
+`docs/report/RAHBAR-A3-Report.docx`. Everything still to write is **highlighted yellow and
+starts with `[ALI]`**: Figure 3 row "check coverage", 4.4 (Part C and the release
+decision), 4.6 (Part E), the F2 gate and F3 rows, short answer (e), your contribution row,
+the judge agreement figure, your screenshots (C gate fail/pass, E coverage before/after,
+F gate result after a ConfigMap edit, `rollout status` and `rollout undo` with a trace).
+Then both roll numbers, agree on the AI statement, and File → Save As → PDF. The main text
+is 5 pages now and must stay ≤ 8; the appendix does not count.
