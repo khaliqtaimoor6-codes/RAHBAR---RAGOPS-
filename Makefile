@@ -83,11 +83,12 @@ check: ## run the submission checker
 k3d-up: ## (our laptop) k3d cluster + ingress-nginx + Ollama container on the k3d network
 	scripts/k3d-up.sh
 
-k3d-images: ## (our laptop) build the three images and import them into k3d
+k3d-images: ## (our laptop) build the four images and import them into k3d
 	docker build -t rahbar-api:$(TAG) api
 	docker build -t rahbar-indexer:$(TAG) --build-context corpus=corpus --build-context fixtures=eval/fixtures indexer
 	docker build -t rahbar-ui:$(TAG) ui
-	k3d image import -c rahbar rahbar-api:$(TAG) rahbar-indexer:$(TAG) rahbar-ui:$(TAG)
+	docker build -t rahbar-eval:$(TAG) eval
+	k3d image import -c rahbar rahbar-api:$(TAG) rahbar-indexer:$(TAG) rahbar-ui:$(TAG) rahbar-eval:$(TAG)
 
 k3d-apply: ## (our laptop) apply the k3d overlay
 	kubectl apply -k k8s/overlays/k3d
