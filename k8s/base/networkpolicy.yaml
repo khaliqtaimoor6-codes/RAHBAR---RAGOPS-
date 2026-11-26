@@ -18,7 +18,7 @@ metadata: {name: allow-dns, namespace: rahbar}
 spec:
   podSelector:
     matchExpressions:
-      - {key: app, operator: In, values: [api, indexer, ui]}
+      - {key: app, operator: In, values: [api, indexer, ui, eval]}
   policyTypes: [Egress]
   egress:
     - to:
@@ -70,6 +70,8 @@ spec:
             matchLabels: {kubernetes.io/metadata.name: ingress-nginx}
         - podSelector:
             matchLabels: {app: ui}
+        - podSelector:                 # the eval Job (Part B) queries the api
+            matchLabels: {app: eval}
       ports:
         - {protocol: TCP, port: 8000}
 ---
@@ -143,3 +145,23 @@ spec:
         - podSelector: {matchLabels: {app: api}}
       ports:
         - {protocol: TCP, port: 6379}
+---
+# The eval Job: the api, Ollama on the host (module-level embeddings) and the hosted judge.
+# No rule lets it reach chroma: it can only read through the api.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: eval-egress, namespace: rahbar}
+spec:
+  podSelector:
+    matchLabels: {app: eval}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: api}}
+      ports:
+        - {protocol: TCP, port: 8000}
+    - to:
+        - ipBlock: {cidr: 0.0.0.0/0}
+      ports:
+        - {protocol: TCP, port: 11434}
+        - {protocol: TCP, port: 443}
