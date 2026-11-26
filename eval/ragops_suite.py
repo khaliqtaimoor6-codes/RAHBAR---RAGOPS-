@@ -83,6 +83,25 @@ def load_golden(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+NUMBER_WORDS = {"one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6",
+                "seven": "7", "eight": "8", "nine": "9", "ten": "10"}
+
+
+def normalise(text: str) -> str:
+    """Lower case, number words as digits, no space inside numbers or before %, and
+    typographic quotes/hyphens folded, so '6 years' matches 'six years' and '100%'
+    matches '100 %' (which the model wrote with a narrow no-break space)."""
+    t = text.lower().replace("\u202f", " ").replace("\u00a0", " ")
+    t = t.replace("\u2019", "'").replace("\u2011", "-").replace("\u2010", "-")
+    t = re.sub(r"\b(" + "|".join(NUMBER_WORDS) + r")\b", lambda m: NUMBER_WORDS[m.group(1)], t)
+    t = re.sub(r"(\d)\s+%", r"\1%", t)
+    return re.sub(r"\s+", " ", t)
+
+
+def expect_hit(expect: str | None, answer: str) -> bool | None:
+    return normalise(expect) in normalise(answer) if expect else None
+
+
 def is_relevant(ref: dict[str, Any], gt: list[dict[str, Any]]) -> bool:
     doc = ref.get("doc_id") or Path(str(ref.get("source", ""))).stem
     return any(doc == g["doc_id"] and ref.get("page") in g["pages"] for g in gt)
@@ -220,13 +239,21 @@ class Judge:
             if r.status_code == 429:
                 time.sleep(min(float(r.headers.get("retry-after", "5") or 5), 30) + attempt)
                 continue
+            if r.status_code == 400 and "validate JSON" in r.text and "response_format" in payload:
+                # Found in the first cluster run: Groq rejects a reply that is not valid
+                # JSON in JSON mode (5 of 28 answers went unjudged). Ask again without JSON
+                # mode and read the first {...} object from the text.
+                payload = {k: v for k, v in payload.items() if k != "response_format"}
+                continue
             if r.status_code != 200:
                 # e.g. 404 for a model name the provider no longer serves: record the
                 # answer as not judged instead of aborting the whole run
                 return {"supported": None,
                         "unsupported_claims": [f"judge HTTP {r.status_code}: {r.text[:120]}"]}
             try:
-                out = json.loads(r.json()["choices"][0]["message"]["content"])
+                text = r.json()["choices"][0]["message"]["content"] or ""
+                m = re.search(r"\{.*\}", text, re.S)
+                out = json.loads(m.group(0) if m else text)
                 return {"supported": bool(out.get("supported")),
                         "unsupported_claims": out.get("unsupported_claims") or []}
             except (ValueError, KeyError):
@@ -274,8 +301,7 @@ def e2e_level(client: httpx.Client, api: str, golden: list[dict[str, Any]], judg
                "citations": resp["citations"], "retrieved": resp["retrieved"],
                "latency_ms": round(latency, 1), "trace_id": resp["trace_id"],
                "fallback": fallback, "expect": q.get("expect"),
-               "expect_hit": (q.get("expect") or "").lower() in resp["answer"].lower()
-               if q.get("expect") else None}
+               "expect_hit": expect_hit(q.get("expect"), resp["answer"])}
         context = "\n\n".join(f"[{c['source']} p.{c.get('page')}] {c['text']}"
                               for c in ((trace or {}).get("context") or []))
         if judge is not None and resp["answered_from_context"] and context:
@@ -291,7 +317,10 @@ def e2e_level(client: httpx.Client, api: str, golden: list[dict[str, Any]], judg
             if cites and gt_docs else None
         rows.append(row)
         time.sleep(pace)
+    return summarise_e2e(rows), rows
 
+
+def summarise_e2e(rows: list[dict[str, Any]]) -> dict[str, Any]:
     answered = [r for r in rows if r["answered"]]
     judged = [r for r in answered if (r.get("judge") or {}).get("supported") is not None]
     unans = [r for r in rows if not r["answerable"]]
@@ -312,7 +341,7 @@ def e2e_level(client: httpx.Client, api: str, golden: list[dict[str, Any]], judg
         "latency_p50_ms": pct(lat, 0.5), "latency_p95_ms": pct(lat, 0.95),
         "fallbacks": sum(1 for r in rows if r["fallback"]),
     }
-    return summary, rows
+    return summary
 
 
 # ------------------------------------------------------------------------------- main
@@ -376,6 +405,37 @@ def table(runs: list[dict[str, Any]]) -> str:
     return head + "\n".join(lines) + "\n"
 
 
+def rejudge(path: Path, args: argparse.Namespace) -> int:
+    """Re-score a saved result: the same answers (nothing is asked again), the current
+    judge and expected-string matcher, the exact contexts read back from the traces.
+    Writes <name>-rejudged.json/.md next to the original, which is kept."""
+    result = json.loads(path.read_text(encoding="utf-8"))
+    judge = Judge(args.judge_base_url, args.judge_key, args.judge_model, args.seed)
+    traces = Path(args.traces)
+    for i, run in enumerate(result["runs"], start=1):
+        print(f"[rejudge] run {i}: {len(run['answers'])} answers", flush=True)
+        for row in run["answers"]:
+            row["expect_hit"] = expect_hit(row.get("expect"), row["answer"])
+            rec = find_trace(traces, row["trace_id"], 0) or {}
+            context = "\n\n".join(f"[{c['source']} p.{c.get('page')}] {c['text']}"
+                                   for c in (rec.get("context") or []))
+            if row["answered"] and context:
+                row["judge"] = judge(context, row["question"], row["answer"])
+                time.sleep(1)
+        run["end_to_end"] = summarise_e2e(run["answers"])
+    result["rejudged"] = {"from": path.name, "judge_model": args.judge_model,
+                          "at": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")}
+    out = path.with_name(path.stem + "-rejudged.json")
+    out.write_text(json.dumps(result, indent=1, ensure_ascii=False), encoding="utf-8")
+    summary = table(result["runs"])
+    path.with_name(path.stem + "-rejudged.md").write_text(
+        f"# RAHBAR offline suite {result['timestamp']} (re-judged)\n\ncollection: "
+        f"{result['collection']}\ngolden: {result['golden']}\n\n{summary}", encoding="utf-8")
+    print(summary)
+    print(f"wrote {out}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     env = os.environ.get
     ap = argparse.ArgumentParser(description="RAHBAR offline test suite (Part B).")
@@ -393,10 +453,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--judge-base-url", default=env("HOSTED_BASE_URL", "https://api.groq.com/openai/v1"))
     ap.add_argument("--judge-model", default=env("JUDGE_MODEL") or env("LLM_MODEL", "openai/gpt-oss-20b"),
                     help="default: the answering model (LLM_MODEL from the ConfigMap)")
+    ap.add_argument("--rejudge", default=env("REJUDGE", ""),
+                    help="re-score a saved ragops-<ts>.json instead of running the suite")
     ap.add_argument("--only", default=env("ONLY", ""), help="comma-separated golden ids (debugging)")
     args = ap.parse_args(argv)
     args.judge_key = env("LLM_API_KEY", "")
 
+    if args.rejudge:
+        return rejudge(Path(args.rejudge), args)
     golden = load_golden(Path(args.golden))
     if args.only:
         golden = [q for q in golden if q["id"] in set(args.only.split(","))]
