@@ -83,6 +83,25 @@ def load_golden(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+NUMBER_WORDS = {"one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6",
+                "seven": "7", "eight": "8", "nine": "9", "ten": "10"}
+
+
+def normalise(text: str) -> str:
+    """Lower case, number words as digits, no space inside numbers or before %, and
+    typographic quotes/hyphens folded, so '6 years' matches 'six years' and '100%'
+    matches '100 %' (which the model wrote with a narrow no-break space)."""
+    t = text.lower().replace("\u202f", " ").replace("\u00a0", " ")
+    t = t.replace("\u2019", "'").replace("\u2011", "-").replace("\u2010", "-")
+    t = re.sub(r"\b(" + "|".join(NUMBER_WORDS) + r")\b", lambda m: NUMBER_WORDS[m.group(1)], t)
+    t = re.sub(r"(\d)\s+%", r"\1%", t)
+    return re.sub(r"\s+", " ", t)
+
+
+def expect_hit(expect: str | None, answer: str) -> bool | None:
+    return normalise(expect) in normalise(answer) if expect else None
+
+
 def is_relevant(ref: dict[str, Any], gt: list[dict[str, Any]]) -> bool:
     doc = ref.get("doc_id") or Path(str(ref.get("source", ""))).stem
     return any(doc == g["doc_id"] and ref.get("page") in g["pages"] for g in gt)
@@ -282,8 +301,7 @@ def e2e_level(client: httpx.Client, api: str, golden: list[dict[str, Any]], judg
                "citations": resp["citations"], "retrieved": resp["retrieved"],
                "latency_ms": round(latency, 1), "trace_id": resp["trace_id"],
                "fallback": fallback, "expect": q.get("expect"),
-               "expect_hit": (q.get("expect") or "").lower() in resp["answer"].lower()
-               if q.get("expect") else None}
+               "expect_hit": expect_hit(q.get("expect"), resp["answer"])}
         context = "\n\n".join(f"[{c['source']} p.{c.get('page')}] {c['text']}"
                               for c in ((trace or {}).get("context") or []))
         if judge is not None and resp["answered_from_context"] and context:
