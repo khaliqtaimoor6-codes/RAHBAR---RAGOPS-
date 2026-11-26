@@ -145,12 +145,14 @@ jobs:
       - name: install kustomize
         run: curl -fsSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" | tar xz -C /usr/local/bin
       - uses: docker/setup-buildx-action@v3
+      # provenance/sbom off: attestation manifests in a loaded image make `k3d image
+      # import` fail (the first run of this job ended in ImagePullBackOff for that reason).
       - name: build api into the local daemon (from the build cache)
         uses: docker/build-push-action@v6
-        with: {context: api, tags: "rahbar-api:${{ github.sha }}", load: true, cache-from: "type=gha,scope=api"}
+        with: {context: api, tags: "rahbar-api:${{ github.sha }}", load: true, provenance: false, sbom: false, cache-from: "type=gha,scope=api"}
       - name: build ui into the local daemon
         uses: docker/build-push-action@v6
-        with: {context: ui, tags: "rahbar-ui:${{ github.sha }}", load: true, cache-from: "type=gha,scope=ui"}
+        with: {context: ui, tags: "rahbar-ui:${{ github.sha }}", load: true, provenance: false, sbom: false, cache-from: "type=gha,scope=ui"}
       - name: build indexer into the local daemon
         uses: docker/build-push-action@v6
         with:
@@ -160,6 +162,8 @@ jobs:
             fixtures=eval/fixtures
           tags: rahbar-indexer:${{ github.sha }}
           load: true
+          provenance: false
+          sbom: false
           cache-from: type=gha,scope=indexer
       - name: k3d cluster, fixture index, rollout, smoke test
         run: |
