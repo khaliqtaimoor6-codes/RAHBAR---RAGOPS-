@@ -37,3 +37,17 @@ spec:
   resources:
     requests:
       storage: 512Mi      # a trace line is ~6-10 KB: ~50,000 queries before rotation
+---
+# Result files of the eval Job (k8s/eval-job.yaml): ragops-<ts>.json/.md and the
+# judge hand-label sheet. Pulled into eval/results/ with scripts/lake.sh pull.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rahbar-results
+  namespace: rahbar
+  labels: {app.kubernetes.io/part-of: rahbar, rahbar/role: results}
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 128Mi
