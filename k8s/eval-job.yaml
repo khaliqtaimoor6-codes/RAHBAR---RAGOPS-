@@ -1,0 +1,64 @@
+# Part B suite as a Job (Assignment 03 F2):  kubectl apply -f k8s/eval-job.yaml
+# Re-run: kubectl -n rahbar delete job eval --ignore-not-found; kubectl apply -f k8s/eval-job.yaml
+# It only queries the api (read path): it never writes to the vector store. Results go to
+# the rahbar-results PVC (scripts/lake.sh pull copies them to eval/results/).
+# To test the Part C / F3 candidate instead, set API_URL to its Service.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eval
+  namespace: rahbar
+  labels: {app: eval, app.kubernetes.io/part-of: rahbar}
+spec:
+  backoffLimit: 0                 # a failed evaluation is a result, not something to retry
+  activeDeadlineSeconds: 7200
+  template:
+    metadata:
+      labels: {app: eval, app.kubernetes.io/part-of: rahbar}
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: eval
+          image: rahbar-eval:dev
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: {name: rahbar-config}     # OLLAMA_URL, EMBED_MODEL, HOSTED_BASE_URL
+          env:
+            - {name: API_URL, value: "http://api:8000"}
+            - {name: TRACE_DIR, value: /traces}
+            - {name: RESULTS_DIR, value: /results}
+            - {name: RUNS, value: "2"}                # stochasticity: two seeded runs
+            - {name: SEED, value: "1234"}
+            - {name: PACE_SECONDS, value: "4"}        # Groq free tier
+            - {name: JUDGE_MODEL, value: "llama-3.1-8b-instant"}
+            - name: LLM_API_KEY                       # the faithfulness judge
+              valueFrom:
+                secretKeyRef: {name: rahbar-secret, key: LLM_API_KEY, optional: true}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - {name: traces, mountPath: /traces, readOnly: true}
+            - {name: results, mountPath: /results}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: traces
+          persistentVolumeClaim: {claimName: rahbar-traces, readOnly: true}
+        - name: results
+          persistentVolumeClaim: {claimName: rahbar-results}
+        - name: tmp
+          emptyDir: {sizeLimit: 64Mi}
