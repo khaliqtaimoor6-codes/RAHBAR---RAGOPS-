@@ -1,0 +1,75 @@
+# Part C2 / F2: the release gate thresholds are data, not code. Edit this ConfigMap and
+# re-run the eval Job (k8s/release/eval-gate-only-job.yaml) to flip a decision without
+# rebuilding the image. Must match eval/gate-thresholds.yaml (tested in eval/tests/test_gate.py).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rahbar-gate
+  namespace: rahbar
+  labels: {app.kubernetes.io/part-of: rahbar}
+data:
+  gate.yaml: |
+    version: 1
+    rules:
+      - id: module-paraphrase
+        level: module
+        metric: paraphrase_mean_cosine
+        max_drop: 0.02
+      - id: module-gap
+        level: module
+        metric: gap
+        max_drop: 0.02
+      - id: module-determinism
+        level: module
+        metric: determinism_max_abs_diff
+        max: 0.001
+      - id: component-recall3
+        level: component
+        metric: recall@3
+        max_drop: 0.05
+      - id: component-recall5
+        level: component
+        metric: recall@5
+        max_drop: 0.02
+      - id: component-mrr
+        level: component
+        metric: mrr
+        max_drop: 0.03
+      - id: component-ndcg5
+        level: component
+        metric: ndcg@5
+        max_drop: 0.03
+      - id: component-typos-recall5
+        level: component
+        variant: typos
+        metric: recall@5
+        max_drop: 0.03
+      - id: component-typos-mrr
+        level: component
+        variant: typos
+        metric: mrr
+        max_drop: 0.03
+      - id: e2e-faithfulness
+        level: end_to_end
+        metric: faithfulness
+        min: 0.95
+        max_drop: 0.05
+      - id: e2e-abstention
+        level: end_to_end
+        metric: abstention_correct_unanswerable
+        min: 0.83
+      - id: e2e-false-abstention
+        level: end_to_end
+        metric: false_abstention_answerable
+        max: 0.12
+        max_rise: 0.05
+      - id: e2e-citations
+        level: end_to_end
+        metric: citation_validity_in_retrieved
+        min: 0.98
+        max_drop: 0.02
+      - id: e2e-latency-p95
+        level: end_to_end
+        metric: latency_p95_ms
+        max: 20000
+        max_rise_pct: 60

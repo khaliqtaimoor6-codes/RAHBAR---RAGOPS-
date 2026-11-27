@@ -66,6 +66,8 @@ jobs:
             echo "--- $overlay"
             kustomize build "k8s/overlays/$overlay" | kubeconform -strict -summary
           done
+          echo "--- release (Parts C/F3, applied separately)"
+          kustomize build k8s/release | kubeconform -strict -summary
 
   build:
     needs: [lint, test, manifests]

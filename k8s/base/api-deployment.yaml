@@ -40,6 +40,7 @@ spec:
           envFrom:
             - configMapRef: {name: rahbar-config}
           env:
+            - {name: TRACE_DIR, value: /traces}
             - name: LLM_API_KEY
               valueFrom:
                 secretKeyRef: {name: rahbar-secret, key: LLM_API_KEY, optional: true}
