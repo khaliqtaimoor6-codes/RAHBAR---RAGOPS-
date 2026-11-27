@@ -1,0 +1,13 @@
+id,trace_id,question,answer,judge_supported,human_label
+g01,b3016b5467554254bb3fce65b87c2467,What CGPA does an undergraduate need to stay off academic warning?,An undergraduate needs a CGPA of at least 2.00 to stay off academic warning.,True,
+g03,1793800b0e264dbd9658604b8b70e850,How many courses is the normal course load in a regular semester?,5 courses,True,
+g05,0fab869fb2c440c4982ff7b7e6c65556,"If I apply for rechecking of my final exam, do I get the rechecking fee back?","Yes, you will get the rechecking fee back if the rechecking results in an increase in your marks.",True,
+g06,05d01573111842188be29b8bb0a05103,Am I allowed to use ChatGPT or other generative AI tools in lab courses like Programming Fundamentals?,"No, you are not allowed to use ChatGPT or other generative AI tools in lab courses such as Programming Fundamentals unless the lab instructor explicitly permits it.",True,
+g07,24b55154832741d682e0ded504243464,"How much is the admission fee, and is it refundable?","The admission fee is Rs 30,000 and it is non‑refundable.",True,
+g08,f4146225b75240a181ced0624605e141,How many grade points is a B+ worth?,3.33,True,
+g09,69e1e81389164e0c864c58a496dc3b6f,What is the maximum time allowed to complete a bachelor's degree?,"The maximum time allowed to complete a bachelor’s degree is six years, extendable for one additional year with approval of Statutory Bodies.",True,
+g10,30ef612a907648798bddc695292cc864,What SGPA do I need to be included in the Rector's List of Honors?,An SGPA of 4.00 (with at least 30 credit hours) is required to be included in the Rector’s List of Honors.,True,
+g12,97a847c1e3274be8a16e59b84e6804a7,How long must a faculty member have worked full-time at NUCES to be eligible to set up a technical start-up?,A faculty member must have worked full‑time at NUCES for more than 1 year to be eligible to set up a technical start‑up.,True,
+v01,2c5791111b9c4e24908e0aaf89fbfab2,What is the deadline to withdraw from a course?,The deadline to withdraw from a course is the last day of the makeup week of every semester.,True,
+v02,1ffa8bf620bc4dadadc2127f040beea9,"How many weeks of teaching are in a regular semester, and what comes after them?","A regular semester contains 16 weeks of teaching, after which there is one makeup week and then two weeks of final examinations.",True,
+e01,d4c2c521a0874e3b96c74f6320766a84,What does clause 1.21 of the academic rules require?,"Clause 1.21 requires students to maintain 100 % attendance in lectures, labs, tutorials, seminars and discussions as prescribed by the course instructor, and allows a maximum of 20 % absence to be condoned by the HoD for genuine reasons such as illness.",True,

@@ -1,0 +1,13 @@
+id,trace_id,question,answer,judge_supported,human_label
+g01,b976ac05a7bb45ae85a6fd84bdb0f6bc,What CGPA does an undergraduate need to stay off academic warning?,An undergraduate student needs a minimum CGPA of 2.00 to avoid academic warning.,True,
+g02,90bfaed0d35e406ca647ae6d2686c62f,What happens if my CGPA stays below 2.00 for three semesters in a row?,"If your CGPA remains below 2.00 for three consecutive semesters, your warning count becomes three and your admission at the University is automatically closed.",True,
+g03,6d08095952914538b6b2941726651597,How many courses is the normal course load in a regular semester?,The normal course load in a regular semester is 5 courses.,True,
+g04,5680a6d6f8b04c8da32eccd35fb9c687,How many courses can I repeat in the summer semester?,You can repeat a maximum of 2 courses (with associated labs if any) in the summer semester.,True,
+g05,996f31a423c04560ac3df85e52758c31,"If I apply for rechecking of my final exam, do I get the rechecking fee back?","Yes, the rechecking fee will be refunded if there is an increase in your marks.",True,
+g07,a8c7fdbec07a49eb8070f9fbffbc26c1,"How much is the admission fee, and is it refundable?","The admission fee is Rs 30,000, payable once at the time of admission. It is non-refundable.",True,
+g08,e234a49decc74807bde2f02a93583997,How many grade points is a B+ worth?,A B+ is worth 3.33 grade points.,True,
+g09,8f0321da39c34f0c830ef62ab7b6234c,What is the maximum time allowed to complete a bachelor's degree?,"The maximum time allowed to complete a Bachelor's degree is 6 years, which can be further extended for one year with the approval of Statutory Bodies.",True,
+g10,6c991120ee364ea3a87f184452be5646,What SGPA do I need to be included in the Rector's List of Honors?,"To be included in the Rector's List of Honors, you need to earn an SGPA of 4.00 with at least 30 credit hours.",True,
+g12,c23066b93fbb4117a70a5ce12d852a42,How long must a faculty member have worked full-time at NUCES to be eligible to set up a technical start-up?,A faculty member must have been a full-time faculty member for more than 1 year to be eligible to set up a technical start-up.,True,
+v01,782e1f563a5142178968ffe14d329128,What is the deadline to withdraw from a course?,The deadline to withdraw from a course is the last day of the makeup week of every semester.,True,
+v02,3c817cb2cda241b1b633ac6258db497f,"How many weeks of teaching are in a regular semester, and what comes after them?","A regular semester includes 16 weeks of teaching, followed by one makeup week and 2 weeks of final examinations.",True,

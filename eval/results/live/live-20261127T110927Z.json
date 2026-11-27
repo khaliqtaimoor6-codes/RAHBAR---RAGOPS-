@@ -1,0 +1,747 @@
+{
+ "timestamp": "20261127T110927Z",
+ "api": "http://localhost:8003",
+ "queries_file": "live_queries.jsonl",
+ "questions": 40,
+ "in_domain": 28,
+ "off_topic": 12,
+ "errors": 0,
+ "seconds": 283.2,
+ "results": [
+  {
+   "id": "l01",
+   "topic": "academic warning",
+   "in_domain": true,
+   "query": "What CGPA do I need to avoid being put on academic warning?",
+   "trace_id": "45b103bd6721492cbe3ecc5a7c1f78e6",
+   "answered": true,
+   "answer": "You need a CGPA of at least 2.0 for BBA/BS, 2.5 for MBA/MS, and 3.0 for PhD to avoid academic warning.",
+   "citations": [
+    {
+     "source": "grading-page.html",
+     "section": "Warning/Probation",
+     "page": 1
+    },
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "5.4 Academic Warning/Probation",
+     "page": 24
+    }
+   ],
+   "top_score": 0.8879,
+   "latency_ms": 6009.6,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l02",
+   "topic": "academic warning",
+   "in_domain": true,
+   "query": "If my CGPA stays below 2 for three semesters will I be dismissed?",
+   "trace_id": "de880ad7192e478fb399319f80b3733c",
+   "answered": true,
+   "answer": "Yes – if your CGPA remains below 2.00 for three consecutive semesters, your admission will be closed (dismissed).",
+   "citations": [
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "5.6 Academic Warning/Probation",
+     "page": 24
+    },
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "3.28 Closure of Admission",
+     "page": 17
+    },
+    {
+     "source": "grading-page.html",
+     "section": "Warning/Probation",
+     "page": 1
+    }
+   ],
+   "top_score": 0.8,
+   "latency_ms": 2281.2,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l03",
+   "topic": "course load",
+   "in_domain": true,
+   "query": "How many courses am I supposed to take in one regular semester?",
+   "trace_id": "d151f73075fd4a1c9038c7eb65c041cc",
+   "answered": false,
+   "answer": "The documents do not cover the question.",
+   "citations": [],
+   "top_score": 0.7902,
+   "latency_ms": 1708.5,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l04",
+   "topic": "summer repeat",
+   "in_domain": true,
+   "query": "Can I repeat a course in the summer, and how many times?",
+   "trace_id": "cdaedce410714767b53c1481f73216a7",
+   "answered": true,
+   "answer": "Yes, you can repeat courses in the summer, but you may only repeat up to two courses (including any associated labs).",
+   "citations": [
+    {
+     "source": "prospectus-2026-academic-rules-and-regulations.pdf",
+     "section": "19 Rules for Summer Semester",
+     "page": 3
+    },
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "1.19 Scheduling of Classes",
+     "page": 9
+    }
+   ],
+   "top_score": 0.8189,
+   "latency_ms": 2650.4,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l05",
+   "topic": "rechecking fee",
+   "in_domain": true,
+   "query": "If I pay for a recheck of my final paper and the grade changes, do I get the fee back?",
+   "trace_id": "b81b2e7d890b4112ae74a576a94dd034",
+   "answered": true,
+   "answer": "Yes – the rechecking fee will be refunded if the recheck results in an increase in marks.",
+   "citations": [
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "5.25 Rechecking of Final Exams",
+     "page": 27
+    }
+   ],
+   "top_score": 0.821,
+   "latency_ms": 2693.4,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l06",
+   "topic": "AI in labs",
+   "in_domain": true,
+   "query": "Are ChatGPT and other AI tools allowed in the programming lab?",
+   "trace_id": "1f15538eadef49d2a1621e8e9b9283e7",
+   "answered": true,
+   "answer": "No, generative AI tools such as ChatGPT are not allowed in programming labs unless the lab instructor explicitly permits their use.",
+   "citations": [
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "6.2 Use in Lab Courses",
+     "page": 50
+    },
+    {
+     "source": "student-handbook-jun-2026.pdf",
+     "section": "6.2 Use in Lab Courses",
+     "page": 57
+    }
+   ],
+   "top_score": 0.8822,
+   "latency_ms": 1331.6,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l07",
+   "topic": "admission fee",
+   "in_domain": true,
+   "query": "How much is the admission fee and can I get it refunded?",
+   "trace_id": "389bbf4af1794a54b23cb9e1640f723a",
+   "answered": true,
+   "answer": "The admission fee is Rs 30,000 and it is not refundable.",
+   "citations": [
+    {
+     "source": "fee-structure-page.html",
+     "section": "Admission Fee",
+     "page": 1
+    },
+    {
+     "source": "fee-structure-page.html",
+     "section": "Fee Refund Policy",
+     "page": 1
+    }
+   ],
+   "top_score": 0.7618,
+   "latency_ms": 1580.6,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l08",
+   "topic": "grading",
+   "in_domain": true,
+   "query": "What is the grade point for a B plus?",
+   "trace_id": "972e226a1e6641a0a5248013cf9ae628",
+   "answered": true,
+   "answer": "3.33",
+   "citations": [
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "2.3 Grade Points",
+     "page": 12
+    },
+    {
+     "source": "prospectus-2026-academic-rules-and-regulations.pdf",
+     "section": "B+ 3.33",
+     "page": 1
+    }
+   ],
+   "top_score": 0.7586,
+   "latency_ms": 10435.3,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l09",
+   "topic": "degree time",
+   "in_domain": true,
+   "query": "What is the longest time I have to finish my bachelor's degree?",
+   "trace_id": "35778767680d45c2ae43fab974124653",
+   "answered": true,
+   "answer": "The longest time you have to finish a bachelor’s degree is six years, extendable for an additional year with approval of the Statutory Bodies.",
+   "citations": [
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "1.23 Bachelor’s Degree Requirements",
+     "page": 10
+    },
+    {
+     "source": "prospectus-2026-academic-rules-and-regulations.pdf",
+     "section": "3 Disciplinary Action 34. Maximum Time Allowed to",
+     "page": 5
+    }
+   ],
+   "top_score": 0.7998,
+   "latency_ms": 6654.0,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l10",
+   "topic": "honors",
+   "in_domain": true,
+   "query": "What SGPA do I need for the rector's honor list?",
+   "trace_id": "327830ca51344ca193ef6d48d8640e0b",
+   "answered": true,
+   "answer": "SGPA 4.00",
+   "citations": [
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "7.3 Rector’s List of Honors",
+     "page": 30
+    },
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "7.5 Rector’s List of Honors",
+     "page": 31
+    }
+   ],
+   "top_score": 0.8326,
+   "latency_ms": 13060.0,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l11",
+   "topic": "withdrawal",
+   "in_domain": true,
+   "query": "When is the last day to drop a course this semester?",
+   "trace_id": "3cf3357446074bad84d4275a8185ed26",
+   "answered": true,
+   "answer": "The last day to drop a course this semester is the last day of the makeup week.",
+   "citations": [
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "4.25 Withdrawal from a Course",
+     "page": 23
+    }
+   ],
+   "top_score": 0.7898,
+   "latency_ms": 3634.5,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l12",
+   "topic": "version",
+   "in_domain": true,
+   "query": "What did the older rules say about the withdrawal deadline?",
+   "trace_id": "3cc5caf317684918be150731d239daa0",
+   "answered": true,
+   "answer": "The older rules said the deadline to withdraw from a course was the last day of classes.",
+   "citations": [
+    {
+     "source": "undergraduate-academic-rules-aug-2023.pdf",
+     "section": "4.25 Withdrawal from a Course",
+     "page": 16
+    }
+   ],
+   "top_score": 0.7628,
+   "latency_ms": 5400.3,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l13",
+   "topic": "exact clause",
+   "in_domain": true,
+   "query": "What is clause 1.21 of the academic rules?",
+   "trace_id": "572dcac695bc4daf81be525d2ae6d23b",
+   "answered": true,
+   "answer": "Clause 1.21 of the academic rules is the Attendance Requirements: Students are required to maintain 100% attendance in lectures, labs, tutorials, seminars and discussions as prescribed by the course instructor. An absence of a maximum of 20% of the total attendance may be condoned by the HoD for genuine reasons, such as illness, etc.",
+   "citations": [
+    {
+     "source": "academic-rules-handbook-jun-2026.pdf",
+     "section": "1.21 Attendance Requirements",
+     "page": 10
+    }
+   ],
+   "top_score": 0.6992,
+   "latency_ms": 9998.5,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l14",
+   "topic": "tuition fee",
+   "in_domain": true,
+   "query": "How much is tuition per credit hour for BS students this year?",
+   "trace_id": "c402a36427a943ddac4c2e241ab278fd",
+   "answered": true,
+   "answer": "Rs. 12,000 per credit hour.",
+   "citations": [
+    {
+     "source": "fee-structure-page.html",
+     "section": "Tuition Fee (w.e.f. Fall 2026 semester)",
+     "page": 1
+    }
+   ],
+   "top_score": 0.7756,
+   "latency_ms": 6128.9,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l15",
+   "topic": "exact clause",
+   "in_domain": true,
+   "query": "Which rule covers dropping a course after the deadline?",
+   "trace_id": "f986e4c057cc47809464b9001e2966c2",
+   "answered": true,
+   "answer": "Rule 5 – Vi – Semester Rules in the student handbook.",
+   "citations": [
+    {
+     "source": "student-handbook-jun-2026.pdf",
+     "section": "Vi – Semester Rules",
+     "page": 29
+    }
+   ],
+   "top_score": 0.7952,
+   "latency_ms": 8668.8,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l16",
+   "topic": "hostel",
+   "in_domain": true,
+   "query": "Can I stay in a university hostel and what does it cost per semester?",
+   "trace_id": "51211567580b4c8abf4046cdc054f0d9",
+   "answered": false,
+   "answer": "The provided documents do not cover information about staying in a university hostel or its cost per semester.",
+   "citations": [],
+   "top_score": 0.7244,
+   "latency_ms": 9623.8,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l17",
+   "topic": "transport fee",
+   "in_domain": true,
+   "query": "Is there a campus bus, and how much does the transport pass cost?",
+   "trace_id": "16f05dfa657d4f73bea73ae1cde67ae4",
+   "answered": false,
+   "answer": "The documents do not provide information about the cost of a transport pass.",
+   "citations": [],
+   "top_score": 0.6828,
+   "latency_ms": 3861.3,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l18",
+   "topic": "library loans",
+   "in_domain": true,
+   "query": "How many books can I borrow from the library and for how many days?",
+   "trace_id": "9b20679a02f745e199f60d61bdab07e8",
+   "answered": true,
+   "answer": "PhD students may borrow up to 7 books for 1 month; Graduate students may borrow up to 5 books for 1 month; Undergraduate students may borrow up to 4 books for 2 weeks.",
+   "citations": [
+    {
+     "source": "student-handbook-jun-2026.pdf",
+     "section": "Vii - Library Services And Rules",
+     "page": 32
+    }
+   ],
+   "top_score": 0.7734,
+   "latency_ms": 10404.4,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l19",
+   "topic": "library fines",
+   "in_domain": true,
+   "query": "What is the late fee on a library book?",
+   "trace_id": "4624c2d338894e6185fa2f1b1462561b",
+   "answered": true,
+   "answer": "The late fee is PKR 10 per item per day.",
+   "citations": [
+    {
+     "source": "student-handbook-jun-2026.pdf",
+     "section": "Vii - Library Services And Rules",
+     "page": 32
+    }
+   ],
+   "top_score": 0.6623,
+   "latency_ms": 8136.5,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l20",
+   "topic": "exam schedule",
+   "in_domain": true,
+   "query": "When are the midterm examinations this fall?",
+   "trace_id": "a739e25499354463873b5cba0f278db6",
+   "answered": false,
+   "answer": "The documents do not cover the question.",
+   "citations": [],
+   "top_score": 0.6731,
+   "latency_ms": 11317.2,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l21",
+   "topic": "exam conduct",
+   "in_domain": true,
+   "query": "Can I bring my smartwatch into the exam hall?",
+   "trace_id": "a711f07815974dd7bf04929556e41ba0",
+   "answered": true,
+   "answer": "No, you cannot bring a smartwatch into the exam hall.",
+   "citations": [
+    {
+     "source": "student-handbook-jun-2026.pdf",
+     "section": "V - Examination Rules",
+     "page": 26
+    }
+   ],
+   "top_score": 0.788,
+   "latency_ms": 7302.2,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l22",
+   "topic": "convocation",
+   "in_domain": true,
+   "query": "How many guests can I invite to convocation?",
+   "trace_id": "c2708eaf007a420abccb10a7c5a8d5b3",
+   "answered": false,
+   "answer": "The documents do not cover the question.",
+   "citations": [],
+   "top_score": 0.6647,
+   "latency_ms": 12764.1,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l23",
+   "topic": "laptop loan",
+   "in_domain": true,
+   "query": "Who is allowed to borrow a laptop from the university?",
+   "trace_id": "1dba3ad85df0452eb40ea20acdb730b5",
+   "answered": false,
+   "answer": "The documents do not cover this question.",
+   "citations": [],
+   "top_score": 0.7008,
+   "latency_ms": 9030.2,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l24",
+   "topic": "library renewals",
+   "in_domain": true,
+   "query": "Can I renew a library book, and how many times?",
+   "trace_id": "cc843cc66cd04e1587ac243d861edafc",
+   "answered": true,
+   "answer": "Yes – you may renew a borrowed book, up to 2 times for PhD, Graduate, and Undergraduate patrons.",
+   "citations": [
+    {
+     "source": "student-handbook-jun-2026.pdf",
+     "section": "Vii - Library Services And Rules",
+     "page": 32
+    }
+   ],
+   "top_score": 0.7772,
+   "latency_ms": 12409.3,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l25",
+   "topic": "lab access",
+   "in_domain": true,
+   "query": "What are the computer lab opening hours?",
+   "trace_id": "2456b6887ba94ed99d72716d85df3e34",
+   "answered": false,
+   "answer": "The documents do not cover the question.",
+   "citations": [],
+   "top_score": 0.6823,
+   "latency_ms": 15918.8,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l26",
+   "topic": "transcript",
+   "in_domain": true,
+   "query": "How do I officially request my transcript?",
+   "trace_id": "9d80599fbd514814af8c1e66eb9afe33",
+   "answered": false,
+   "answer": "The documents do not cover this question.",
+   "citations": [],
+   "top_score": 0.6696,
+   "latency_ms": 3508.8,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l27",
+   "topic": "attendance",
+   "in_domain": true,
+   "query": "What is the minimum attendance for undergraduate programs?",
+   "trace_id": "a9e973ff55df4b77b5720f31af411ca1",
+   "answered": true,
+   "answer": "80%",
+   "citations": [
+    {
+     "source": "prospectus-2026-academic-rules-and-regulations.pdf",
+     "section": "1 Attendance Requirement",
+     "page": 1
+    }
+   ],
+   "top_score": 0.8181,
+   "latency_ms": 5601.1,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "l28",
+   "topic": "scholarships",
+   "in_domain": true,
+   "query": "What scholarships can students apply for?",
+   "trace_id": "0d7a4d10552443ad8943a9aa58bcfdb2",
+   "answered": true,
+   "answer": "Students can apply for the Merit Scholarship for Bachelor students, which is awarded to the top three position holders in each Examination Board or NU admission merit list and covers 100% tuition fee for four years of uninterrupted studies. They can also apply for various community‑based scholarships such as the Memon Community Scholarship, Bohra Community Scholarship, Agha Khan Foundation Scholarship, Ihsan Trust Sponsorship, and General Refaqat Memorial Scholarship.",
+   "citations": [
+    {
+     "source": "student-handbook-jun-2026.pdf",
+     "section": "Internal Scholarships",
+     "page": 19
+    },
+    {
+     "source": "annual-report-2019-20.pdf",
+     "section": "6 Other Scholarships",
+     "page": 32
+    },
+    {
+     "source": "annual-report-2023-24.pdf",
+     "section": "6 Other Scholarships",
+     "page": 78
+    }
+   ],
+   "top_score": 0.778,
+   "latency_ms": 5957.7,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o01",
+   "topic": "weather",
+   "in_domain": false,
+   "query": "What is the weather in Lahore tomorrow?",
+   "trace_id": "c682065f1e1d4fd1bcf27f1852d9df80",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.6254,
+   "latency_ms": 734.3,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o02",
+   "topic": "sports news",
+   "in_domain": false,
+   "query": "Who won the Champions Trophy in 2025?",
+   "trace_id": "440dc0b153db484c9f5c323bf37fbf92",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.6348,
+   "latency_ms": 403.7,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o03",
+   "topic": "cooking",
+   "in_domain": false,
+   "query": "How do I bake a chocolate cake?",
+   "trace_id": "04f2fe647dc7496aa07a2797aee66bbf",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.514,
+   "latency_ms": 396.8,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o04",
+   "topic": "general knowledge",
+   "in_domain": false,
+   "query": "What is the capital of Japan?",
+   "trace_id": "6fd8a784d49949169839dcb7a7bd30f3",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.5907,
+   "latency_ms": 446.6,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o05",
+   "topic": "programming",
+   "in_domain": false,
+   "query": "Which Python web framework is fastest?",
+   "trace_id": "c0fc6e6b986747c9a070c1bffc7694e4",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.6352,
+   "latency_ms": 336.5,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o06",
+   "topic": "government services",
+   "in_domain": false,
+   "query": "How do I renew my passport?",
+   "trace_id": "47d8e6efcb214944a72a0f9804e941ec",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.6385,
+   "latency_ms": 302.5,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o07",
+   "topic": "entertainment",
+   "in_domain": false,
+   "query": "What time does the local cinema open?",
+   "trace_id": "b7d902aec33f499fb0b3fea0745dbdaa",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.5798,
+   "latency_ms": 533.4,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o08",
+   "topic": "health",
+   "in_domain": false,
+   "query": "Can you recommend a good dentist in Karachi?",
+   "trace_id": "741068430bf04c488c954d8a9fbf6c4a",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.6539,
+   "latency_ms": 344.8,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o09",
+   "topic": "finance",
+   "in_domain": false,
+   "query": "What are the current gold prices?",
+   "trace_id": "8c9ad509e0a644b8a0dae8a922f21ef7",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.585,
+   "latency_ms": 373.3,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o10",
+   "topic": "pets",
+   "in_domain": false,
+   "query": "How do I train a puppy to sit?",
+   "trace_id": "c0de2d5c504f4d2d9827b536edb208ac",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.5599,
+   "latency_ms": 207.4,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o11",
+   "topic": "science",
+   "in_domain": false,
+   "query": "What is the distance to the moon?",
+   "trace_id": "c10c2c48b64e4fcea35504c7ad51fbdb",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.5828,
+   "latency_ms": 291.7,
+   "cached": false,
+   "error": null
+  },
+  {
+   "id": "o12",
+   "topic": "sports news",
+   "in_domain": false,
+   "query": "Which football club won the Premier League last season?",
+   "trace_id": "71b18e98de7c4e4b92588c8c174e09e4",
+   "answered": false,
+   "answer": "The documents I have do not cover this question, so I cannot answer it reliably. Please check with the Academic Office.",
+   "citations": [],
+   "top_score": 0.5931,
+   "latency_ms": 474.5,
+   "cached": false,
+   "error": null
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+id,trace_id,question,answer,judge_supported,human_label
+g01,ff880a519699429082e2294c33eaa2ef,What CGPA does an undergraduate need to stay off academic warning?,An undergraduate must maintain a CGPA of at least 2.0 to stay off academic warning.,True,
+e01,9f443b4837ff460b897da0322b7e3008,What does clause 1.21 of the academic rules require?,"Clause 1.21 requires students to maintain 100 % attendance in lectures, labs, tutorials, seminars and discussions as prescribed by the course instructor, with a maximum of 20 % absence condoned by the HoD for genuine reasons.",,

@@ -1,0 +1,5 @@
+id,trace_id,question,answer,judge_supported,human_label
+g02,9c065d51e6184979add5cdcddd741b7f,What happens if my CGPA stays below 2.00 for three semesters in a row?,"If your CGPA stays below 2.00 for three consecutive semesters, your admission at the University is automatically closed.",True,
+g03,fdf3d487d6c344f1948867f55101d0df,How many courses is the normal course load in a regular semester?,5 courses,True,
+g05,44489ba8b9d941998a8dbb6612030930,"If I apply for rechecking of my final exam, do I get the rechecking fee back?",Yes – the rechecking fee will be refunded if the rechecking results in an increase in your marks.,True,
+g06,5c35e9e50c41409583b6cdd987420e57,Am I allowed to use ChatGPT or other generative AI tools in lab courses like Programming Fundamentals?,"No, you are not allowed to use ChatGPT or other generative AI tools in lab courses such as Programming Fundamentals unless the lab instructor explicitly permits it.",True,

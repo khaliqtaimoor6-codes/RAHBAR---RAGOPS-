@@ -1,0 +1,215 @@
+{
+  "gate": "fail",
+  "candidate": "/results/ragops-20261127T112234Z.json",
+  "baseline": "/app/eval/baseline-a3.json",
+  "config": "/etc/rahbar-gate/gate.yaml",
+  "candidate_meta": {
+    "collection": {
+      "name": "rahbar-cand-cs300",
+      "index_id": "aa8a067afcb7",
+      "indexed_at": "2026-11-27T10:40:31Z",
+      "embed_model": "nomic-embed-text",
+      "chunk_size": 300,
+      "chunk_overlap": 50,
+      "chunks": 309
+    },
+    "embedding_version": "nomic-embed-text@0a109f422b47",
+    "golden": {
+      "file": "golden.jsonl",
+      "questions": 34,
+      "answerable": 28,
+      "unanswerable": 6,
+      "hard": 16,
+      "human": 21,
+      "synthetic": 13
+    }
+  },
+  "baseline_meta": {
+    "collection": {
+      "name": "rahbar",
+      "index_id": "f4c2ff9a3277",
+      "indexed_at": "2026-11-25T19:53:56Z",
+      "embed_model": "nomic-embed-text",
+      "chunk_size": 150,
+      "chunk_overlap": 30,
+      "chunks": 1032
+    },
+    "embedding_version": "nomic-embed-text@0a109f422b47",
+    "golden": {
+      "file": "golden.jsonl",
+      "questions": 34,
+      "answerable": 28,
+      "unanswerable": 6,
+      "hard": 16,
+      "human": 21,
+      "synthetic": 13
+    }
+  },
+  "checks": [
+    {
+      "id": "module-paraphrase",
+      "level": "module",
+      "metric": "paraphrase_mean_cosine",
+      "baseline": 0.7864,
+      "candidate": 0.7865,
+      "delta": 0.0001,
+      "requirement": ">= 0.7864 (baseline - 0.02)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "module-gap",
+      "level": "module",
+      "metric": "gap",
+      "baseline": 0.3264,
+      "candidate": 0.3263,
+      "delta": -0.0001,
+      "requirement": ">= 0.3264 (baseline - 0.02)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "module-determinism",
+      "level": "module",
+      "metric": "determinism_max_abs_diff",
+      "baseline": 0.0,
+      "candidate": 0.0,
+      "delta": 0.0,
+      "requirement": "<= 0.001",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "component-recall3",
+      "level": "component",
+      "metric": "recall@3",
+      "baseline": 0.9107,
+      "candidate": 0.0,
+      "delta": -0.9107,
+      "requirement": ">= 0.9107 (baseline - 0.05)",
+      "passed": false,
+      "message": "drop 0.9107 > allowed 0.05"
+    },
+    {
+      "id": "component-recall5",
+      "level": "component",
+      "metric": "recall@5",
+      "baseline": 0.9643,
+      "candidate": 0.0,
+      "delta": -0.9643,
+      "requirement": ">= 0.9643 (baseline - 0.02)",
+      "passed": false,
+      "message": "drop 0.9643 > allowed 0.02"
+    },
+    {
+      "id": "component-mrr",
+      "level": "component",
+      "metric": "mrr",
+      "baseline": 0.8304,
+      "candidate": 0.5536,
+      "delta": -0.2768,
+      "requirement": ">= 0.8304 (baseline - 0.03)",
+      "passed": false,
+      "message": "drop 0.2768 > allowed 0.03"
+    },
+    {
+      "id": "component-ndcg5",
+      "level": "component",
+      "metric": "ndcg@5",
+      "baseline": 0.8383,
+      "candidate": 0.5688,
+      "delta": -0.2695,
+      "requirement": ">= 0.8383 (baseline - 0.03)",
+      "passed": false,
+      "message": "drop 0.2695 > allowed 0.03"
+    },
+    {
+      "id": "component-typos-recall5",
+      "level": "component",
+      "metric": "typos.recall@5",
+      "baseline": 0.9286,
+      "candidate": 0.0,
+      "delta": -0.9286,
+      "requirement": ">= 0.9286 (baseline - 0.03)",
+      "passed": false,
+      "message": "drop 0.9286 > allowed 0.03"
+    },
+    {
+      "id": "component-typos-mrr",
+      "level": "component",
+      "metric": "typos.mrr",
+      "baseline": 0.8393,
+      "candidate": 0.4911,
+      "delta": -0.3482,
+      "requirement": ">= 0.8393 (baseline - 0.03)",
+      "passed": false,
+      "message": "drop 0.3482 > allowed 0.03"
+    },
+    {
+      "id": "e2e-faithfulness",
+      "level": "end_to_end",
+      "metric": "faithfulness",
+      "baseline": 1.0,
+      "candidate": 1.0,
+      "delta": 0.0,
+      "requirement": ">= 0.95 and >= 1.0000 (baseline - 0.05)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "e2e-abstention",
+      "level": "end_to_end",
+      "metric": "abstention_correct_unanswerable",
+      "baseline": 0.8333,
+      "candidate": 1.0,
+      "delta": 0.1667,
+      "requirement": ">= 0.83",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "e2e-false-abstention",
+      "level": "end_to_end",
+      "metric": "false_abstention_answerable",
+      "baseline": 0.0714,
+      "candidate": 0.3214,
+      "delta": 0.25,
+      "requirement": "<= 0.12 and <= 0.0714 (baseline + 0.05)",
+      "passed": false,
+      "message": "0.3214 > maximum 0.12; rise 0.2500 > allowed 0.05"
+    },
+    {
+      "id": "e2e-citations",
+      "level": "end_to_end",
+      "metric": "citation_validity_in_retrieved",
+      "baseline": 1.0,
+      "candidate": 1.0,
+      "delta": 0.0,
+      "requirement": ">= 0.98 and >= 1.0000 (baseline - 0.02)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "e2e-latency-p95",
+      "level": "end_to_end",
+      "metric": "latency_p95_ms",
+      "baseline": 13671.535,
+      "candidate": 17840.75,
+      "delta": 4169.215,
+      "requirement": "<= 20000 and <= 13671.5350 (baseline x 1.25)",
+      "passed": false,
+      "message": "rise to 17840.7500 > allowed 17089.4188"
+    }
+  ],
+  "failures": [
+    "component-recall3: drop 0.9107 > allowed 0.05",
+    "component-recall5: drop 0.9643 > allowed 0.02",
+    "component-mrr: drop 0.2768 > allowed 0.03",
+    "component-ndcg5: drop 0.2695 > allowed 0.03",
+    "component-typos-recall5: drop 0.9286 > allowed 0.03",
+    "component-typos-mrr: drop 0.3482 > allowed 0.03",
+    "e2e-false-abstention: 0.3214 > maximum 0.12; rise 0.2500 > allowed 0.05",
+    "e2e-latency-p95: rise to 17840.7500 > allowed 17089.4188"
+  ],
+  "generated_at": "20261127T113957Z"
+}
