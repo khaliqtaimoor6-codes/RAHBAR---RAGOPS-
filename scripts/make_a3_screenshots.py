@@ -47,7 +47,7 @@ def main() -> int:
     spec = [
         ("A1", "kubectl -n rahbar exec lake-shell -- python -m pipeline.ingest --report 20261127T140208Z",
          "evidence-verification.txt", "A1-verification.png"),
-        ("A2", "kubectl -n rahbar logs job/ingest-cand-topk6 --tail=20",
+        ("A2", "kubectl -n rahbar logs job/ingest-rerun-unchanged --tail=25",
          "evidence-zero-reembed.txt", "A2-zero-reembed.png"),
         ("B", "cat eval/results/suite/ragops-20261127T163847Z.md",
          "evidence-suite.md", "B-suite.png"),
@@ -69,6 +69,8 @@ def main() -> int:
          "evidence-f2.txt", "F2-config-change.png"),
         ("F3", "cat docs/evidence/a3/F3-rollout-topk6.txt docs/evidence/a3/F3-rollback-topk6.txt",
          "evidence-f3.txt", "F3-rollout-undo.png"),
+        ("F4", "kubectl -n rahbar logs job/ingest-cand-topk6; kubectl -n rahbar logs job/eval-baseline-candidate",
+         "evidence-completed-jobs.txt", "F4-completed-jobs.png"),
     ]
     for label, cmd, path, name in spec:
         p = ROOT / "docs" / "report" / "assets" / path

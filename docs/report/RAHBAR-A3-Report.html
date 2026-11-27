@@ -5,8 +5,8 @@
 <title>RAHBAR Assignment 03 Report</title>
 <style>
 @page { size: A4 landscape; margin: 8mm; }
-body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 7.6pt; line-height: 1.22; color: #111; }
-h1 { font-size: 15pt; margin: 0 0 3mm; }
+body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 7.0pt; line-height: 1.18; color: #111; }
+h1 { font-size: 13pt; margin: 0 0 2mm; }
 h2 { font-size: 10pt; margin: 3mm 0 1.5mm; }
 h3 { font-size: 8.5pt; margin: 2mm 0 1mm; }
 p { margin: 1mm 0; }
@@ -17,9 +17,9 @@ th, td { border: 0.3pt solid #888; padding: 1.1pt 2pt; vertical-align: top; }
 th { background: #e6eef7; }
 .small { font-size: 6.8pt; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
-.screens { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5mm; }
+.screens { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2mm; }
 figure { margin: 0; }
-figure img { width: 100%; max-height: 103mm; object-fit: contain; background: #0d1117; }
+figure img { width: 100%; max-height: 92mm; object-fit: contain; background: #0d1117; }
 figcaption { font-size: 6.6pt; margin-bottom: 1.5mm; }
 code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
 .tag { display:inline-block; padding:0 2pt; background:#dce8f5; border-radius:2pt; }
@@ -165,7 +165,7 @@ code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
 <h2>Appendix: labeled screenshots (commands and full output)</h2>
 <div class="screens">
 <figure><img src="../screenshots/A1-verification.png"><figcaption><b>A1.</b> Verification report for Batch B: pass/fail per check with reasons.</figcaption></figure>
-<figure><img src="../screenshots/A2-zero-reembed.png"><figcaption><b>A2.</b> Reconcile after restore: 0 chunks embedded, 13 chunks relabelled.</figcaption></figure>
+<figure><img src="../screenshots/A2-zero-reembed.png"><figcaption><b>A2.</b> Second ingestion on an unchanged corpus: 0 chunks embedded, 0 orphans.</figcaption></figure>
 <figure><img src="../screenshots/B-suite.png"><figcaption><b>B.</b> Evaluation summary: module, component and end-to-end levels.</figcaption></figure>
 <figure><img src="../screenshots/C-gate-fail.png"><figcaption><b>C fail.</b> Release gate stops the deliberately bad <code>cs300</code> candidate.</figcaption></figure>
 <figure><img src="../screenshots/C-gate-pass.png"><figcaption><b>C pass.</b> Release gate passes for <code>TOP_K=6</code>.</figcaption></figure>
@@ -182,6 +182,7 @@ code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
 <figure><img src="../screenshots/E-coverage-after.png"><figcaption><b>E after.</b> Coverage rises after adding eight golden questions.</figcaption></figure>
 <figure><img src="../screenshots/F1-get-all.png"><figcaption><b>F1.</b> <code>kubectl get all,pvc,configmap,cronjob,job</code> for namespace <code>rahbar</code>.</figcaption></figure>
 <figure><img src="../screenshots/F3-rollout-undo.png"><figcaption><b>F3.</b> Passing rollout, trace, and rollback to the previous collection.</figcaption></figure>
+<figure><img src="../screenshots/F4-completed-jobs.png"><figcaption><b>F4.</b> Logs of a completed ingestion Job and a completed evaluation Job.</figcaption></figure>
 </div>
 </section>
 </body>
