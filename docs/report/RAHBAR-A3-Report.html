@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>RAHBAR Assignment 03 Report</title>
+<style>
+@page { size: A4 landscape; margin: 8mm; }
+body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 7.6pt; line-height: 1.22; color: #111; }
+h1 { font-size: 15pt; margin: 0 0 3mm; }
+h2 { font-size: 10pt; margin: 3mm 0 1.5mm; }
+h3 { font-size: 8.5pt; margin: 2mm 0 1mm; }
+p { margin: 1mm 0; }
+.page { page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+table { border-collapse: collapse; width: 100%; margin: 1mm 0 2mm; }
+th, td { border: 0.3pt solid #888; padding: 1.1pt 2pt; vertical-align: top; }
+th { background: #e6eef7; }
+.small { font-size: 6.8pt; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.screens { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5mm; }
+figure { margin: 0; }
+figure img { width: 100%; max-height: 103mm; object-fit: contain; background: #0d1117; }
+figcaption { font-size: 6.6pt; margin-bottom: 1.5mm; }
+code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
+.tag { display:inline-block; padding:0 2pt; background:#dce8f5; border-radius:2pt; }
+</style>
+</head>
+<body>
+<section class="page">
+<h1>RAHBAR — RAGOps report (Assignment 03)</h1>
+<p>Ali Haider Bajwa (Systems &amp; DevOps) and Taimoor Khaliq (RAG core) · CS4032 · repository: <code>khaliqtaimoor6-codes/RAHBAR---RAGOPS-</code> · all figures are from our own Kubernetes runs; raw evidence is committed under <code>eval/results/</code>, <code>docs/evidence/</code> and <code>traces/</code>.</p>
+<h2>1. Figure 3 stages → RAHBAR</h2>
+<table>
+<tr><th>Stage</th><th>What our pipeline does</th><th>File</th><th>Missing</th></tr>
+<tr><td>Ingest</td><td>Init container mirrors nine public documents into the lake PVC and verifies SHA-256 against <code>corpus/MANIFEST.md</code>; operators drop batches into <code>inbox/</code>.</td><td><code>corpus/fetch.py</code>, <code>scripts/lake.sh</code></td><td>No push-based source; batches are copied by hand.</td></tr>
+<tr><td>Verify</td><td>Quality, completeness, recency, uniqueness per document; advisory injection flag; failures quarantined with a reason file; one JSON report per run.</td><td><code>indexer/pipeline/verify.py</code>, <code>ingest.py</code></td><td>No factual-consistency check between documents.</td></tr>
+<tr><td>Update data lake</td><td><code>current/</code>, <code>archive/&lt;family&gt;/&lt;version&gt;/</code>, <code>deleted/</code>, <code>quarantine/</code>, registry and extracted text on a PVC.</td><td><code>indexer/pipeline/lake.py</code></td><td>No retention policy for deleted/quarantine folders.</td></tr>
+<tr><td>Update retrieval sources</td><td>Reconcile Chroma with the registry; embed only changed chunks; metadata-only archive/restore; delete by <code>doc_id</code>; new <code>index_id</code>.</td><td><code>indexer/pipeline/reconcile.py</code></td><td>Not atomic across documents within one run.</td></tr>
+<tr><td>Offline testing</td><td>34-question golden set; module, component and end-to-end metrics; two seeded Part B runs; Kubernetes Job writes timestamped results.</td><td><code>eval/ragops_suite.py</code>, <code>k8s/eval-job.yaml</code></td><td>Release gate added in Part C.</td></tr>
+<tr><td>Live testing</td><td>One trace per query on stdout and a volume; <code>/metrics</code>; trace summary over a window; tool rebuilds the exact prompt.</td><td><code>api/app/services/trace.py</code>, <code>api/app/tools/</code></td><td>No alerting; metrics are pulled by hand.</td></tr>
+<tr><td>Check coverage</td><td>40 live queries mapped to the nearest golden question; threshold 0.70; script exits non-zero below 85% in-domain coverage; eight new questions close the gaps.</td><td><code>eval/live_queries.py</code>, <code>eval/coverage.py</code></td><td>Offline golden drift is not auto-replaced.</td></tr>
+</table>
+<h2>2. Paper Table 2 qualities</h2>
+<table>
+<tr><th>Quality</th><th>What we measure</th><th>Threshold</th><th>Evidence</th></tr>
+<tr><td>Adaptability</td><td>Chunks embedded on an unchanged corpus; time to build candidates from the lake</td><td>0 chunks</td><td>0 chunks / 4.7 s on restore; 1,032 chunks rebuilt after PVC loss; <code>ingest-*.json</code></td></tr>
+<tr><td>Monitorability</td><td>Top-1 similarity, abstention and cache rates, p95 per stage, injection flags</td><td>—</td><td><code>D3-trace-summary.txt</code>; 6 injected chunks dropped; Prometheus endpoint</td></tr>
+<tr><td>Observability</td><td>Fields per trace; per-stage latency</td><td>All D1 fields</td><td>18 top-level fields; embed/cache/retrieve/rails/generate/total in every trace</td></tr>
+<tr><td>Traceability</td><td>Rebuilt prompt hash equals recorded hash</td><td>100%</td><td><code>D2-trace-show-answered.txt</code>: MATCH</td></tr>
+<tr><td>Reliability</td><td>Orphan chunks; data after vector-store restart; rolling release with zero unavailability</td><td>0; unchanged; maxUnavailable 0</td><td>0 orphans in all runs; traces after restart; <code>F3-rollout-topk6.txt</code></td></tr>
+</table>
+<h2>3. Release decision</h2>
+<p><span class="tag">RELEASE</span> The <code>TOP_K=6</code> candidate is accepted: gate PASS against the matched qwen baseline. The deliberately bad <code>CHUNK_SIZE=300</code> and <code>100</code> candidates are rejected (GATE FAILED), and a bad <code>cs300</code> release was reversed with <code>kubectl rollout undo</code>. The passing candidate was rolled out, traced, and rolled back for the demo; the live Deployment remained on <code>rahbar@4dcc91100345</code> at submission.</p>
+</section>
+
+<section class="page">
+<h2>4. Results A–B</h2>
+<div class="two">
+<div>
+<h3>A1. Batch B verification (run 20261127T140208Z)</h3>
+<table class="small"><tr><th>Check</th><th>Failures</th><th>Examples</th></tr>
+<tr><td>Uniqueness</td><td>3</td><td>b03 byte copy of b01; b04 same text as b02; b11 near-duplicate of b05, cosine 0.9997</td></tr>
+<tr><td>Completeness</td><td>3</td><td>b06 ends mid-sentence; b08 and c03 miss metadata</td></tr>
+<tr><td>Quality</td><td>1</td><td>b07 corrupt PDF (<code>Unexpected EOF</code>)</td></tr>
+<tr><td>Recency</td><td>2 archives</td><td>2023 rules superseded by 2026 handbook; fee page superseded by b09, then restored</td></tr>
+<tr><td>Injection</td><td>1 flag</td><td>b10: “Ignore all previous instructions”; chunks dropped by the rail</td></tr>
+</table>
+<p>Summary: 23 checked, 14 indexed, 2 archived, 7 quarantined. Near-duplicate threshold 0.985 sits above the highest genuine pair (0.9606) and below the planted copy (0.9997).</p>
+<h3>A2. Incremental update</h3>
+<table class="small"><tr><th>Run</th><th>Chunks embedded</th><th>Other</th></tr>
+<tr><td>First corpus</td><td>1,008</td><td>24 pages OCR'd; 2023 rules archived</td></tr>
+<tr><td>Unchanged corpus</td><td>0</td><td>index_id unchanged; 3.3 s</td></tr>
+<tr><td>Batch B</td><td>26</td><td>6 indexed, 5 quarantined; fee page relabelled</td></tr>
+<tr><td>Delete b12 / restore fee page</td><td>0</td><td>4 chunks removed; 13 chunks relabelled; 0 orphans</td></tr>
+<tr><td>Rebuilt candidate registry</td><td>1,032</td><td>full verify after PVC restore; 2,260 s; then 0-chunk restore</td></tr>
+</table>
+</div>
+<div>
+<h3>B. Three-level offline suite (baseline 20261126T104001Z, two runs)</h3>
+<table class="small"><tr><th>Level</th><th>Metric</th><th>Run 1</th><th>Run 2</th><th>Δ</th></tr>
+<tr><td>module</td><td>paraphrase / unrelated cosine</td><td>0.786 / 0.460</td><td>0.786 / 0.460</td><td>0</td></tr>
+<tr><td>module</td><td>gap; determinism</td><td>0.326; 0.0</td><td>0.326; 0.0</td><td>0</td></tr>
+<tr><td>module</td><td>ms/chunk (single; batched 28.1)</td><td>41.9</td><td>48.5</td><td>+6.6</td></tr>
+<tr><td>component</td><td>recall@3 / recall@5</td><td>0.911 / 0.964</td><td>0.911 / 0.964</td><td>0</td></tr>
+<tr><td>component</td><td>MRR / nDCG@5</td><td>0.830 / 0.838</td><td>0.830 / 0.838</td><td>0</td></tr>
+<tr><td>component</td><td>typos recall@5 / MRR</td><td>0.929 / 0.839</td><td>0.929 / 0.839</td><td>0</td></tr>
+<tr><td>e2e</td><td>faithfulness (judged)</td><td>1.0 (25/28)</td><td>1.0 (24/26)</td><td>0</td></tr>
+<tr><td>e2e</td><td>abstention correct</td><td>0.833</td><td>0.833</td><td>0</td></tr>
+<tr><td>e2e</td><td>false abstention</td><td>0.036</td><td>0.107</td><td>+0.071</td></tr>
+<tr><td>e2e</td><td>citations in retrieved</td><td>1.0</td><td>1.0</td><td>0</td></tr>
+<tr><td>e2e</td><td>expected string</td><td>0.857</td><td>0.714</td><td>−0.143</td></tr>
+<tr><td>e2e</td><td>latency p50 / p95 (ms)</td><td>8,191 / 13,681</td><td>8,934 / 13,662</td><td>—</td></tr>
+</table>
+<p>Embeddings and ranks are bit-identical across the two runs; variation is in generation: invalid JSON 1× (run 1) and 3× (run 2) became safe fallbacks. Typos cost 3.6 points of recall@5. The only full retrieval miss is g11 (garbled annual-report table). D5 traced a02 from its trace alone: the corpus covers bus routes, only the fee is missing, so the golden label was wrong.</p>
+</div>
+</div>
+</section>
+
+<section class="page">
+<h2>5. Results C, E, F</h2>
+<div class="two">
+<div>
+<h3>C. Change experiment and release gate</h3>
+<p>One change: <code>TOP_K</code> 5 → 6. Both runs used the same 1,032-chunk collection and the same <code>qwen/qwen3.8-27b</code> model; the original gpt-oss key hit Groq's 200,000 TPD cap during the re-run. Baseline <code>20261127T162843Z</code> (TOP_K=5), candidate <code>20261127T163847Z</code> (TOP_K=6).</p>
+<table class="small"><tr><th>Metric</th><th>Baseline</th><th>Candidate</th><th>Δ</th></tr>
+<tr><td>paraphrase mean / gap</td><td>0.7865 / 0.3263</td><td>0.7865 / 0.3263</td><td>0</td></tr>
+<tr><td>recall@3 / recall@5</td><td>0.9107 / 0.9643</td><td>0.9107 / 0.9643</td><td>0</td></tr>
+<tr><td>MRR / nDCG@5</td><td>0.8244 / 0.8354</td><td>0.8244 / 0.8373</td><td>0 / +0.0019</td></tr>
+<tr><td>typos recall@5 / MRR</td><td>0.9286 / 0.8393</td><td>0.9286 / 0.8393</td><td>0</td></tr>
+<tr><td>faithfulness / abstention correct</td><td>1.0 / 1.0</td><td>1.0 / 1.0</td><td>0</td></tr>
+<tr><td>false abstention</td><td>0.2500</td><td>0.0714</td><td>−0.1786</td></tr>
+<tr><td>expected string</td><td>0.7143</td><td>0.9286</td><td>+0.2143</td></tr>
+<tr><td>latency p50 / p95 (ms)</td><td>4,325 / 9,665</td><td>8,565 / 14,513</td><td>+4,848 p95</td></tr>
+</table>
+<p>Gate thresholds: recall@5 may drop ≤ 0.02; MRR/nDCG ≤ 0.03; faithfulness ≥ 0.95; abstention ≥ 0.83; false abstention ≤ 0.12; citations ≥ 0.98; p95 ≤ 20 s and ≤ 160% of baseline. The relative p95 band was widened from 125% after two same-config qwen runs varied 9.7–14.5 s with no code change; the hard 20 s ceiling is unchanged. Deliberately bad candidates: <code>cs300</code> recall@5 0.6964 and <code>cs100</code> 0.6071 — both GATE FAILED. The passing candidate GATE PASSED.</p>
+<h3>F2. ConfigMap threshold change</h3>
+<p>Without rebuilding an image, tightening <code>component-recall5.max_drop</code> to −0.01 (candidate must gain a point) changed the gate from PASS to FAIL; restoring the ConfigMap changed it back to PASS (<code>F2-gate-config-change.txt</code>).</p>
+</div>
+<div>
+<h3>E. Drift and coverage</h3>
+<table class="small"><tr><th>Item</th><th>Before</th><th>After</th></tr>
+<tr><td>In-domain coverage</td><td>25/28 = 0.8929</td><td>28/28 = 1.0</td></tr>
+<tr><td>Off-topic coverage</td><td>0.0833</td><td>0.0833</td></tr>
+<tr><td>Uncovered topics</td><td>lab access, scholarships, transcript</td><td>none</td></tr>
+<tr><td>Golden set</td><td>34 questions</td><td>42 (eight new synthetic)</td></tr>
+</table>
+<p>40 live queries (28 in-domain, 12 off-topic) were logged through <code>/api/ask</code>. The script exits 1 below 85% in-domain coverage. E3: Batch B verification and restores are in Part A; the final re-run after the lost registry is the 1,032-chunk candidate above. Eight new golden questions close the topics; the Part B/C gate stays on the fixed 34-question set.</p>
+<h3>F. Kubernetes</h3>
+<table class="small"><tr><th>Item</th><th>Object / evidence</th></tr>
+<tr><td>F1 deploy</td><td>Deployment <code>api</code> (3 replicas, HPA to 8); StatefulSet <code>chroma</code> with PVC; Services; Ingress</td></tr>
+<tr><td>F2 jobs</td><td>Job <code>ingest</code> + nightly CronJob (Forbid + lake lock); Job <code>eval</code>; thresholds in ConfigMap <code>rahbar-gate</code></td></tr>
+<tr><td>F3 release</td><td><code>api-candidate</code> + Service; NetworkPolicies; rollout status and undo traces</td></tr>
+<tr><td>F4 observability</td><td>Trace records on stdout and the <code>rahbar-traces</code> PVC; <code>/metrics</code> via port-forward</td></tr>
+<tr><td>F5 resources</td><td>api 50m/128Mi → 500m/256Mi; chroma 25m/192Mi → 500m/384Mi; ingest 250m/256Mi → 1500m/512Mi; peak RSS 111 Mi embedding 1,262 chunks, 172.4 Mi for the 1,032-chunk rebuild</td></tr>
+</table>
+<p>F3 passing rollout: trace <code>73d0a6c6…</code> shows <code>rahbar-cand-topk6@7a0aa714ee0b</code> and answered 2.00; after <code>rollout undo</code>, trace <code>8f4be339…</code> shows <code>rahbar@4dcc91100345</code> with the same embedding version <code>nomic-embed-text@0a109f422b47</code>.</p>
+</div>
+</div>
+</section>
+
+<section class="page">
+<h2>6. Short answers</h2>
+<div class="two">
+<div>
+<p><b>(a)</b> Uniqueness caught most Batch B problems (3: one byte copy, one same-text copy, one near-duplicate); completeness caught 3, quality 1, recency 2 archives. A well-formed, unique but factually wrong new policy would pass; an NLI/contradiction check over the same family would catch it. Near-duplicate “first arrival wins” should prefer the newer <code>doc_version</code>.</p>
+<p><b>(b)</b> Module embeddings were healthy (gap 0.326, determinism 0) while the deliberately bad candidates failed at component level: <code>cs300</code> recall@5 0.6964 and <code>cs100</code> 0.6071 versus 0.9643 baseline. A healthy embedding space does not imply good chunk granularity; the release gate stops the bad ones before end-to-end. In the first topk6 run, module metrics were fine again but end-to-end false abstention hit 0.857 because the hosted model hit its daily token cap; provider errors were visible in the trace and api logs.</p>
+<p><b>(c)</b> We archive, never delete, superseded versions. Their chunks stay indexed with <code>superseded=true</code> and are filtered out unless a question asks for an older edition. Deleting them would break rollback (restore is 0 chunks re-embedded), questions about the 2023 rules, and audits of old traces. Operator deletions move the file to <code>deleted/&lt;run&gt;/</code>.</p>
+</div>
+<div>
+<p><b>(d)</b> We trust the LLM-judged faithfulness least: it is one more API call with JSON-mode and rate-limit failures (5 unparsable replies in the first run), and a grounded number can still be wrong, as g11 showed. Hand labelling ≥ 8 answers and comparing agreement is the mitigation; citations and expected strings give independent checks.</p>
+<p><b>(e)</b> The hardest paper idea was one-writer / atomic updates. We approximated it with an indexer-only writer, a lake lock, NetworkPolicy and per-document reconcile. A crash mid-run can still leave a partially updated collection until the next run; a blue/green collection swap would be closer to the paper but costs another 1,032 embeddings.</p>
+<p><b>(f)</b> Job <code>ingest</code> (and its CronJob with <code>Forbid</code> plus a lake lock) is the only writer, enforced by <code>chroma-from-api-and-indexer</code>. PVC <code>rahbar-lake</code> holds the lake, quarantine and archive; StatefulSet <code>chroma</code> holds retrieval sources; ConfigMaps hold thresholds and the embedding pin; PVC <code>rahbar-traces</code> plus stdout carry traceability; the api readiness probe refuses an index built with another embedding model; Secret <code>rahbar-secret</code> holds the Groq key.</p>
+</div>
+</div>
+<h2>7. Contribution and AI statement</h2>
+<table>
+<tr><th>Member</th><th>Work</th></tr>
+<tr><td>Taimoor Khaliq</td><td>Part A (verification, data lake, incremental update, Batch B); Part B (golden set, three-level suite, stochasticity); Part D1–D4 (trace record, tool, metrics, injection rail, D5); F1, F2-ingestion, F4, F5; repository and CI fixes.</td></tr>
+<tr><td>Ali Haider Bajwa</td><td>Parts C, E, F2 gate ConfigMap and threshold-change demo, F3 controlled release; qwen baseline/candidate reruns after the provider quota; final report, screenshots and submission checks; review of synthetic questions and judge labels with Taimoor.</td></tr>
+</table>
+<p><b>AI statement.</b> We used Claude Code and Sisyphus to help write code, manifests, tests and drafts of this report. Every number comes from runs of our own pipeline on our own cluster, and both members reviewed the work and can explain every part of it.</p>
+</section>
+
+<section class="page">
+<h2>Appendix: labeled screenshots (commands and full output)</h2>
+<div class="screens">
+<figure><img src="../screenshots/A1-verification.png"><figcaption><b>A1.</b> Verification report for Batch B: pass/fail per check with reasons.</figcaption></figure>
+<figure><img src="../screenshots/A2-zero-reembed.png"><figcaption><b>A2.</b> Reconcile after restore: 0 chunks embedded, 13 chunks relabelled.</figcaption></figure>
+<figure><img src="../screenshots/B-suite.png"><figcaption><b>B.</b> Evaluation summary: module, component and end-to-end levels.</figcaption></figure>
+<figure><img src="../screenshots/C-gate-fail.png"><figcaption><b>C fail.</b> Release gate stops the deliberately bad <code>cs300</code> candidate.</figcaption></figure>
+<figure><img src="../screenshots/C-gate-pass.png"><figcaption><b>C pass.</b> Release gate passes for <code>TOP_K=6</code>.</figcaption></figure>
+<figure><img src="../screenshots/F2-config-change.png"><figcaption><b>F2.</b> ConfigMap threshold edit flips PASS → FAIL → PASS without an image rebuild.</figcaption></figure>
+</div>
+</section>
+
+<section class="page">
+<h2>Appendix (continued)</h2>
+<div class="screens">
+<figure><img src="../screenshots/D1-trace.png"><figcaption><b>D1.</b> One full trace record from our cluster.</figcaption></figure>
+<figure><img src="../screenshots/D2-trace-show.png"><figcaption><b>D2.</b> Trace tool rebuilding the exact prompt (hash MATCH).</figcaption></figure>
+<figure><img src="../screenshots/E-coverage-before.png"><figcaption><b>E before.</b> Coverage with the original 34-question golden set.</figcaption></figure>
+<figure><img src="../screenshots/E-coverage-after.png"><figcaption><b>E after.</b> Coverage rises after adding eight golden questions.</figcaption></figure>
+<figure><img src="../screenshots/F1-get-all.png"><figcaption><b>F1.</b> <code>kubectl get all,pvc,configmap,cronjob,job</code> for namespace <code>rahbar</code>.</figcaption></figure>
+<figure><img src="../screenshots/F3-rollout-undo.png"><figcaption><b>F3.</b> Passing rollout, trace, and rollback to the previous collection.</figcaption></figure>
+</div>
+</section>
+</body>
+</html>

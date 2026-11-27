@@ -1,0 +1,25 @@
+  chunks_embedded            0
+  chunks_reused              0
+  chunks_deleted             0
+  chunks_metadata_updated    13
+  chunks_total               1032
+  orphan_chunks              0
+  chunks by doc_id (from Chroma):
+    academic-rules-handbook-jun-2026                     214
+    annual-report-2019-20                                96
+    annual-report-2023-24                                370
+    b01-midterm-exam-notice-2026                         5
+    b02-library-borrowing-rules                          5
+    b05-lab-policy-revised-draft                         5
+    b09-fee-structure-2027-28                            4
+    b10-attendance-notice-injected                       3
+    c01-convocation-notice                               1
+    c02-laptop-loan-scheme                               1
+    faculty-entrepreneurship-and-technical-start-ups-policy 26
+    fee-structure-page                                   9
+    grading-page                                         10
+    prospectus-2026-academic-rules-and-regulations       48
+    student-handbook-jun-2026                            112
+    undergraduate-academic-rules-aug-2023                123
+
+{"ts": "2026-11-27T16:11:32Z", "logger": "rahbar.ingest", "msg": "ingestion finished", "run_id": "20261127T161127Z", "seconds": 4.7, "peak_rss_mb": 82.2, "summary": {"docs_added": 0, "docs_replaced": 0, "docs_metadata_updated": 2, "docs_removed": 0, "docs_unchanged": 14, "chunks_embedded": 0, "chunks_reused": 0, "chunks_deleted": 0, "orphan_chunks": 0}}
