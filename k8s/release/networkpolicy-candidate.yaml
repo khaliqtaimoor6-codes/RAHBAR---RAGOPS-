@@ -1,0 +1,88 @@
+# Additive policies for the F3 candidate. `default-deny-all` from k8s/base still applies;
+# these are the only extra paths the candidate pods (and the eval Job reaching them) need.
+# The candidate may read Chroma and Redis like the live api, and call Ollama/hosted LLM,
+# but it is never reachable from the Ingress or the UI.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: allow-dns-candidate, namespace: rahbar}
+spec:
+  podSelector: {matchLabels: {app: api-candidate}}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}
+          podSelector: {matchLabels: {k8s-app: kube-dns}}
+      ports:
+        - {protocol: UDP, port: 53}
+        - {protocol: TCP, port: 53}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: api-candidate-from-eval, namespace: rahbar}
+spec:
+  podSelector: {matchLabels: {app: api-candidate}}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {app: eval}}
+      ports:
+        - {protocol: TCP, port: 8000}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: api-candidate-egress, namespace: rahbar}
+spec:
+  podSelector: {matchLabels: {app: api-candidate}}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: chroma}}
+      ports:
+        - {protocol: TCP, port: 8000}
+    - to:
+        - podSelector: {matchLabels: {app: redis}}
+      ports:
+        - {protocol: TCP, port: 6379}
+    - to:
+        - ipBlock: {cidr: 0.0.0.0/0}
+      ports:
+        - {protocol: TCP, port: 11434}
+        - {protocol: TCP, port: 443}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: chroma-from-api-candidate, namespace: rahbar}
+spec:
+  podSelector: {matchLabels: {app: chroma}}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {app: api-candidate}}
+      ports:
+        - {protocol: TCP, port: 8000}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: redis-from-api-candidate, namespace: rahbar}
+spec:
+  podSelector: {matchLabels: {app: redis}}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {app: api-candidate}}
+      ports:
+        - {protocol: TCP, port: 6379}
+---
+# The eval Job already has DNS and external egress from k8s/base; this adds the candidate
+# Service to its allowed destinations.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: eval-egress-to-candidate, namespace: rahbar}
+spec:
+  podSelector: {matchLabels: {app: eval}}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: api-candidate}}
+      ports:
+        - {protocol: TCP, port: 8000}

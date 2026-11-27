@@ -1,0 +1,55 @@
+# F2 demo: re-run ONLY the gate on the newest saved suite result. No questions are asked
+# again and no image is rebuilt, so editing the rahbar-gate ConfigMap (e.g. tightening
+# recall@5 from 0.02 to 0.00) flips pass -> fail. The command picks the latest ragops-*.json
+# on the results PVC; run this after eval-candidate wrote its result.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eval-gate
+  namespace: rahbar
+  labels: {app: eval, app.kubernetes.io/part-of: rahbar}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 600
+  template:
+    metadata:
+      labels: {app: eval, app.kubernetes.io/part-of: rahbar}
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: gate
+          image: rahbar-eval:dev
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c"]
+          args:
+            - >-
+              exec python ragops_suite.py
+              --gate-only "$(ls -t /results/ragops-*.json | grep -v -- '-gate.json' | head -1)"
+              --gate-baseline /results/baseline-qwen.json
+              --gate-config /etc/rahbar-gate/gate.yaml
+          resources:
+            requests: {cpu: 20m, memory: 64Mi}
+            limits: {cpu: 200m, memory: 128Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: results, mountPath: /results}
+            - {name: tmp, mountPath: /tmp}
+            - {name: gate, mountPath: /etc/rahbar-gate, readOnly: true}
+      volumes:
+        - name: results
+          persistentVolumeClaim: {claimName: rahbar-results}
+        - name: tmp
+          emptyDir: {sizeLimit: 64Mi}
+        - name: gate
+          configMap: {name: rahbar-gate}

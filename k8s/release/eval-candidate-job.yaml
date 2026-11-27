@@ -1,0 +1,68 @@
+# C1/F2/F3: the release evaluation. Same suite as k8s/eval-job.yaml, but pointed at the
+# candidate Service, one seeded run (the two-run stochasticity was already shown in Part B),
+# and GATE=1 so a failing gate exits non-zero and fails this Job. The baseline for C2 is
+# the one-run qwen baseline saved on the results PVC; both C1 runs use the same model, so
+# TOP_K is the only change. Thresholds come from the rahbar-gate ConfigMap, never the image.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eval-candidate
+  namespace: rahbar
+  labels: {app: eval, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 7200
+  template:
+    metadata:
+      labels: {app: eval, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: eval
+          image: rahbar-eval:dev
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: {name: rahbar-config}
+          env:
+            - {name: API_URL, value: "http://api-candidate:8000"}
+            - {name: TRACE_DIR, value: /traces}
+            - {name: RESULTS_DIR, value: /results}
+            - {name: RUNS, value: "1"}
+            - {name: SEED, value: "1234"}
+            - {name: PACE_SECONDS, value: "4"}
+            - {name: GATE, value: "1"}
+            - {name: JUDGE_MODEL, value: qwen/qwen3.8-27b}
+            - {name: GATE_BASELINE, value: /results/baseline-qwen.json}
+            - {name: GATE_CONFIG, value: /etc/rahbar-gate/gate.yaml}
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef: {name: rahbar-secret, key: LLM_API_KEY, optional: true}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: traces, mountPath: /traces, readOnly: true}
+            - {name: results, mountPath: /results}
+            - {name: tmp, mountPath: /tmp}
+            - {name: gate, mountPath: /etc/rahbar-gate, readOnly: true}
+      volumes:
+        - name: traces
+          persistentVolumeClaim: {claimName: rahbar-traces, readOnly: true}
+        - name: results
+          persistentVolumeClaim: {claimName: rahbar-results}
+        - name: tmp
+          emptyDir: {sizeLimit: 64Mi}
+        - name: gate
+          configMap: {name: rahbar-gate}

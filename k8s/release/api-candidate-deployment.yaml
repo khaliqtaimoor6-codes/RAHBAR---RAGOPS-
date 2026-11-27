@@ -1,0 +1,80 @@
+# C1/F3: a separate api Deployment used for both sides of the C1 comparison. It reads the
+# baseline-equivalent 1,032-chunk collection; the only C1 change is TOP_K (5 for the
+# baseline run, 6 for the candidate run). Both use qwen/qwen3.8-27b because the Part B
+# gpt-oss-20b key hit Groq's daily token limit during the re-run. Rollout/undo is on
+# live `api`, never on this Deployment.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-candidate
+  namespace: rahbar
+  labels: {app: api-candidate, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: {app: api-candidate}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}
+  template:
+    metadata:
+      labels: {app: api-candidate, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+    spec:
+      serviceAccountName: api
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: api
+          image: rahbar-api:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - {name: http, containerPort: 8000}
+          envFrom:
+            - configMapRef: {name: rahbar-config}
+          env:
+            - {name: CHROMA_COLLECTION, value: rahbar-cand-topk6}
+            - {name: LLM_MODEL, value: qwen/qwen3.8-27b}
+            - {name: TOP_K, value: "6"}
+            - {name: TRACE_DIR, value: /traces}
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef: {name: rahbar-secret, key: LLM_API_KEY, optional: true}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+            - {name: traces, mountPath: /traces}
+          startupProbe:
+            httpGet: {path: /healthz, port: 8000}
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            httpGet: {path: /healthz, port: 8000}
+            periodSeconds: 20
+            failureThreshold: 3
+            timeoutSeconds: 2
+          readinessProbe:
+            httpGet: {path: /readyz, port: 8000}
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+          lifecycle:
+            preStop:
+              exec:
+                command: ["python", "-c", "import time; time.sleep(5)"]
+      volumes:
+        - {name: tmp, emptyDir: {sizeLimit: 64Mi}}
+        - {name: traces, persistentVolumeClaim: {claimName: rahbar-traces}}

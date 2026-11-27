@@ -1,0 +1,19 @@
+# Parts C/F3, applied separately from the base overlay so the candidate pods do not run
+# all the time: kubectl apply -k k8s/release
+# ci.yml validates this kustomization with kubeconform -strict as well.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: rahbar
+labels:
+  - pairs: {app.kubernetes.io/part-of: rahbar}
+    includeSelectors: false
+resources:
+  - candidate-base-job.yaml
+  - candidate-topk6-job.yaml
+  - candidate-ingest-job.yaml
+  - api-candidate-deployment.yaml
+  - api-candidate-service.yaml
+  - networkpolicy-candidate.yaml
+  - eval-baseline-candidate-job.yaml
+  - eval-candidate-job.yaml
+  - eval-gate-only-job.yaml
