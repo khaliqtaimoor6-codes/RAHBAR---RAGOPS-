@@ -1,0 +1,40 @@
+{"id": "l01", "query": "What CGPA do I need to avoid being put on academic warning?", "topic": "academic warning", "in_domain": true}
+{"id": "l02", "query": "If my CGPA stays below 2 for three semesters will I be dismissed?", "topic": "academic warning", "in_domain": true}
+{"id": "l03", "query": "How many courses am I supposed to take in one regular semester?", "topic": "course load", "in_domain": true}
+{"id": "l04", "query": "Can I repeat a course in the summer, and how many times?", "topic": "summer repeat", "in_domain": true}
+{"id": "l05", "query": "If I pay for a recheck of my final paper and the grade changes, do I get the fee back?", "topic": "rechecking fee", "in_domain": true}
+{"id": "l06", "query": "Are ChatGPT and other AI tools allowed in the programming lab?", "topic": "AI in labs", "in_domain": true}
+{"id": "l07", "query": "How much is the admission fee and can I get it refunded?", "topic": "admission fee", "in_domain": true}
+{"id": "l08", "query": "What is the grade point for a B plus?", "topic": "grading", "in_domain": true}
+{"id": "l09", "query": "What is the longest time I have to finish my bachelor's degree?", "topic": "degree time", "in_domain": true}
+{"id": "l10", "query": "What SGPA do I need for the rector's honor list?", "topic": "honors", "in_domain": true}
+{"id": "l11", "query": "When is the last day to drop a course this semester?", "topic": "withdrawal", "in_domain": true}
+{"id": "l12", "query": "What did the older rules say about the withdrawal deadline?", "topic": "version", "in_domain": true}
+{"id": "l13", "query": "What is clause 1.21 of the academic rules?", "topic": "exact clause", "in_domain": true}
+{"id": "l14", "query": "How much is tuition per credit hour for BS students this year?", "topic": "tuition fee", "in_domain": true}
+{"id": "l15", "query": "Which rule covers dropping a course after the deadline?", "topic": "exact clause", "in_domain": true}
+{"id": "l16", "query": "Can I stay in a university hostel and what does it cost per semester?", "topic": "hostel", "in_domain": true}
+{"id": "l17", "query": "Is there a campus bus, and how much does the transport pass cost?", "topic": "transport fee", "in_domain": true}
+{"id": "l18", "query": "How many books can I borrow from the library and for how many days?", "topic": "library loans", "in_domain": true}
+{"id": "l19", "query": "What is the late fee on a library book?", "topic": "library fines", "in_domain": true}
+{"id": "l20", "query": "When are the midterm examinations this fall?", "topic": "exam schedule", "in_domain": true}
+{"id": "l21", "query": "Can I bring my smartwatch into the exam hall?", "topic": "exam conduct", "in_domain": true}
+{"id": "l22", "query": "How many guests can I invite to convocation?", "topic": "convocation", "in_domain": true}
+{"id": "l23", "query": "Who is allowed to borrow a laptop from the university?", "topic": "laptop loan", "in_domain": true}
+{"id": "l24", "query": "Can I renew a library book, and how many times?", "topic": "library renewals", "in_domain": true}
+{"id": "l25", "query": "What are the computer lab opening hours?", "topic": "lab access", "in_domain": true}
+{"id": "l26", "query": "How do I officially request my transcript?", "topic": "transcript", "in_domain": true}
+{"id": "l27", "query": "What is the minimum attendance for undergraduate programs?", "topic": "attendance", "in_domain": true}
+{"id": "l28", "query": "What scholarships can students apply for?", "topic": "scholarships", "in_domain": true}
+{"id": "o01", "query": "What is the weather in Lahore tomorrow?", "topic": "weather", "in_domain": false}
+{"id": "o02", "query": "Who won the Champions Trophy in 2025?", "topic": "sports news", "in_domain": false}
+{"id": "o03", "query": "How do I bake a chocolate cake?", "topic": "cooking", "in_domain": false}
+{"id": "o04", "query": "What is the capital of Japan?", "topic": "general knowledge", "in_domain": false}
+{"id": "o05", "query": "Which Python web framework is fastest?", "topic": "programming", "in_domain": false}
+{"id": "o06", "query": "How do I renew my passport?", "topic": "government services", "in_domain": false}
+{"id": "o07", "query": "What time does the local cinema open?", "topic": "entertainment", "in_domain": false}
+{"id": "o08", "query": "Can you recommend a good dentist in Karachi?", "topic": "health", "in_domain": false}
+{"id": "o09", "query": "What are the current gold prices?", "topic": "finance", "in_domain": false}
+{"id": "o10", "query": "How do I train a puppy to sit?", "topic": "pets", "in_domain": false}
+{"id": "o11", "query": "What is the distance to the moon?", "topic": "science", "in_domain": false}
+{"id": "o12", "query": "Which football club won the Premier League last season?", "topic": "sports news", "in_domain": false}
