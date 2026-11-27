@@ -1,0 +1,43 @@
+=== F3 rollout: live api -> candidate collection ===
+Fri Nov 27 11:47:53 AM UTC 2026
+--- before ---
+deployment.apps/api 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         <none>
+4         <none>
+5         <none>
+
+ConfigMap CHROMA_COLLECTION=rahbar
+--- set env ---
+deployment.apps/api env updated
+--- rollout status ---
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+--- pods ---
+NAME                   READY   STATUS        RESTARTS   AGE   IP            NODE                  NOMINATED NODE   READINESS GATES
+api-5c97875675-gh6b4   1/1     Running       0          9s    10.42.0.12    k3d-rahbar-server-0   <none>           <none>
+api-5c97875675-lt9jg   1/1     Running       0          27s   10.42.0.10    k3d-rahbar-server-0   <none>           <none>
+api-5c97875675-xfjxz   1/1     Running       0          18s   10.42.0.11    k3d-rahbar-server-0   <none>           <none>
+api-dfdbfd946-hk5x9    1/1     Terminating   0          45m   10.42.0.253   k3d-rahbar-server-0   <none>           <none>
+--- verify + query ---
+CHROMA_COLLECTION= rahbar-cand-cs300
+readyz= {'status': 'ready', 'checks': {'chroma': 'ok', 'collection': 'ok', 'embed_model': 'ok', 'redis': 'ok'}}
+status= 200
+{
+ "answer": "I could not produce a reliable answer from the documents just now. Please try again, or check with the Academic Office.",
+ "citations": [],
+ "trace_id": "599580d943184022a978c9fb11743a61",
+ "cached": false,
+ "answered_from_context": false
+}

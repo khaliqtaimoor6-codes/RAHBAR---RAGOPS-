@@ -218,6 +218,42 @@ make eval
 validity falls below 95%. In CI the same gate runs on the three-document fixture corpus
 in an ephemeral k3d cluster. Results and method: [docs/PIPELINE.md](docs/PIPELINE.md).
 
+## Part C: one change, three levels and the release gate
+
+The passing candidate changes `TOP_K` 5 → 6 on a baseline-equivalent 1,032-chunk
+collection (`rahbar-cand-topk6`). The deliberately bad `CHUNK_SIZE=300`/`100` collections
+remain as gate-fail demos. All run the same three-level suite; the gate compares with a
+matched qwen baseline using thresholds from the `rahbar-gate` ConfigMap. Full method:
+[docs/RAGOPS.md](docs/RAGOPS.md).
+
+```bash
+kubectl apply -f k8s/base/namespace.yaml
+kubectl apply -k k8s/release
+kubectl -n rahbar wait --for=condition=complete job/ingest-cand-cs300 --timeout=30m
+kubectl -n rahbar rollout status deploy/api-candidate
+kubectl -n rahbar delete job eval-candidate --ignore-not-found
+kubectl apply -f k8s/release/eval-candidate-job.yaml
+kubectl -n rahbar logs -f job/eval-candidate      # ends with GATE PASSED / GATE FAILED
+scripts/lake.sh pull                              # results + <name>-gate.json/.md
+```
+
+Locally: `python eval/gate.py --candidate <result.json> --config eval/gate-thresholds.yaml`.
+Only the thresholds are in the ConfigMap — editing it and re-running
+`k8s/release/eval-gate-only-job.yaml` flips a decision without rebuilding the image.
+
+## Part E: live queries, coverage and drift
+
+```bash
+python eval/live_queries.py --api http://rahbar.local --out eval/results/live
+python eval/coverage.py --live eval/results/live/live-<ts>.json --golden eval/golden.jsonl
+python eval/build_golden.py                       # golden.jsonl (34) + golden-e4.jsonl (42)
+python eval/coverage.py --live eval/results/live/live-<ts>.json --golden eval/golden-e4.jsonl --out eval/results/coverage-e4
+```
+
+`coverage.py` exits 1 when fewer than 85% of the in-domain live queries are within cosine
+0.70 of a golden question. The extra eight questions in `golden-e4.jsonl` close the topics
+that were uncovered; the Part B/C gate still uses the fixed 34-question `golden.jsonl`.
+
 ## CI/CD
 
 * **`ci.yml`** (pull requests to `main`, pushes to `dev`): lint (ruff, mypy) · test (pytest,

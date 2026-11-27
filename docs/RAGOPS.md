@@ -2,8 +2,8 @@
 
 This file tracks Assignment 03 work in this repository: **Part A** (data management),
 **Part B** (offline testing at three levels) with the **eval Job**, **Part D**
-(observability and traceability, including D5) and the **data side of Part F**. Parts C, E
-and F3 are in [HANDOFF-TEAMMATE.md](HANDOFF-TEAMMATE.md).
+(observability and traceability, including D5) and the **data side of Part F**. Parts C, E,
+the F2 gate and F3 are documented below.
 
 Status legend: ✅ code + unit tests done · 🟡 code done, needs a cluster run for results ·
 ⬜ not started
@@ -18,7 +18,7 @@ Status legend: ✅ code + unit tests done · 🟡 code done, needs a cluster run
 | Update retrieval sources | Reconcile Chroma with the lake: embed only new/changed chunks, metadata-only archive/restore, delete by doc_id | `indexer/pipeline/reconcile.py` | ✅ 🟡 |
 | Offline testing | Golden set (34), three-level suite, two seeded runs, as a Job | `eval/ragops_suite.py`, `k8s/eval-job.yaml` | ✅ (gate: Part C) |
 | Live testing / monitoring | One trace per query, metrics, summary script, trace tool | `api/app/services/trace.py`, `api/app/tools/` | ✅ 🟡 |
-| Check coverage | Live-query coverage vs golden set | teammate (Part E) | ⬜ |
+| Check coverage | Live-query coverage vs golden set | `eval/live_queries.py`, `eval/coverage.py`, `eval/golden-e4.jsonl` | 🟡 |
 
 ## Part A: data management
 
@@ -218,6 +218,156 @@ to its trace.
 | F4 traces on stdout and a volume | PVC `rahbar-traces` mounted at `/traces` in the api | `k8s/base/api-deployment.yaml` |
 | F5 resources | ingest Job / api / chroma requests and limits | measured, see Results |
 
+## Part C: one pipeline change and the release gate
+
+**C1.** One change: `TOP_K` 5 → 6 on the answer pipeline. Both halves read the same
+baseline-equivalent collection `rahbar-cand-topk6` (1,032 chunks, `nomic-embed-text|150|30|
+structure`, built from the lake after the restored PVC lost its registry); only `api-candidate`
+reads it. The deliberately bad candidates `rahbar-cand-cs300` (CHUNK_SIZE 300, recall@5
+0.6964) and `rahbar-cand-cs100` (CHUNK_SIZE 100, recall@5 0.6071) remain as the gate-fail
+demos. Part B's original two-run baseline is `ragops-20261126T104001Z-rejudged-1.json`
+(gpt-oss-20b, `rahbar@f4c2ff9a3277`); when it was re-run on 27 Nov the Groq key hit its
+200000 TPD limit, so the C1 comparison uses two matched one-run suites with
+`qwen/qwen3.8-27b` on the same collection: `TOP_K=5` baseline `20261127T162843Z` and
+`TOP_K=6` candidate `20261127T163847Z`. That keeps TOP_K as the only change inside C1.
+
+```bash
+kubectl apply -f k8s/release/candidate-base-job.yaml   # full verify -> lake registry
+kubectl -n rahbar wait --for=condition=complete job/ingest-cand-topk6-base --timeout=60m
+# restore the superseded fee page before the final candidate reconcile
+kubectl -n rahbar exec lake-shell -- sh -c 'echo fee-structure-page > /data/lake/inbox/_restore.txt'
+kubectl apply -f k8s/release/candidate-topk6-job.yaml  # reconcile-only -> 1032 chunks
+kubectl apply -f k8s/release/api-candidate-deployment.yaml
+kubectl -n rahbar rollout status deploy/api-candidate
+kubectl -n rahbar set env deploy/api-candidate TOP_K=5
+kubectl apply -f k8s/release/eval-baseline-candidate-job.yaml
+kubectl -n rahbar wait --for=condition=complete job/eval-baseline-candidate --timeout=7200s
+kubectl -n rahbar exec lake-shell -- sh -c 'cp "$(ls -t /results/ragops-*.json | head -1)" /results/baseline-qwen.json'
+kubectl -n rahbar set env deploy/api-candidate TOP_K=6
+kubectl delete job eval-candidate --ignore-not-found
+kubectl apply -f k8s/release/eval-candidate-job.yaml
+kubectl -n rahbar logs -f job/eval-candidate      # PASS/FAIL at the end
+scripts/lake.sh pull                              # -> eval/results/suite/
+```
+
+The candidate suite `20261127T163847Z` gates against `eval/results/suite/baseline-qwen.json`
+(1 run, TOP_K=5). Both report all three levels; the qwen baseline replaces the Part B
+baseline only for C1/C2 because the original answer model had no remaining daily quota.
+
+**C2 / F2 gate.** `eval/gate.py` averages each metric over a result's runs, checks that
+both results used the same question ids and embedding pin, then applies the rules in
+`eval/gate-thresholds.yaml`: recall@5 may drop ≤ 2 points (paper §5.4), MRR/nDCG ≤ 3,
+module paraphrase/gap ≤ 2, faithfulness ≥ 0.95 with ≤ 5 points of drop, abstention ≥ 0.83
+(at most one of six must-abstain questions answered), false abstention ≤ 0.12 with ≤ 0.05
+rise, citation validity ≥ 0.98, p95 ≤ 20 s and ≤ 160% of baseline. The relative p95 band
+was widened from 125% to 160% after two same-config qwen runs without code changes measured
+9.7 s and 14.5 s (free-tier hosted queueing); the hard 20 s ceiling still bounds the release.
+An unmeasured required metric fails. The thresholds are mirrored in `k8s/base/gate-config.yaml`
+(tested equal in `eval/tests/test_gate.py`) and mounted at `/etc/rahbar-gate/gate.yaml`; the
+release Job exits 1 when the gate fails.
+
+```bash
+python eval/gate.py --candidate <candidate.json> \
+  --baseline eval/results/suite/ragops-20261126T104001Z-rejudged-1.json
+# re-run the gate on the newest saved result: no questions re-asked, no rebuild
+kubectl -n rahbar delete job eval-gate --ignore-not-found
+kubectl apply -f k8s/release/eval-gate-only-job.yaml
+kubectl -n rahbar logs -f job/eval-gate
+# flip a decision by editing only the ConfigMap, then restore it. With the qwen baseline
+# recall@5 = 0.9643 and candidate = 0.9643, max_drop -0.01 demands a 1-point gain and fails.
+kubectl -n rahbar patch configmap rahbar-gate --type merge \
+  -p '{"data":{"gate.yaml":"version: 1\nrules:\n  - id: component-recall5\n    level: component\n    metric: recall@5\n    max_drop: -0.01\n"}}'
+kubectl -n rahbar delete job eval-gate --ignore-not-found
+kubectl apply -f k8s/release/eval-gate-only-job.yaml
+kubectl -n rahbar apply -f k8s/base/gate-config.yaml
+```
+
+Evidence: `eval/results/suite/*-gate.json/.md`, `docs/evidence/a3/C-gate-pass.txt` and
+`docs/evidence/a3/F2-gate-config-change.txt` (pass → fail → pass without rebuilding the image).
+`ragops-20261127T154916Z` is the earlier failed run: the fee page was archived by the fresh
+verification (fixed with `_restore.txt`) and gpt-oss hit its 200000 TPD quota.
+
+## Part E: live query log, coverage and drift
+
+**E1.** 40 user-style queries in `eval/live_queries.jsonl` (28 in-domain, 12 off-topic)
+are sent through `/api/ask` with the cache bypassed. Each call writes a trace in the api
+pods — that is the live query log — and `eval/results/live/live-<ts>.json` indexes the
+answers and trace ids.
+
+```bash
+python eval/live_queries.py --api http://rahbar.local --out eval/results/live
+scripts/lake.sh pull
+```
+
+**E2.** `eval/coverage.py` embeds the live queries and the golden questions with
+`nomic-embed-text` (`search_query: ` prefix), takes the maximum cosine, and reports the
+share above 0.70 plus the uncovered topics. The gate is an in-domain share ≥ 0.85;
+the script exits 1 below it. 0.70 sits between the module level's paraphrase mean (0.786)
+and unrelated mean (0.460).
+
+**E3.** Batch B (`data/batch_b/`, 12 documents) went through verification and incremental
+update on 25 Nov: 5 quarantined (3 uniqueness, 2 completeness), 1 corrupt PDF, a newer fee
+version archived, 1 injection flagged; 26 chunks embedded. The fee page switched to
+2027-28 and back to 2026-27 on rollback with **0** chunks re-embedded. The Part B suite was
+re-run after Batch B and the rollback (`20261126T104001Z`): the library, exam, lab and
+laptop questions (h04–h09) became answerable; the tuition question still answers from the
+current 2026-27 page. Reports: `eval/results/ingest/verify-*.json`, `ingest-*.json`.
+
+**E4.** Eight questions in `eval/build_golden.py` / `eval/golden-e4.jsonl` close the
+uncovered topics: lab hours and food, library renewals, transcript (abstain — b12 was
+deleted), attendance minimum and condonation, scholarships, and a fee-only transport
+question (abstain — D5 showed the bus service is covered but not its fee). They are
+`synthetic` and `reviewed: false` until a group member checks them.
+
+```bash
+python eval/build_golden.py
+python eval/coverage.py --live <live.json> --golden eval/golden-e4.jsonl \
+  --out eval/results/coverage-e4
+```
+
+`golden.jsonl` deliberately stays at 34 questions: the release gate compares against a
+baseline produced on that set. The coverage set grows to 42.
+
+**E3 (final candidate rebuild).** The restored PVC had lost `state/registry.json`, so the
+final candidate was rebuilt with a full verification Job (`20261127T140208Z`, 23 documents
+checked: 14 indexed, 2 archived by recency, 7 quarantined, 1,032 chunks embedded). Because
+b09 arrived with the mirror, the 2026-27 fee page was archived; the baseline has it current,
+so `_restore.txt` was queued and a 4.7 s reconcile-only run relabelled 13 chunks with
+**0** chunks embedded. The two matched qwen suites then changed only `TOP_K`: recall@5
+0.9643 → 0.9643, MRR 0.8244 → 0.8244, false abstention 0.2500 → 0.0714 and expected-string
+0.7143 → 0.9286. Reports: `eval/results/suite/ragops-20261127T162843Z.json`,
+`eval/results/suite/ragops-20261127T163847Z.json`, `eval/results/suite/baseline-qwen.json`.
+
+## Part F (release side): F2 gate and F3 controlled release
+
+`k8s/release/` holds the candidate ingest Jobs, `api-candidate` Deployment + Service, its
+NetworkPolicies, and the two eval Jobs. The candidate is never behind the Ingress and can
+only be reached by the eval Job. The release decision:
+
+```bash
+# passing candidate -> live api
+kubectl -n rahbar set env deploy/api \
+  CHROMA_COLLECTION=rahbar-cand-topk6 TOP_K=6 LLM_MODEL=qwen/qwen3.8-27b
+kubectl -n rahbar rollout status deploy/api          # maxUnavailable: 0
+kubectl -n rahbar exec -i deploy/api -- python - <<'PY'
+import httpx
+r = httpx.post('http://127.0.0.1:8000/api/ask',
+               json={'question': 'What CGPA does an undergraduate need to stay off academic warning?'},
+               timeout=120)
+print(r.json()['trace_id'])
+PY
+kubectl -n rahbar rollout undo deploy/api            # back to rahbar@4dcc91100345
+kubectl -n rahbar rollout status deploy/api
+```
+
+Every trace records `collection.name`, `collection.index_id` and `embedding.version`, so
+the rollback is visible in the data itself, not just in a Deployment spec. The passing
+rollout trace `73d0a6c6d5bb4a978d0c9a314b8d320b` shows `rahbar-cand-topk6@7a0aa714ee0b`
+and answered 2.00; after `rollout undo`, trace `8f4be339e26f45cd9a5bf2cb641816bb` shows
+`rahbar@4dcc91100345` with the same embedding version. The deliberately bad `cs300`
+release and its undo are kept in `docs/evidence/f3-rollout.txt` / `f3-rollback.txt`.
+Evidence: `docs/evidence/a3/F3-rollout-topk6.txt`, `F3-rollback-topk6.txt`.
+
 ## Results (our minikube cluster, 25 Nov 2026)
 
 Raw logs: `docs/evidence/a3/`. Machine-readable reports: `eval/results/ingest/`
@@ -234,7 +384,9 @@ Raw logs: `docs/evidence/a3/`. Machine-readable reports: `eval/results/ingest/`
 | 4 | delete `b12-transcript-request-procedure` | — | — | 0 | chunks for b12: **4 → 0**, `orphan_chunks = 0` | 4.0 s |
 | 5 | restore `fee-structure-page` (rollback) | — | — | **0** | 13 chunks relabelled; 2027-28 archived, 2026-27 current | 2.7 s |
 | C | candidate collection `rahbar-cand-cs300` (`--reconcile-only`, CHUNK_SIZE 300) | — | 14 docs | 834 | live `rahbar` untouched; no re-download, no re-OCR | 34 s |
-| C | candidate collection `rahbar-cand-cs100` (CHUNK_SIZE 100, overlap 20) | — | 14 docs | 1262 | likely the weaker candidate: use it for the gate-fails demo | 55 s |
+| C | candidate collection `rahbar-cand-cs100` (CHUNK_SIZE 100, overlap 20) | — | 14 docs | 1262 | deliberately bad: used for the gate-fails demo | 55 s |
+| C | regenerate the lake registry from the restored PVC | 23 checked (14 index, 2 archive, 7 quarantine) | — | 1032 | full verify + OCR, then fee page restored; `rahbar-cand-topk6` | 2260 s |
+| C | `TOP_K=6` candidate suite (`20261127T163847Z`, qwen) | — | — | — | gate PASS against 1-run qwen baseline `20261127T162843Z` (`TOP_K=5`) | 13 min |
 
 ### Batch B verification (A1)
 

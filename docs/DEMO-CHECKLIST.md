@@ -87,3 +87,28 @@ Then ask a question about the new document and open its trace (D2).
   editions stay answerable on request, and old traces stay auditable.
 - *What did you find on the cluster?* A byte copy reusing the original's doc_id slipped
   through as "unchanged"; the trace tool crashed on cache-hit traces. Both fixed with tests.
+
+## Ali's checklist (Parts B, C, E, F2-eval, F3 — Linux/bash)
+
+Every command below runs from the repo root on a terminal; keep the command and its full
+output in the frame (no cropping) and save it under `docs/screenshots/` with the label shown.
+The PowerShell table above is Taimoor's; these are yours.
+
+| Label | Command | Shows |
+| --- | --- | --- |
+| B | `kubectl -n rahbar logs job/eval --tail=30` | the Part B two-run summary table |
+| C1 | `kubectl -n rahbar logs job/eval-candidate --tail=30` | candidate suite, all three levels |
+| C2 pass | `python eval/gate.py --candidate <cs300.json> --baseline eval/results/suite/ragops-20261126T104001Z-rejudged-1.json` | rule-by-rule PASS and `GATE PASSED` |
+| C2 fail | same command with `<cs100.json>` | `component-recall5` FAIL and `GATE FAILED` |
+| F2 flip | `kubectl -n rahbar logs job/eval-gate` after the ConfigMap patch in RAGOPS.md | the decision changed without rebuilding |
+| E1 | `python eval/live_queries.py --api http://rahbar.local --out eval/results/live` | 40 live queries with trace ids |
+| E2 before | `python eval/coverage.py --live <live.json> --golden eval/golden.jsonl` | in-domain share and uncovered topics |
+| E2 after | `python eval/coverage.py --live <live.json> --golden eval/golden-e4.jsonl --out eval/results/coverage-e4` | share rises after the eight E4 questions |
+| F3 rollout | `kubectl -n rahbar set env deploy/api CHROMA_COLLECTION=rahbar-cand-cs300` then `kubectl -n rahbar rollout status deploy/api` | zero-downtime rollout to the candidate |
+| F3 trace | `kubectl -n rahbar logs deploy/api \| grep rahbar.trace \| tail -1` | new `collection.name` and `embedding.version` |
+| F3 undo | `kubectl -n rahbar rollout undo deploy/api` then `kubectl -n rahbar rollout status deploy/api` | bad release reversed |
+| F3 trace 2 | `kubectl -n rahbar exec deploy/api -- python -m app.tools.trace_show <new_id>` | trace shows the previous collection again |
+
+On this laptop `import -window <id>` (ImageMagick) captures a real terminal window. The
+numbers in the report come from these runs; keep the JSON files under `eval/results/` and
+commit them with the screenshots.
