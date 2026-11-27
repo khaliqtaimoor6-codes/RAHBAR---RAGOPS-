@@ -1,5 +1,8 @@
 *
 !ragops_suite.py
+!gate.py
+!gate-thresholds.yaml
 !judge_agreement.py
 !golden.jsonl
 !module_pairs.json
+!results/suite/ragops-20261126T104001Z-rejudged-1.json
