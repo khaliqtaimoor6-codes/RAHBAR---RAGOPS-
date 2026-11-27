@@ -1,7 +1,7 @@
 === F3 rollout: live api -> candidate collection ===
 Fri Nov 27 11:47:53 AM UTC 2026
 --- before ---
-deployment.apps/api 
+deployment.apps/api
 REVISION  CHANGE-CAUSE
 1         <none>
 2         <none>

@@ -17,7 +17,7 @@ Waiting for deployment "api" rollout to finish: 1 old replicas are pending termi
 Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
 deployment "api" successfully rolled out
 --- history ---
-deployment.apps/api 
+deployment.apps/api
 REVISION  CHANGE-CAUSE
 1         <none>
 2         <none>

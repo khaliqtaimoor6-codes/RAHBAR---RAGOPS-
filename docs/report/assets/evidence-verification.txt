@@ -39,4 +39,3 @@ c01-convocation-notice                       PASS     PASS      PASS     PASS   
 c02-laptop-loan-scheme                       PASS     PASS      PASS     PASS    -       INDEX
 c03-cafeteria-timings                        PASS     FAIL      PASS     PASS    -       QUARANTINE
       - completeness: missing required metadata: doc_version
-
