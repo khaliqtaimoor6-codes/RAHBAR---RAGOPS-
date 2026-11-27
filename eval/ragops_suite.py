@@ -41,6 +41,9 @@ from pathlib import Path
 from typing import Any
 
 import httpx
+import yaml
+
+from gate import DEFAULT_BASELINE, DEFAULT_CONFIG, evaluate
 
 HERE = Path(__file__).resolve().parent
 QUERY_PREFIX = {"nomic-embed-text": "search_query: "}
@@ -175,7 +178,8 @@ def retrieval_metrics(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
         def recall(k: int) -> float:
             found = [g for g in gt if any(
-                (r.get("doc_id") or "") == g["doc_id"] and r.get("page") in g["pages"]
+                (r.get("doc_id") or Path(str(r.get("source", ""))).stem) == g["doc_id"]
+                and r.get("page") in g["pages"]
                 for r in refs[:k])]
             return len(found) / len(gt)
 
@@ -444,6 +448,25 @@ def rejudge(path: Path, args: argparse.Namespace) -> int:
     return 0
 
 
+def run_gate(candidate: Path, args: argparse.Namespace) -> int:
+    """Run the C2 release gate on a suite result; 0 pass, 1 fail, 2 bad input.
+
+    Thresholds come from --gate-config (the mounted ConfigMap on the cluster), not from
+    the image, so editing them changes a decision without a rebuild.
+    """
+    baseline = args.gate_baseline or str(DEFAULT_BASELINE)
+    config = args.gate_config or str(DEFAULT_CONFIG)
+    out = Path(args.gate_out) if args.gate_out else candidate.with_name(candidate.stem + "-gate")
+    try:
+        result = evaluate(candidate, Path(baseline), Path(config), out)
+    except (OSError, ValueError, json.JSONDecodeError, yaml.YAMLError) as exc:
+        print(f"gate input error: {exc}", file=sys.stderr)
+        return 2
+    print(result.markdown())
+    print(f"GATE {'PASSED' if result.passed else 'FAILED'}")
+    return 0 if result.passed else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     env = os.environ.get
     ap = argparse.ArgumentParser(description="RAHBAR offline test suite (Part B).")
@@ -464,9 +487,19 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--rejudge", default=env("REJUDGE", ""),
                     help="re-score a saved ragops-<ts>.json instead of running the suite")
     ap.add_argument("--only", default=env("ONLY", ""), help="comma-separated golden ids (debugging)")
+    ap.add_argument("--gate", action="store_true",
+                    default=env("GATE", "0").strip().lower() in {"1", "true", "yes", "on"},
+                    help="run the C2 release gate after the suite (exit 1 when it fails)")
+    ap.add_argument("--gate-only", default=env("GATE_ONLY", ""),
+                    help="run only the gate on a saved suite result JSON")
+    ap.add_argument("--gate-baseline", default=env("GATE_BASELINE", ""))
+    ap.add_argument("--gate-config", default=env("GATE_CONFIG", ""))
+    ap.add_argument("--gate-out", default=env("GATE_OUT", ""), help="gate report path prefix")
     args = ap.parse_args(argv)
     args.judge_key = env("LLM_API_KEY", "")
 
+    if args.gate_only:
+        return run_gate(Path(args.gate_only), args)
     if args.rejudge:
         return rejudge(Path(args.rejudge), args)
     golden = load_golden(Path(args.golden))
@@ -508,6 +541,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"golden: {result['golden']}")
     print(summary)
     print(f"wrote {out / ('ragops-' + stamp + '.json')}")
+    if args.gate:
+        return run_gate(out / f"ragops-{stamp}.json", args)
     return 0
 
 

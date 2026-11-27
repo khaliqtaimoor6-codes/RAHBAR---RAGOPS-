@@ -1,0 +1,13 @@
+id,trace_id,question,answer,judge_supported,human_label
+g01,e00d17fbc3514fbb87d55504d48fda4a,What CGPA does an undergraduate need to stay off academic warning?,An undergraduate student needs a minimum CGPA of 2.00 to avoid academic warning.,True,
+g02,aa6b843463544071bf770fb7b81a3435,What happens if my CGPA stays below 2.00 for three semesters in a row?,"If your CGPA remains below 2.00 for three consecutive semesters, your admission at the University is automatically closed.",True,
+g03,0ec03c3236164b5b8013ea7183d49974,How many courses is the normal course load in a regular semester?,The normal course load in a regular semester is 5 courses.,True,
+g04,bf1491fb8d0f4a499bf27fe17a9ccc6a,How many courses can I repeat in the summer semester?,A student can repeat a maximum of 2 courses (with associated labs if any) in the summer semester.,True,
+g05,7c5cd97a2ea64264bef30989ea1c373b,"If I apply for rechecking of my final exam, do I get the rechecking fee back?","Yes, the rechecking fee will be refunded if there is an increase in your marks.",True,
+g06,8058a64ff623430fb269764ace2d83a6,Am I allowed to use ChatGPT or other generative AI tools in lab courses like Programming Fundamentals?,"No, the use of generative AI tools like ChatGPT in labs is generally prohibited unless explicitly allowed by the lab instructor, particularly in courses such as Programming Fundamentals.",True,
+g07,857c03381c5d49058ee64d9226b5de5e,"How much is the admission fee, and is it refundable?","The admission fee is Rs 30,000, and it is non-refundable.",True,
+g08,f105f62cd3eb4db4b9cdcc3477aff12c,How many grade points is a B+ worth?,A B+ is worth 3.33 grade points.,True,
+g09,3afc29f1f37243c6ae09dad8b42e5bc3,What is the maximum time allowed to complete a bachelor's degree?,"The maximum time allowed to complete a bachelor's degree is 6 years, which can be further extended for one year with the approval of Statutory Bodies.",True,
+g10,62dd07ec75db4b928d6e027f6e39da34,What SGPA do I need to be included in the Rector's List of Honors?,"To be included in the Rector's List of Honors, you need an SGPA of 4.00 and must have completed at least 30 credit hours.",True,
+g12,705f41a99fb24ba197d1ee75445bac86,How long must a faculty member have worked full-time at NUCES to be eligible to set up a technical start-up?,A faculty member must have been a full-time faculty member for more than 1 year to be eligible to set up a technical start-up.,True,
+v01,8e45eb337e6845f08037d761ebb70f79,What is the deadline to withdraw from a course?,The deadline to withdraw from a course is the last day of the makeup week of every semester.,True,

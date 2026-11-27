@@ -38,6 +38,9 @@ spec:
             - {name: RUNS, value: "2"}                # stochasticity: two seeded runs
             - {name: SEED, value: "1234"}
             - {name: PACE_SECONDS, value: "4"}        # Groq free tier
+            - {name: GATE_CONFIG, value: /etc/rahbar-gate/gate.yaml}
+            # GATE is unset (off) here: this is the Part B suite Job. The release Job in
+            # k8s/release/eval-candidate-job.yaml sets GATE=1 and fails when the gate fails.
             # JUDGE_MODEL unset: the judge uses LLM_MODEL from the ConfigMap.
             - name: LLM_API_KEY                       # the faithfulness judge
               valueFrom:
@@ -55,6 +58,7 @@ spec:
             - {name: traces, mountPath: /traces, readOnly: true}
             - {name: results, mountPath: /results}
             - {name: tmp, mountPath: /tmp}
+            - {name: gate, mountPath: /etc/rahbar-gate, readOnly: true}
       volumes:
         - name: traces
           persistentVolumeClaim: {claimName: rahbar-traces, readOnly: true}
@@ -62,3 +66,5 @@ spec:
           persistentVolumeClaim: {claimName: rahbar-results}
         - name: tmp
           emptyDir: {sizeLimit: 64Mi}
+        - name: gate
+          configMap: {name: rahbar-gate}

@@ -1,0 +1,60 @@
+# C1 baseline half of the gate comparison: the baseline-equivalent 1,032-chunk collection
+# read with TOP_K=5 and the same hosted model as the candidate (qwen/qwen3.8-27b). The
+# result is copied to /results/baseline-qwen.json, which the candidate gate reads.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eval-baseline-candidate
+  namespace: rahbar
+  labels: {app: eval, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 7200
+  template:
+    metadata:
+      labels: {app: eval, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: eval
+          image: rahbar-eval:dev
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: {name: rahbar-config}
+          env:
+            - {name: API_URL, value: "http://api-candidate:8000"}
+            - {name: TRACE_DIR, value: /traces}
+            - {name: RESULTS_DIR, value: /results}
+            - {name: RUNS, value: "1"}
+            - {name: SEED, value: "1234"}
+            - {name: PACE_SECONDS, value: "4"}
+            - {name: JUDGE_MODEL, value: qwen/qwen3.8-27b}
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef: {name: rahbar-secret, key: LLM_API_KEY, optional: true}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: traces, mountPath: /traces, readOnly: true}
+            - {name: results, mountPath: /results}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: traces
+          persistentVolumeClaim: {claimName: rahbar-traces, readOnly: true}
+        - name: results
+          persistentVolumeClaim: {claimName: rahbar-results}
+        - name: tmp
+          emptyDir: {sizeLimit: 64Mi}

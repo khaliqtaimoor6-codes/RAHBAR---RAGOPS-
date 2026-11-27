@@ -1,0 +1,41 @@
+report: verify-20261127T140208Z.json   summary: {"index": 14, "archive": 2, "quarantine": 7, "unchanged": 0, "skipped": 0}
+
+=== VERIFICATION REPORT  run=20261127T140208Z  checked=23  unchanged=0  skipped=0 ===
+doc_id                                       quality  complete  recency  unique  inject  action
+undergraduate-academic-rules-aug-2023        PASS     PASS      FAIL     PASS    -       ARCHIVE
+      - recency: superseded: newer version academic-rules-handbook-jun-2026 (2026-06, same batch)
+academic-rules-handbook-jun-2026             PASS     PASS      PASS     PASS    -       INDEX
+prospectus-2026-academic-rules-and-regulatio PASS     PASS      PASS     PASS    -       INDEX
+student-handbook-jun-2026                    PASS     PASS      PASS     PASS    -       INDEX
+annual-report-2019-20                        PASS     PASS      PASS     PASS    -       INDEX
+annual-report-2023-24                        PASS     PASS      PASS     PASS    -       INDEX
+fee-structure-page                           PASS     PASS      FAIL     PASS    -       ARCHIVE
+      - recency: superseded: newer version b09-fee-structure-2027-28 (2027-28, same batch)
+grading-page                                 PASS     PASS      PASS     PASS    -       INDEX
+faculty-entrepreneurship-and-technical-start PASS     PASS      PASS     PASS    -       INDEX
+b01-midterm-exam-notice-2026                 PASS     PASS      PASS     PASS    -       INDEX
+b02-library-borrowing-rules                  PASS     PASS      PASS     PASS    -       INDEX
+b01-midterm-exam-notice-2026~b03-midterm-not SKIP     SKIP      SKIP     FAIL    -       QUARANTINE
+      - quality: not run: byte-identical to an indexed document
+      - completeness: not run: byte-identical
+      - recency: not run: byte-identical
+      - uniqueness: exact duplicate of b01-midterm-exam-notice-2026 (same file hash, different file name b03-midterm-notice-COPY.md)
+b04-library-rules-reformatted                PASS     PASS      PASS     FAIL    -       QUARANTINE
+      - uniqueness: exact duplicate of b02-library-borrowing-rules (same text)
+b05-lab-policy-revised-draft                 PASS     PASS      PASS     PASS    -       INDEX
+b06-final-exam-notice-truncated              PASS     FAIL      PASS     PASS    -       QUARANTINE
+      - completeness: truncated: text ends mid-sentence: '...card is allowed to sit the paper only after th'
+b07-scholarship-policy-corrupt               FAIL     SKIP      PASS     PASS    -       QUARANTINE
+      - quality: extraction failed: PdfminerException: Unexpected EOF
+      - completeness: not run: nothing was extracted
+b08-sports-facilities-no-metadata            PASS     FAIL      PASS     PASS    -       QUARANTINE
+      - completeness: missing required metadata: source, title, doc_version
+b09-fee-structure-2027-28                    PASS     PASS      PASS     PASS    -       INDEX
+b10-attendance-notice-injected               PASS     PASS      PASS     PASS    FLAG    INDEX
+      - injection (advisory): p1: 'Ignore all previous instructions'
+b11-computer-lab-usage-policy                PASS     PASS      PASS     FAIL    -       QUARANTINE
+      - uniqueness: near-duplicate of b05-lab-policy-revised-draft (cosine 0.9997 >= 0.985)
+c01-convocation-notice                       PASS     PASS      PASS     PASS    -       INDEX
+c02-laptop-loan-scheme                       PASS     PASS      PASS     PASS    -       INDEX
+c03-cafeteria-timings                        PASS     FAIL      PASS     PASS    -       QUARANTINE
+      - completeness: missing required metadata: doc_version

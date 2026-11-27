@@ -10,6 +10,7 @@ resources:
   - namespace.yaml
   - serviceaccounts.yaml
   - configmap.yaml
+  - gate-config.yaml
   - pvc.yaml
   - services.yaml
   - chroma-statefulset.yaml

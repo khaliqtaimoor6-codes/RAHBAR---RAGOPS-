@@ -1,0 +1,45 @@
+=== F3 rollback: live api -> live collection ===
+Fri Nov 27 11:49:27 AM UTC 2026
+--- undo ---
+Warning: resource deployments/api was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
+deployment.apps/api rolled back
+--- rollout status ---
+Waiting for deployment "api" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+--- history ---
+deployment.apps/api
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         <none>
+4         <none>
+6         <none>
+7         <none>
+
+--- pods ---
+NAME                   READY   STATUS        RESTARTS   AGE    IP           NODE                  NOMINATED NODE   READINESS GATES
+api-5c97875675-xfjxz   1/1     Terminating   0          112s   10.42.0.11   k3d-rahbar-server-0   <none>           <none>
+api-dfdbfd946-khrcr    1/1     Running       0          27s    10.42.0.13   k3d-rahbar-server-0   <none>           <none>
+api-dfdbfd946-sdf89    1/1     Running       0          19s    10.42.0.14   k3d-rahbar-server-0   <none>           <none>
+api-dfdbfd946-xh26v    1/1     Running       0          10s    10.42.0.15   k3d-rahbar-server-0   <none>           <none>
+--- verify + query ---
+CHROMA_COLLECTION= rahbar
+readyz= {'status': 'ready', 'checks': {'chroma': 'ok', 'collection': 'ok', 'embed_model': 'ok', 'redis': 'ok'}}
+status= 200
+{
+ "answer": "I could not produce a reliable answer from the documents just now. Please try again, or check with the Academic Office.",
+ "citations": [],
+ "trace_id": "c41489ea90554e6182d56861b52d5710",
+ "cached": false,
+ "answered_from_context": false
+}

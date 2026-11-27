@@ -1,0 +1,19 @@
+=== F2 ConfigMap threshold-change demo (candidate rahhbar-cand-topk6, top_k=6) ===
+2026-11-27T17:06:21Z
+
+--- 1. current ConfigMap: GATE PASSED ---
+| component-recall5 | component | recall@5 | 0.9643 | 0.9643 | +0.0000 | >= 0.9643 (baseline - 0.02) | PASS |
+| e2e-latency-p95 | end_to_end | latency_p95_ms | 9664.9200 | 14513.0700 | +4848.1500 | <= 20000 and <= 9664.9200 (baseline x 1.60) | PASS |
+GATE PASSED
+
+--- 2. tighten recall@5 max_drop 0.02 -> -0.01 (candidate must gain 1 point) ---
+configmap/rahbar-gate patched
+--- tightened gate result ---
+| component-recall5 | component | recall@5 | 0.9643 | 0.9643 | +0.0000 | >= 0.9643 (baseline - -0.01) | **FAIL** |
+## Failures
+- component-recall5: drop 0.0000 > allowed -0.01
+GATE FAILED
+
+--- 3. restore ConfigMap and re-run gate: GATE PASSED ---
+| component-recall5 | component | recall@5 | 0.9643 | 0.9643 | +0.0000 | >= 0.9643 (baseline - 0.02) | PASS |
+GATE PASSED

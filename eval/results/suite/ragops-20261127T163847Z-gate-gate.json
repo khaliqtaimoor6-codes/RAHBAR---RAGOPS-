@@ -1,0 +1,210 @@
+{
+  "gate": "fail",
+  "candidate": "/results/ragops-20261127T163847Z-gate.json",
+  "baseline": "/app/eval/baseline-a3.json",
+  "config": "/etc/rahbar-gate/gate.yaml",
+  "candidate_meta": {
+    "collection": null,
+    "embedding_version": null,
+    "golden": null
+  },
+  "baseline_meta": {
+    "collection": {
+      "name": "rahbar",
+      "index_id": "f4c2ff9a3277",
+      "indexed_at": "2026-11-25T19:53:56Z",
+      "embed_model": "nomic-embed-text",
+      "chunk_size": 150,
+      "chunk_overlap": 30,
+      "chunks": 1032
+    },
+    "embedding_version": "nomic-embed-text@0a109f422b47",
+    "golden": {
+      "file": "golden.jsonl",
+      "questions": 34,
+      "answerable": 28,
+      "unanswerable": 6,
+      "hard": 16,
+      "human": 21,
+      "synthetic": 13
+    }
+  },
+  "checks": [
+    {
+      "id": "module-paraphrase",
+      "level": "module",
+      "metric": "paraphrase_mean_cosine",
+      "baseline": 0.7864,
+      "candidate": null,
+      "delta": null,
+      "requirement": ">= 0.7864 (baseline - 0.02)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "module-gap",
+      "level": "module",
+      "metric": "gap",
+      "baseline": 0.3264,
+      "candidate": null,
+      "delta": null,
+      "requirement": ">= 0.3264 (baseline - 0.02)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "module-determinism",
+      "level": "module",
+      "metric": "determinism_max_abs_diff",
+      "baseline": 0.0,
+      "candidate": null,
+      "delta": null,
+      "requirement": "<= 0.001",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "component-recall3",
+      "level": "component",
+      "metric": "recall@3",
+      "baseline": 0.9107,
+      "candidate": null,
+      "delta": null,
+      "requirement": ">= 0.9107 (baseline - 0.05)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "component-recall5",
+      "level": "component",
+      "metric": "recall@5",
+      "baseline": 0.9643,
+      "candidate": null,
+      "delta": null,
+      "requirement": ">= 0.9643 (baseline - 0.02)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "component-mrr",
+      "level": "component",
+      "metric": "mrr",
+      "baseline": 0.8304,
+      "candidate": null,
+      "delta": null,
+      "requirement": ">= 0.8304 (baseline - 0.03)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "component-ndcg5",
+      "level": "component",
+      "metric": "ndcg@5",
+      "baseline": 0.8383,
+      "candidate": null,
+      "delta": null,
+      "requirement": ">= 0.8383 (baseline - 0.03)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "component-typos-recall5",
+      "level": "component",
+      "metric": "typos.recall@5",
+      "baseline": 0.9286,
+      "candidate": null,
+      "delta": null,
+      "requirement": ">= 0.9286 (baseline - 0.03)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "component-typos-mrr",
+      "level": "component",
+      "metric": "typos.mrr",
+      "baseline": 0.8393,
+      "candidate": null,
+      "delta": null,
+      "requirement": ">= 0.8393 (baseline - 0.03)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "e2e-faithfulness",
+      "level": "end_to_end",
+      "metric": "faithfulness",
+      "baseline": 1.0,
+      "candidate": null,
+      "delta": null,
+      "requirement": ">= 0.95 and >= 1.0000 (baseline - 0.05)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "e2e-abstention",
+      "level": "end_to_end",
+      "metric": "abstention_correct_unanswerable",
+      "baseline": 0.8333,
+      "candidate": null,
+      "delta": null,
+      "requirement": ">= 0.83",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "e2e-false-abstention",
+      "level": "end_to_end",
+      "metric": "false_abstention_answerable",
+      "baseline": 0.0714,
+      "candidate": null,
+      "delta": null,
+      "requirement": "<= 0.12 and <= 0.0714 (baseline + 0.05)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "e2e-citations",
+      "level": "end_to_end",
+      "metric": "citation_validity_in_retrieved",
+      "baseline": 1.0,
+      "candidate": null,
+      "delta": null,
+      "requirement": ">= 0.98 and >= 1.0000 (baseline - 0.02)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    },
+    {
+      "id": "e2e-latency-p95",
+      "level": "end_to_end",
+      "metric": "latency_p95_ms",
+      "baseline": 13671.535,
+      "candidate": null,
+      "delta": null,
+      "requirement": "<= 20000 and <= 13671.5350 (baseline x 1.60)",
+      "passed": false,
+      "message": "metric not measured in the candidate"
+    }
+  ],
+  "failures": [
+    "compatibility: golden sets differ: baseline 34 questions, candidate None questions",
+    "compatibility: golden question ids differ: missing in candidate ['a01', 'a02', 'a03', 'a04', 'a05', 'a06'], extra in candidate []",
+    "compatibility: embedding model changed: baseline 'nomic-embed-text', candidate None; compare inside one pin only",
+    "compatibility: embedding version missing from a result (traces not mounted?)",
+    "compatibility: candidate collection not recorded (no trace to identify what was tested)",
+    "module-paraphrase: metric not measured in the candidate",
+    "module-gap: metric not measured in the candidate",
+    "module-determinism: metric not measured in the candidate",
+    "component-recall3: metric not measured in the candidate",
+    "component-recall5: metric not measured in the candidate",
+    "component-mrr: metric not measured in the candidate",
+    "component-ndcg5: metric not measured in the candidate",
+    "component-typos-recall5: metric not measured in the candidate",
+    "component-typos-mrr: metric not measured in the candidate",
+    "e2e-faithfulness: metric not measured in the candidate",
+    "e2e-abstention: metric not measured in the candidate",
+    "e2e-false-abstention: metric not measured in the candidate",
+    "e2e-citations: metric not measured in the candidate",
+    "e2e-latency-p95: metric not measured in the candidate"
+  ],
+  "generated_at": "20261127T165736Z"
+}

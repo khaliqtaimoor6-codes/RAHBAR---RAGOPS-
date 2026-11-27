@@ -1,0 +1,387 @@
+{
+ "generated_at": "20261127T115313Z",
+ "golden": "eval/golden-e4.jsonl",
+ "golden_questions": 42,
+ "live": "eval/results/live/live-20261127T110927Z.json",
+ "live_queries": 40,
+ "in_domain": 28,
+ "off_topic": 12,
+ "cosine_threshold": 0.7,
+ "required_share": 0.85,
+ "in_domain_share": 1.0,
+ "off_topic_share": 0.0833,
+ "covered_in_domain": 28,
+ "score_stats": {
+  "in_domain_min": 0.7469,
+  "in_domain_mean": 0.8964,
+  "in_domain_max": 1.0,
+  "off_topic_min": 0.4521,
+  "off_topic_mean": 0.5742,
+  "off_topic_max": 0.701
+ },
+ "uncovered_by_topic": {},
+ "uncovered": [],
+ "rows": [
+  {
+   "id": "l01",
+   "topic": "academic warning",
+   "in_domain": true,
+   "query": "What CGPA do I need to avoid being put on academic warning?",
+   "best_golden": "g01",
+   "score": 0.9073,
+   "covered": true
+  },
+  {
+   "id": "l02",
+   "topic": "academic warning",
+   "in_domain": true,
+   "query": "If my CGPA stays below 2 for three semesters will I be dismissed?",
+   "best_golden": "g02",
+   "score": 0.8822,
+   "covered": true
+  },
+  {
+   "id": "l03",
+   "topic": "course load",
+   "in_domain": true,
+   "query": "How many courses am I supposed to take in one regular semester?",
+   "best_golden": "g03",
+   "score": 0.9102,
+   "covered": true
+  },
+  {
+   "id": "l04",
+   "topic": "summer repeat",
+   "in_domain": true,
+   "query": "Can I repeat a course in the summer, and how many times?",
+   "best_golden": "g04",
+   "score": 0.9325,
+   "covered": true
+  },
+  {
+   "id": "l05",
+   "topic": "rechecking fee",
+   "in_domain": true,
+   "query": "If I pay for a recheck of my final paper and the grade changes, do I get the fee back?",
+   "best_golden": "g05",
+   "score": 0.8947,
+   "covered": true
+  },
+  {
+   "id": "l06",
+   "topic": "AI in labs",
+   "in_domain": true,
+   "query": "Are ChatGPT and other AI tools allowed in the programming lab?",
+   "best_golden": "g06",
+   "score": 0.885,
+   "covered": true
+  },
+  {
+   "id": "l07",
+   "topic": "admission fee",
+   "in_domain": true,
+   "query": "How much is the admission fee and can I get it refunded?",
+   "best_golden": "g07",
+   "score": 0.9441,
+   "covered": true
+  },
+  {
+   "id": "l08",
+   "topic": "grading",
+   "in_domain": true,
+   "query": "What is the grade point for a B plus?",
+   "best_golden": "g08",
+   "score": 0.8864,
+   "covered": true
+  },
+  {
+   "id": "l09",
+   "topic": "degree time",
+   "in_domain": true,
+   "query": "What is the longest time I have to finish my bachelor's degree?",
+   "best_golden": "g09",
+   "score": 0.8677,
+   "covered": true
+  },
+  {
+   "id": "l10",
+   "topic": "honors",
+   "in_domain": true,
+   "query": "What SGPA do I need for the rector's honor list?",
+   "best_golden": "g10",
+   "score": 0.9627,
+   "covered": true
+  },
+  {
+   "id": "l11",
+   "topic": "withdrawal",
+   "in_domain": true,
+   "query": "When is the last day to drop a course this semester?",
+   "best_golden": "v01",
+   "score": 0.7469,
+   "covered": true
+  },
+  {
+   "id": "l12",
+   "topic": "version",
+   "in_domain": true,
+   "query": "What did the older rules say about the withdrawal deadline?",
+   "best_golden": "v01",
+   "score": 0.8321,
+   "covered": true
+  },
+  {
+   "id": "l13",
+   "topic": "exact clause",
+   "in_domain": true,
+   "query": "What is clause 1.21 of the academic rules?",
+   "best_golden": "e01",
+   "score": 0.9771,
+   "covered": true
+  },
+  {
+   "id": "l14",
+   "topic": "tuition fee",
+   "in_domain": true,
+   "query": "How much is tuition per credit hour for BS students this year?",
+   "best_golden": "e02",
+   "score": 0.892,
+   "covered": true
+  },
+  {
+   "id": "l15",
+   "topic": "exact clause",
+   "in_domain": true,
+   "query": "Which rule covers dropping a course after the deadline?",
+   "best_golden": "v01",
+   "score": 0.8587,
+   "covered": true
+  },
+  {
+   "id": "l16",
+   "topic": "hostel",
+   "in_domain": true,
+   "query": "Can I stay in a university hostel and what does it cost per semester?",
+   "best_golden": "a01",
+   "score": 0.8627,
+   "covered": true
+  },
+  {
+   "id": "l17",
+   "topic": "transport fee",
+   "in_domain": true,
+   "query": "Is there a campus bus, and how much does the transport pass cost?",
+   "best_golden": "e10",
+   "score": 0.8481,
+   "covered": true
+  },
+  {
+   "id": "l18",
+   "topic": "library loans",
+   "in_domain": true,
+   "query": "How many books can I borrow from the library and for how many days?",
+   "best_golden": "h04",
+   "score": 0.8874,
+   "covered": true
+  },
+  {
+   "id": "l19",
+   "topic": "library fines",
+   "in_domain": true,
+   "query": "What is the late fee on a library book?",
+   "best_golden": "h05",
+   "score": 0.8461,
+   "covered": true
+  },
+  {
+   "id": "l20",
+   "topic": "exam schedule",
+   "in_domain": true,
+   "query": "When are the midterm examinations this fall?",
+   "best_golden": "h06",
+   "score": 0.8987,
+   "covered": true
+  },
+  {
+   "id": "l21",
+   "topic": "exam conduct",
+   "in_domain": true,
+   "query": "Can I bring my smartwatch into the exam hall?",
+   "best_golden": "h07",
+   "score": 0.7841,
+   "covered": true
+  },
+  {
+   "id": "l22",
+   "topic": "convocation",
+   "in_domain": true,
+   "query": "How many guests can I invite to convocation?",
+   "best_golden": "h08",
+   "score": 0.857,
+   "covered": true
+  },
+  {
+   "id": "l23",
+   "topic": "laptop loan",
+   "in_domain": true,
+   "query": "Who is allowed to borrow a laptop from the university?",
+   "best_golden": "h09",
+   "score": 0.7654,
+   "covered": true
+  },
+  {
+   "id": "l24",
+   "topic": "library renewals",
+   "in_domain": true,
+   "query": "Can I renew a library book, and how many times?",
+   "best_golden": "e05",
+   "score": 1.0,
+   "covered": true
+  },
+  {
+   "id": "l25",
+   "topic": "lab access",
+   "in_domain": true,
+   "query": "What are the computer lab opening hours?",
+   "best_golden": "e04",
+   "score": 1.0,
+   "covered": true
+  },
+  {
+   "id": "l26",
+   "topic": "transcript",
+   "in_domain": true,
+   "query": "How do I officially request my transcript?",
+   "best_golden": "e06",
+   "score": 0.9939,
+   "covered": true
+  },
+  {
+   "id": "l27",
+   "topic": "attendance",
+   "in_domain": true,
+   "query": "What is the minimum attendance for undergraduate programs?",
+   "best_golden": "e07",
+   "score": 0.9774,
+   "covered": true
+  },
+  {
+   "id": "l28",
+   "topic": "scholarships",
+   "in_domain": true,
+   "query": "What scholarships can students apply for?",
+   "best_golden": "e09",
+   "score": 1.0,
+   "covered": true
+  },
+  {
+   "id": "o01",
+   "topic": "weather",
+   "in_domain": false,
+   "query": "What is the weather in Lahore tomorrow?",
+   "best_golden": "g11",
+   "score": 0.6299,
+   "covered": false
+  },
+  {
+   "id": "o02",
+   "topic": "sports news",
+   "in_domain": false,
+   "query": "Who won the Champions Trophy in 2025?",
+   "best_golden": "a05",
+   "score": 0.701,
+   "covered": true
+  },
+  {
+   "id": "o03",
+   "topic": "cooking",
+   "in_domain": false,
+   "query": "How do I bake a chocolate cake?",
+   "best_golden": "e01",
+   "score": 0.4521,
+   "covered": false
+  },
+  {
+   "id": "o04",
+   "topic": "general knowledge",
+   "in_domain": false,
+   "query": "What is the capital of Japan?",
+   "best_golden": "a05",
+   "score": 0.4771,
+   "covered": false
+  },
+  {
+   "id": "o05",
+   "topic": "programming",
+   "in_domain": false,
+   "query": "Which Python web framework is fastest?",
+   "best_golden": "e04",
+   "score": 0.5191,
+   "covered": false
+  },
+  {
+   "id": "o06",
+   "topic": "government services",
+   "in_domain": false,
+   "query": "How do I renew my passport?",
+   "best_golden": "e05",
+   "score": 0.6762,
+   "covered": false
+  },
+  {
+   "id": "o07",
+   "topic": "entertainment",
+   "in_domain": false,
+   "query": "What time does the local cinema open?",
+   "best_golden": "e04",
+   "score": 0.6726,
+   "covered": false
+  },
+  {
+   "id": "o08",
+   "topic": "health",
+   "in_domain": false,
+   "query": "Can you recommend a good dentist in Karachi?",
+   "best_golden": "g10",
+   "score": 0.501,
+   "covered": false
+  },
+  {
+   "id": "o09",
+   "topic": "finance",
+   "in_domain": false,
+   "query": "What are the current gold prices?",
+   "best_golden": "e02",
+   "score": 0.5556,
+   "covered": false
+  },
+  {
+   "id": "o10",
+   "topic": "pets",
+   "in_domain": false,
+   "query": "How do I train a puppy to sit?",
+   "best_golden": "a03",
+   "score": 0.5369,
+   "covered": false
+  },
+  {
+   "id": "o11",
+   "topic": "science",
+   "in_domain": false,
+   "query": "What is the distance to the moon?",
+   "best_golden": "g09",
+   "score": 0.5062,
+   "covered": false
+  },
+  {
+   "id": "o12",
+   "topic": "sports news",
+   "in_domain": false,
+   "query": "Which football club won the Premier League last season?",
+   "best_golden": "a05",
+   "score": 0.663,
+   "covered": false
+  }
+ ],
+ "passed": true
+}

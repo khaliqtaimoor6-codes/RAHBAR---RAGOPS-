@@ -1,0 +1,104 @@
+# C1/F3: build the candidate collections straight from the lake (no download, no OCR).
+# --reconcile-only embeds only what the lake says changed, into a NEW collection.
+# The live `rahbar` collection is untouched; both candidates can coexist in Chroma.
+# Re-run after deleting the Job: kubectl -n rahbar delete job ingest-cand-cs300 --ignore-not-found
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ingest-cand-cs300
+  namespace: rahbar
+  labels: {app: indexer, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  template:
+    metadata:
+      labels: {app: indexer, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+    spec:
+      serviceAccountName: indexer
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: ingest
+          image: rahbar-indexer:dev
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "pipeline.ingest"]
+          args: ["--reconcile-only"]
+          envFrom:
+            - configMapRef: {name: rahbar-config}
+          env:
+            - {name: CHROMA_COLLECTION, value: rahbar-cand-cs300}
+            - {name: CHUNK_SIZE, value: "300"}
+            - {name: CHUNK_OVERLAP, value: "50"}
+          resources:
+            requests: {cpu: 250m, memory: 256Mi}
+            limits: {cpu: "1500m", memory: 512Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: lake, mountPath: /data/lake}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: lake, persistentVolumeClaim: {claimName: rahbar-lake}}
+        - {name: tmp, emptyDir: {sizeLimit: 512Mi}}
+---
+# The deliberately bad candidate: fixed 100-word chunks, overlap 20. The A2 chunking
+# sweep measured recall@5 0.316 for this setting (vs 0.868 at 150), so the release gate
+# must stop it. Built for the C2 "one candidate fails" demo; never rolled out.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ingest-cand-cs100
+  namespace: rahbar
+  labels: {app: indexer, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  template:
+    metadata:
+      labels: {app: indexer, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+    spec:
+      serviceAccountName: indexer
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: ingest
+          image: rahbar-indexer:dev
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "pipeline.ingest"]
+          args: ["--reconcile-only"]
+          envFrom:
+            - configMapRef: {name: rahbar-config}
+          env:
+            - {name: CHROMA_COLLECTION, value: rahbar-cand-cs100}
+            - {name: CHUNK_SIZE, value: "100"}
+            - {name: CHUNK_OVERLAP, value: "20"}
+          resources:
+            requests: {cpu: 250m, memory: 256Mi}
+            limits: {cpu: "1500m", memory: 512Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: lake, mountPath: /data/lake}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: lake, persistentVolumeClaim: {claimName: rahbar-lake}}
+        - {name: tmp, emptyDir: {sizeLimit: 512Mi}}

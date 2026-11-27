@@ -1,0 +1,53 @@
+# C1/F3: reconcile-only rebuild of the Part B baseline-quality collection into its own
+# Chroma collection. Run candidate-base-job.yaml first to rebuild the lake registry; this
+# Job then embeds the accepted 1,032 chunks into rahbar-cand-topk6 with the shared pin
+# (nomic-embed-text|150|30|structure). The live `rahbar` collection is untouched.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ingest-cand-topk6
+  namespace: rahbar
+  labels: {app: indexer, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  template:
+    metadata:
+      labels: {app: indexer, app.kubernetes.io/part-of: rahbar, rahbar/track: candidate}
+    spec:
+      serviceAccountName: indexer
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: ingest
+          image: rahbar-indexer:dev
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "pipeline.ingest"]
+          args: ["--reconcile-only"]
+          envFrom:
+            - configMapRef: {name: rahbar-config}
+          env:
+            - {name: CHROMA_COLLECTION, value: rahbar-cand-topk6}
+            - {name: CHUNK_SIZE, value: "150"}
+            - {name: CHUNK_OVERLAP, value: "30"}
+            - {name: CHUNK_STRATEGY, value: structure}
+          resources:
+            requests: {cpu: 250m, memory: 256Mi}
+            limits: {cpu: "1500m", memory: 512Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: lake, mountPath: /data/lake}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: lake, persistentVolumeClaim: {claimName: rahbar-lake}}
+        - {name: tmp, emptyDir: {sizeLimit: 512Mi}}

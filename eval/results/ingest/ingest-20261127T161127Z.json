@@ -1,0 +1,64 @@
+{
+ "collection": "rahbar-cand-topk6",
+ "chunk_cfg": "nomic-embed-text|150|30|structure",
+ "docs_unchanged": 14,
+ "docs_added": 0,
+ "docs_replaced": 0,
+ "docs_metadata_updated": 2,
+ "docs_removed": 0,
+ "chunks_embedded": 0,
+ "chunks_reused": 0,
+ "chunks_deleted": 0,
+ "chunks_metadata_updated": 13,
+ "per_doc": {
+  "b09-fee-structure-2027-28": {
+   "action": "metadata",
+   "superseded": true
+  },
+  "fee-structure-page": {
+   "action": "metadata",
+   "superseded": false
+  }
+ },
+ "index_id": "7a0aa714ee0b",
+ "chunks_total": 1032,
+ "chunks_by_doc_id": {
+  "academic-rules-handbook-jun-2026": 214,
+  "annual-report-2019-20": 96,
+  "annual-report-2023-24": 370,
+  "b01-midterm-exam-notice-2026": 5,
+  "b02-library-borrowing-rules": 5,
+  "b05-lab-policy-revised-draft": 5,
+  "b09-fee-structure-2027-28": 4,
+  "b10-attendance-notice-injected": 3,
+  "c01-convocation-notice": 1,
+  "c02-laptop-loan-scheme": 1,
+  "faculty-entrepreneurship-and-technical-start-ups-policy": 26,
+  "fee-structure-page": 9,
+  "grading-page": 10,
+  "prospectus-2026-academic-rules-and-regulations": 48,
+  "student-handbook-jun-2026": 112,
+  "undergraduate-academic-rules-aug-2023": 123
+ },
+ "orphan_chunks": 0,
+ "missing_docs": [],
+ "seconds": 4.7,
+ "peak_rss_mb": 82.2,
+ "controls": [
+  {
+   "op": "restore",
+   "doc_id": "fee-structure-page",
+   "result": "current again",
+   "archived": [
+    "b09-fee-structure-2027-28"
+   ]
+  }
+ ],
+ "verification": {
+  "index": 0,
+  "archive": 0,
+  "quarantine": 0,
+  "unchanged": 0,
+  "skipped": 0
+ }
+}

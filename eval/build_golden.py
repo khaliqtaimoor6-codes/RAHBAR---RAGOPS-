@@ -21,6 +21,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -89,23 +90,59 @@ SYNTHETIC = [
 # (both documented in docs/PIPELINE.md, "What we could not recover"): g11's table is on
 # p.19 of the 2023-24 annual report (extraction loss); g12's "Eligibility criteria" heading
 # was OCR'd as body text and sits in the chunk labelled "Objectives" on p.1.
+# Part E4: questions from the topics the live-query coverage check found missing. Kept in
+# their own file so the Part B/C gate set (golden.jsonl, 34 questions) stays fixed while
+# the baseline result it is compared against was produced. Each abstain question carries
+# a note explaining why the corpus cannot answer it.
+PART_E = [
+    {"id": "e04", "type": "lab", "hard": False,
+     "question": "What are the computer lab opening hours?",
+     "relevant": [{"source": "b05-lab-policy-revised-draft.md", "section": "1.1"}],
+     "expect": "21:00"},
+    {"id": "e05", "type": "library", "hard": False,
+     "question": "Can I renew a library book, and how many times?",
+     "relevant": [{"source": "b02-library-borrowing-rules.md", "section": "2.1"}],
+     "expect": "twice"},
+    {"id": "e06", "type": "transcript", "hard": False, "must_abstain": True,
+     "question": "How do I officially request a transcript?",
+     "relevant": [],
+     "note": "b12-transcript-request-procedure was deleted in the A2 delete demo"},
+    {"id": "e07", "type": "attendance", "hard": True,
+     "question": "What is the minimum attendance requirement for undergraduate degree programs?",
+     "relevant": [{"source": "prospectus-2026-academic-rules-and-regulations.pdf",
+                   "section": "1 Attendance Requirement"}],
+     "expect": "80%"},
+    {"id": "e08", "type": "attendance", "hard": True,
+     "question": "How much attendance can be condoned for a genuine reason such as illness?",
+     "relevant": [{"source": "academic-rules-handbook-jun-2026.pdf", "section": "1.21"}],
+     "expect": "20%"},
+    {"id": "e09", "type": "scholarship", "hard": False,
+     "question": "What scholarships can students apply for?",
+     "relevant": [{"source": "student-handbook-jun-2026.pdf", "section": "Internal Scholarships"}],
+     "expect": "scholarship"},
+    {"id": "e10", "type": "transport", "hard": True, "must_abstain": True,
+     "question": "How much is the transport fee per semester?",
+     "relevant": [],
+     "note": "D5: the annual reports describe the bus service, but no fee is stated"},
+    {"id": "e11", "type": "lab", "hard": False,
+     "question": "Are food and drinks allowed inside the computing labs?",
+     "relevant": [{"source": "b05-lab-policy-revised-draft.md", "section": "1.2"}],
+     "expect": "not allowed"},
+]
+
+
+# Pages for the two Assignment 02 questions whose heading is not a chunk label in the index
+# (both documented in docs/PIPELINE.md, "What we could not recover"): g11's table is on
+# p.19 of the 2023-24 annual report (extraction loss); g12's "Eligibility criteria" heading
+# was OCR'd as body text and sits in the chunk labelled "Objectives" on p.1.
 PAGE_OVERRIDES = {
     ("g11", "annual-report-2023-24.pdf"): [19],
     ("g12", "faculty-entrepreneurship-and-technical-start-ups-policy.pdf"): [1],
 }
 
 
-def main() -> int:
-    index = json.loads((HERE / "index_sections.json").read_text(encoding="utf-8"))
-    human = yaml.safe_load((HERE / "golden.yaml").read_text(encoding="utf-8"))["questions"]
-    rows = []
-    for q in human:
-        rows.append({**q, "origin": "human", "reviewed": "group (written by hand, Assignment 02)",
-                     "hard": q.get("type") in ("version", "exact", "injection")})
-    for q in SYNTHETIC:
-        rows.append({**q, "origin": "synthetic", "reviewed": False})
-
-    unresolved = []
+def resolve_pages(rows: list[dict[str, Any]], index: list[dict[str, Any]]) -> list[str]:
+    unresolved: list[str] = []
     for r in rows:
         r.setdefault("must_abstain", False)
         r["answerable"] = not r["must_abstain"]
@@ -119,16 +156,42 @@ def main() -> int:
                 rel["pages"], rel["page_source"] = override, "docs/PIPELINE.md (A2 extraction notes)"
             if not rel["pages"]:
                 unresolved.append(f"{r['id']}: {rel['source']} / {rel['section']}")
+    return unresolved
 
-    out = HERE / "golden.jsonl"
+
+def write_rows(out: Path, rows: list[dict[str, Any]]) -> None:
     with out.open("w", encoding="utf-8", newline="\n") as fh:
         for r in rows:
             fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+
+
+def describe(rows: list[dict[str, Any]]) -> str:
     n = len(rows)
     ans = sum(r["answerable"] for r in rows)
-    print(f"wrote {out.name}: {n} questions | answerable {ans} | unanswerable {n - ans} | "
-          f"hard {sum(bool(r['hard']) for r in rows)} | human {sum(r['origin'] == 'human' for r in rows)} "
-          f"| synthetic {sum(r['origin'] == 'synthetic' for r in rows)}")
+    return (f"{n} questions | answerable {ans} | unanswerable {n - ans} | "
+            f"hard {sum(bool(r['hard']) for r in rows)} | "
+            f"human {sum(r['origin'] == 'human' for r in rows)} | "
+            f"synthetic {sum(r['origin'] == 'synthetic' for r in rows)}")
+
+
+def main() -> int:
+    index = json.loads((HERE / "index_sections.json").read_text(encoding="utf-8"))
+    human = yaml.safe_load((HERE / "golden.yaml").read_text(encoding="utf-8"))["questions"]
+    rows: list[dict[str, Any]] = [
+        {**q, "origin": "human", "reviewed": "group (written by hand, Assignment 02)",
+         "hard": q.get("type") in ("version", "exact", "injection")}
+        for q in human
+    ]
+    rows.extend({**q, "origin": "synthetic", "reviewed": False} for q in SYNTHETIC)
+    unresolved = resolve_pages(rows, index)
+    write_rows(HERE / "golden.jsonl", rows)
+    print(f"wrote golden.jsonl: {describe(rows)}")
+
+    e4 = [{**q, "origin": "synthetic", "reviewed": False, "part": "E4"} for q in PART_E]
+    unresolved.extend(resolve_pages(e4, index))
+    extended = rows + e4
+    write_rows(HERE / "golden-e4.jsonl", extended)
+    print(f"wrote golden-e4.jsonl: {describe(extended)} (+{len(e4)} E4 questions)")
     if unresolved:
         print("clause not found in the index (no page recorded):")
         for u in unresolved:

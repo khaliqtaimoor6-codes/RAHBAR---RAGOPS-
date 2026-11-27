@@ -1,0 +1,206 @@
+{
+  "gate": "pass",
+  "candidate": "/results/ragops-20261127T163847Z.json",
+  "baseline": "/results/baseline-qwen.json",
+  "config": "/etc/rahbar-gate/gate.yaml",
+  "candidate_meta": {
+    "collection": {
+      "name": "rahbar-cand-topk6",
+      "index_id": "7a0aa714ee0b",
+      "indexed_at": "2026-11-27T16:11:32Z",
+      "embed_model": "nomic-embed-text",
+      "chunk_size": 150,
+      "chunk_overlap": 30,
+      "chunks": 1032
+    },
+    "embedding_version": "nomic-embed-text@0a109f422b47",
+    "golden": {
+      "file": "golden.jsonl",
+      "questions": 34,
+      "answerable": 28,
+      "unanswerable": 6,
+      "hard": 16,
+      "human": 21,
+      "synthetic": 13
+    }
+  },
+  "baseline_meta": {
+    "collection": {
+      "name": "rahbar-cand-topk6",
+      "index_id": "7a0aa714ee0b",
+      "indexed_at": "2026-11-27T16:11:32Z",
+      "embed_model": "nomic-embed-text",
+      "chunk_size": 150,
+      "chunk_overlap": 30,
+      "chunks": 1032
+    },
+    "embedding_version": "nomic-embed-text@0a109f422b47",
+    "golden": {
+      "file": "golden.jsonl",
+      "questions": 34,
+      "answerable": 28,
+      "unanswerable": 6,
+      "hard": 16,
+      "human": 21,
+      "synthetic": 13
+    }
+  },
+  "checks": [
+    {
+      "id": "module-paraphrase",
+      "level": "module",
+      "metric": "paraphrase_mean_cosine",
+      "baseline": 0.7865,
+      "candidate": 0.7865,
+      "delta": 0.0,
+      "requirement": ">= 0.7865 (baseline - 0.02)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "module-gap",
+      "level": "module",
+      "metric": "gap",
+      "baseline": 0.3263,
+      "candidate": 0.3263,
+      "delta": 0.0,
+      "requirement": ">= 0.3263 (baseline - 0.02)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "module-determinism",
+      "level": "module",
+      "metric": "determinism_max_abs_diff",
+      "baseline": 0.0,
+      "candidate": 0.0,
+      "delta": 0.0,
+      "requirement": "<= 0.001",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "component-recall3",
+      "level": "component",
+      "metric": "recall@3",
+      "baseline": 0.9107,
+      "candidate": 0.9107,
+      "delta": 0.0,
+      "requirement": ">= 0.9107 (baseline - 0.05)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "component-recall5",
+      "level": "component",
+      "metric": "recall@5",
+      "baseline": 0.9643,
+      "candidate": 0.9643,
+      "delta": 0.0,
+      "requirement": ">= 0.9643 (baseline - 0.02)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "component-mrr",
+      "level": "component",
+      "metric": "mrr",
+      "baseline": 0.8244,
+      "candidate": 0.8244,
+      "delta": 0.0,
+      "requirement": ">= 0.8244 (baseline - 0.03)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "component-ndcg5",
+      "level": "component",
+      "metric": "ndcg@5",
+      "baseline": 0.8354,
+      "candidate": 0.8373,
+      "delta": 0.0019,
+      "requirement": ">= 0.8354 (baseline - 0.03)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "component-typos-recall5",
+      "level": "component",
+      "metric": "typos.recall@5",
+      "baseline": 0.9286,
+      "candidate": 0.9286,
+      "delta": 0.0,
+      "requirement": ">= 0.9286 (baseline - 0.03)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "component-typos-mrr",
+      "level": "component",
+      "metric": "typos.mrr",
+      "baseline": 0.8393,
+      "candidate": 0.8393,
+      "delta": 0.0,
+      "requirement": ">= 0.8393 (baseline - 0.03)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "e2e-faithfulness",
+      "level": "end_to_end",
+      "metric": "faithfulness",
+      "baseline": 1.0,
+      "candidate": 1.0,
+      "delta": 0.0,
+      "requirement": ">= 0.95 and >= 1.0000 (baseline - 0.05)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "e2e-abstention",
+      "level": "end_to_end",
+      "metric": "abstention_correct_unanswerable",
+      "baseline": 1.0,
+      "candidate": 1.0,
+      "delta": 0.0,
+      "requirement": ">= 0.83",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "e2e-false-abstention",
+      "level": "end_to_end",
+      "metric": "false_abstention_answerable",
+      "baseline": 0.25,
+      "candidate": 0.0714,
+      "delta": -0.1786,
+      "requirement": "<= 0.12 and <= 0.2500 (baseline + 0.05)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "e2e-citations",
+      "level": "end_to_end",
+      "metric": "citation_validity_in_retrieved",
+      "baseline": 1.0,
+      "candidate": 1.0,
+      "delta": 0.0,
+      "requirement": ">= 0.98 and >= 1.0000 (baseline - 0.02)",
+      "passed": true,
+      "message": ""
+    },
+    {
+      "id": "e2e-latency-p95",
+      "level": "end_to_end",
+      "metric": "latency_p95_ms",
+      "baseline": 9664.92,
+      "candidate": 14513.07,
+      "delta": 4848.15,
+      "requirement": "<= 20000 and <= 9664.9200 (baseline x 1.60)",
+      "passed": true,
+      "message": ""
+    }
+  ],
+  "failures": [],
+  "generated_at": "20261127T171145Z"
+}
