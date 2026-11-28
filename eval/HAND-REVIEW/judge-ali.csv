@@ -1,0 +1,7 @@
+id,trace_id,question,answer,judge_supported,human_label,notes
+g01,0cad0a66233a49ccaddfa3f879aca890,What CGPA does an undergraduate need to stay off academic warning?,An undergraduate must maintain a CGPA of at least 2.00 to stay off academic warning.,True,,
+g02,685176b64f6d449689e304ac1acf1e64,What happens if my CGPA stays below 2.00 for three semesters in a row?,Your admission will be closed.,True,,
+g03,9973f89c4ee8428d888a8b2607058236,How many courses is the normal course load in a regular semester?,The normal course load in a regular semester is 5 courses.,True,,
+g04,dfed14ca62af4019a12dde32035bcb44,How many courses can I repeat in the summer semester?,You can repeat up to two courses in the summer semester.,True,,
+g05,22552c32509c470daa330c81b2ef81a2,"If I apply for rechecking of my final exam, do I get the rechecking fee back?","Yes, the rechecking fee will be refunded if there is an increase in marks.",True,,
+g06,5e28d80b631240beb16f6fe9a22fc1ce,Am I allowed to use ChatGPT or other generative AI tools in lab courses like Programming Fundamentals?,"No, you are not allowed to use ChatGPT or other generative AI tools in lab courses such as Programming Fundamentals unless the lab instructor explicitly permits it.",True,,
