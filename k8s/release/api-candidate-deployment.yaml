@@ -1,8 +1,6 @@
-# C1/F3: a separate api Deployment used for both sides of the C1 comparison. It reads the
-# baseline-equivalent 1,032-chunk collection; the only C1 change is TOP_K (5 for the
-# baseline run, 6 for the candidate run). Both use qwen/qwen3.8-27b because the Part B
-# gpt-oss-20b key hit Groq's daily token limit during the re-run. Rollout/undo is on
-# live `api`, never on this Deployment.
+# C1/F3: a separate api Deployment for the candidate. It reads the baseline-equivalent
+# 1,032-chunk collection with the same answer model as Part B (gpt-oss-20b); the only C1
+# change is TOP_K 5 -> 6. Rollout/undo is on live `api`, never on this Deployment.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -41,7 +39,6 @@ spec:
             - configMapRef: {name: rahbar-config}
           env:
             - {name: CHROMA_COLLECTION, value: rahbar-cand-topk6}
-            - {name: LLM_MODEL, value: qwen/qwen3.8-27b}
             - {name: TOP_K, value: "6"}
             - {name: TRACE_DIR, value: /traces}
             - name: LLM_API_KEY

@@ -237,7 +237,7 @@ body.push(table([2400, 7346], ["Member", "Work"], [
 body.push(gap());
 body.push(new Paragraph({ spacing: { after: 100 }, children: [
   new TextRun({ text: "AI statement (draft, agree on the wording together): ", bold: true }),
-  new TextRun({ text: "We used Claude Code (Anthropic) to help write code, tests, Kubernetes manifests and drafts of this report. Every number comes from runs of our own pipeline on our own cluster, and both members reviewed the work and can explain every part of it.", highlight: "yellow" })] }));
+  new TextRun({ text: "We used Claude Code (Anthropic) and Sisyphus to help write code, tests, Kubernetes manifests and drafts of this report. Every number comes from runs of our own pipeline on our own cluster, and both members reviewed the work and can explain every part of it.", highlight: "yellow" })] }));
 
 // ---- appendix (its own landscape section: wide terminal screenshots stay readable)
 const appendix = [];

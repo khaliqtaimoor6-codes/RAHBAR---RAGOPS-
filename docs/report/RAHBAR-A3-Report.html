@@ -50,7 +50,7 @@ code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
 <tr><td>Reliability</td><td>Orphan chunks; data after vector-store restart; rolling release with zero unavailability</td><td>0; unchanged; maxUnavailable 0</td><td>0 orphans in all runs; traces after restart; <code>F3-rollout-topk6.txt</code></td></tr>
 </table>
 <h2>3. Release decision</h2>
-<p><span class="tag">RELEASE</span> The <code>TOP_K=6</code> candidate is accepted: gate PASS against the matched qwen baseline. The deliberately bad <code>CHUNK_SIZE=300</code> and <code>100</code> candidates are rejected (GATE FAILED), and a bad <code>cs300</code> release was reversed with <code>kubectl rollout undo</code>. The passing candidate was rolled out, traced, and rolled back for the demo; the live Deployment remained on <code>rahbar@4dcc91100345</code> at submission.</p>
+<p><span class="tag">RELEASE</span> The <code>TOP_K=6</code> candidate is accepted: gate PASS against the original Part B baseline. The deliberately bad <code>CHUNK_SIZE=300</code> and <code>100</code> candidates are rejected (GATE FAILED), and a bad <code>cs300</code> release was reversed with <code>kubectl rollout undo</code>. The passing candidate was rolled out, traced, and rolled back for the demo; the live Deployment remained on <code>rahbar@4dcc91100345</code> at submission.</p>
 </section>
 
 <section class="page">
@@ -101,18 +101,18 @@ code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
 <div class="two">
 <div>
 <h3>C. Change experiment and release gate</h3>
-<p>One change: <code>TOP_K</code> 5 → 6. Both runs used the same 1,032-chunk collection and the same <code>qwen/qwen3.8-27b</code> model; the original gpt-oss key hit Groq's 200,000 TPD cap during the re-run. Baseline <code>20261127T162843Z</code> (TOP_K=5), candidate <code>20261127T163847Z</code> (TOP_K=6).</p>
+<p>One change: <code>TOP_K</code> 5 → 6. Both use the same answer model (<code>openai/gpt-oss-20b</code>) and embedding pin; the baseline is Part B's original two-run result <code>20261126T104001Z-rejudged-1</code>, and the candidate suite is <code>20261128T115331Z</code> on the baseline-equivalent 1,032-chunk collection.</p>
 <table class="small"><tr><th>Metric</th><th>Baseline</th><th>Candidate</th><th>Δ</th></tr>
-<tr><td>paraphrase mean / gap</td><td>0.7865 / 0.3263</td><td>0.7865 / 0.3263</td><td>0</td></tr>
+<tr><td>paraphrase mean / gap</td><td>0.7864 / 0.3264</td><td>0.7865 / 0.3263</td><td>+0.0001 / −0.0001</td></tr>
 <tr><td>recall@3 / recall@5</td><td>0.9107 / 0.9643</td><td>0.9107 / 0.9643</td><td>0</td></tr>
-<tr><td>MRR / nDCG@5</td><td>0.8244 / 0.8354</td><td>0.8244 / 0.8373</td><td>0 / +0.0019</td></tr>
+<tr><td>MRR / nDCG@5</td><td>0.8304 / 0.8383</td><td>0.8244 / 0.8373</td><td>−0.0060 / −0.0010</td></tr>
 <tr><td>typos recall@5 / MRR</td><td>0.9286 / 0.8393</td><td>0.9286 / 0.8393</td><td>0</td></tr>
-<tr><td>faithfulness / abstention correct</td><td>1.0 / 1.0</td><td>1.0 / 1.0</td><td>0</td></tr>
-<tr><td>false abstention</td><td>0.2500</td><td>0.0714</td><td>−0.1786</td></tr>
-<tr><td>expected string</td><td>0.7143</td><td>0.9286</td><td>+0.2143</td></tr>
-<tr><td>latency p50 / p95 (ms)</td><td>4,325 / 9,665</td><td>8,565 / 14,513</td><td>+4,848 p95</td></tr>
+<tr><td>faithfulness / abstention correct</td><td>1.0 / 0.8333</td><td>0.9615 / 1.0</td><td>−0.0385 / +0.1667</td></tr>
+<tr><td>false abstention</td><td>0.0714</td><td>0.0714</td><td>0</td></tr>
+<tr><td>expected string</td><td>0.8571</td><td>0.7857</td><td>−0.0714</td></tr>
+<tr><td>latency p50 / p95 (ms)</td><td>8,191 / 13,672</td><td>7,592 / 11,822</td><td>−1,850 p95</td></tr>
 </table>
-<p>Gate thresholds: recall@5 may drop ≤ 0.02; MRR/nDCG ≤ 0.03; faithfulness ≥ 0.95; abstention ≥ 0.83; false abstention ≤ 0.12; citations ≥ 0.98; p95 ≤ 20 s and ≤ 160% of baseline. The relative p95 band was widened from 125% after two same-config qwen runs varied 9.7–14.5 s with no code change; the hard 20 s ceiling is unchanged. Deliberately bad candidates: <code>cs300</code> recall@5 0.6964 and <code>cs100</code> 0.6071 — both GATE FAILED. The passing candidate GATE PASSED.</p>
+<p>Gate thresholds: recall@5 may drop ≤ 0.02; MRR/nDCG ≤ 0.03; faithfulness ≥ 0.95; abstention ≥ 0.83; false abstention ≤ 0.12; citations ≥ 0.98; p95 ≤ 20 s and ≤ 125% of baseline. Deliberately bad candidates: <code>cs300</code> recall@5 0.6964 and <code>cs100</code> 0.6071 — both GATE FAILED. The passing candidate GATE PASSED.</p>
 <h3>F2. ConfigMap threshold change</h3>
 <p>Without rebuilding an image, tightening <code>component-recall5.max_drop</code> to −0.01 (candidate must gain a point) changed the gate from PASS to FAIL; restoring the ConfigMap changed it back to PASS (<code>F2-gate-config-change.txt</code>).</p>
 </div>
@@ -133,7 +133,7 @@ code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
 <tr><td>F4 observability</td><td>Trace records on stdout and the <code>rahbar-traces</code> PVC; <code>/metrics</code> via port-forward</td></tr>
 <tr><td>F5 resources</td><td>api 50m/128Mi → 500m/256Mi; chroma 25m/192Mi → 500m/384Mi; ingest 250m/256Mi → 1500m/512Mi; peak RSS 111 Mi embedding 1,262 chunks, 172.4 Mi for the 1,032-chunk rebuild</td></tr>
 </table>
-<p>F3 passing rollout: trace <code>73d0a6c6…</code> shows <code>rahbar-cand-topk6@7a0aa714ee0b</code> and answered 2.00; after <code>rollout undo</code>, trace <code>8f4be339…</code> shows <code>rahbar@4dcc91100345</code> with the same embedding version <code>nomic-embed-text@0a109f422b47</code>.</p>
+<p>F3 passing rollout: trace <code>032c4915…</code> shows <code>rahbar-cand-topk6@7a0aa714ee0b</code> and answered 2.00; after <code>rollout undo</code>, trace <code>3d87e681…</code> shows <code>rahbar@4dcc91100345</code> with the same embedding version <code>nomic-embed-text@0a109f422b47</code>.</p>
 </div>
 </div>
 </section>
@@ -143,7 +143,7 @@ code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
 <div class="two">
 <div>
 <p><b>(a)</b> Uniqueness caught most Batch B problems (3: one byte copy, one same-text copy, one near-duplicate); completeness caught 3, quality 1, recency 2 archives. A well-formed, unique but factually wrong new policy would pass; an NLI/contradiction check over the same family would catch it. Near-duplicate “first arrival wins” should prefer the newer <code>doc_version</code>.</p>
-<p><b>(b)</b> Module embeddings were healthy (gap 0.326, determinism 0) while the deliberately bad candidates failed at component level: <code>cs300</code> recall@5 0.6964 and <code>cs100</code> 0.6071 versus 0.9643 baseline. A healthy embedding space does not imply good chunk granularity; the release gate stops the bad ones before end-to-end. In the first topk6 run, module metrics were fine again but end-to-end false abstention hit 0.857 because the hosted model hit its daily token cap; provider errors were visible in the trace and api logs.</p>
+<p><b>(b)</b> Module embeddings were healthy (gap 0.326, determinism 0) while the deliberately bad candidates failed at component level: <code>cs300</code> recall@5 0.6964 and <code>cs100</code> 0.6071 versus 0.9643 baseline. A healthy embedding space does not imply good chunk granularity; the release gate stops the bad ones before end-to-end.</p>
 <p><b>(c)</b> We archive, never delete, superseded versions. Their chunks stay indexed with <code>superseded=true</code> and are filtered out unless a question asks for an older edition. Deleting them would break rollback (restore is 0 chunks re-embedded), questions about the 2023 rules, and audits of old traces. Operator deletions move the file to <code>deleted/&lt;run&gt;/</code>.</p>
 </div>
 <div>
@@ -156,7 +156,7 @@ code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
 <table>
 <tr><th>Member</th><th>Work</th></tr>
 <tr><td>Taimoor Khaliq</td><td>Part A (verification, data lake, incremental update, Batch B); Part B (golden set, three-level suite, stochasticity); Part D1–D4 (trace record, tool, metrics, injection rail, D5); F1, F2-ingestion, F4, F5; repository and CI fixes.</td></tr>
-<tr><td>Ali Haider Bajwa</td><td>Parts C, E, F2 gate ConfigMap and threshold-change demo, F3 controlled release; qwen baseline/candidate reruns after the provider quota; final report, screenshots and submission checks.</td></tr>
+<tr><td>Ali Haider Bajwa</td><td>Parts C, E, F2 gate ConfigMap and threshold-change demo, F3 controlled release; final gpt-oss candidate rerun after the provider quota reset; report, screenshots and submission checks.</td></tr>
 </table>
 <p><b>AI statement.</b> We used Claude Code and Sisyphus to help write code, manifests, tests and drafts of this report. Every number comes from runs of our own pipeline on our own cluster, and both members reviewed the work and can explain every part of it.</p>
 </section>

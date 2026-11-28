@@ -220,16 +220,16 @@ to its trace.
 
 ## Part C: one pipeline change and the release gate
 
-**C1.** One change: `TOP_K` 5 → 6 on the answer pipeline. Both halves read the same
-baseline-equivalent collection `rahbar-cand-topk6` (1,032 chunks, `nomic-embed-text|150|30|
-structure`, built from the lake after the restored PVC lost its registry); only `api-candidate`
-reads it. The deliberately bad candidates `rahbar-cand-cs300` (CHUNK_SIZE 300, recall@5
-0.6964) and `rahbar-cand-cs100` (CHUNK_SIZE 100, recall@5 0.6071) remain as the gate-fail
-demos. Part B's original two-run baseline is `ragops-20261126T104001Z-rejudged-1.json`
-(gpt-oss-20b, `rahbar@f4c2ff9a3277`); when it was re-run on 27 Nov the Groq key hit its
-200000 TPD limit, so the C1 comparison uses two matched one-run suites with
-`qwen/qwen3.8-27b` on the same collection: `TOP_K=5` baseline `20261127T162843Z` and
-`TOP_K=6` candidate `20261127T163847Z`. That keeps TOP_K as the only change inside C1.
+**C1.** One change: `TOP_K` 5 → 6 on the answer pipeline. The candidate reads the
+baseline-equivalent collection `rahbar-cand-topk6` (1,032 chunks,
+`nomic-embed-text|150|30|structure`, rebuilt from the lake after the restored PVC lost its
+registry) with the same answer model as Part B (`openai/gpt-oss-20b`). The baseline remains
+Part B's original two-run result `ragops-20261126T104001Z-rejudged-1.json`
+(`rahbar@f4c2ff9a3277`, also 1,032 chunks). The deliberately bad candidates
+`rahbar-cand-cs300` (CHUNK_SIZE 300, recall@5 0.6964) and `rahbar-cand-cs100` (CHUNK_SIZE
+100, recall@5 0.6071) remain as gate-fail demos. The final candidate suite is
+`20261128T115331Z` (TOP_K=6); it gates against the original Part B baseline, so the answer
+model and embedding pin stay fixed and TOP_K is the only C1 change.
 
 ```bash
 kubectl apply -f k8s/release/candidate-base-job.yaml   # full verify -> lake registry
@@ -237,32 +237,25 @@ kubectl -n rahbar wait --for=condition=complete job/ingest-cand-topk6-base --tim
 # restore the superseded fee page before the final candidate reconcile
 kubectl -n rahbar exec lake-shell -- sh -c 'echo fee-structure-page > /data/lake/inbox/_restore.txt'
 kubectl apply -f k8s/release/candidate-topk6-job.yaml  # reconcile-only -> 1032 chunks
-kubectl apply -f k8s/release/api-candidate-deployment.yaml
+kubectl apply -f k8s/release/api-candidate-deployment.yaml   # gpt-oss-20b, TOP_K=6
 kubectl -n rahbar rollout status deploy/api-candidate
-kubectl -n rahbar set env deploy/api-candidate TOP_K=5
-kubectl apply -f k8s/release/eval-baseline-candidate-job.yaml
-kubectl -n rahbar wait --for=condition=complete job/eval-baseline-candidate --timeout=7200s
-kubectl -n rahbar exec lake-shell -- sh -c 'cp "$(ls -t /results/ragops-*.json | head -1)" /results/baseline-qwen.json'
-kubectl -n rahbar set env deploy/api-candidate TOP_K=6
 kubectl delete job eval-candidate --ignore-not-found
 kubectl apply -f k8s/release/eval-candidate-job.yaml
 kubectl -n rahbar logs -f job/eval-candidate      # PASS/FAIL at the end
 scripts/lake.sh pull                              # -> eval/results/suite/
 ```
 
-The candidate suite `20261127T163847Z` gates against `eval/results/suite/baseline-qwen.json`
-(1 run, TOP_K=5). Both report all three levels; the qwen baseline replaces the Part B
-baseline only for C1/C2 because the original answer model had no remaining daily quota.
+The candidate suite `20261128T115331Z` gates against the original Part B baseline baked into
+the eval image (`eval/baseline-a3.json`). Both report all three levels with the same answer
+model and embedding pin.
 
 **C2 / F2 gate.** `eval/gate.py` averages each metric over a result's runs, checks that
 both results used the same question ids and embedding pin, then applies the rules in
 `eval/gate-thresholds.yaml`: recall@5 may drop ≤ 2 points (paper §5.4), MRR/nDCG ≤ 3,
 module paraphrase/gap ≤ 2, faithfulness ≥ 0.95 with ≤ 5 points of drop, abstention ≥ 0.83
 (at most one of six must-abstain questions answered), false abstention ≤ 0.12 with ≤ 0.05
-rise, citation validity ≥ 0.98, p95 ≤ 20 s and ≤ 160% of baseline. The relative p95 band
-was widened from 125% to 160% after two same-config qwen runs without code changes measured
-9.7 s and 14.5 s (free-tier hosted queueing); the hard 20 s ceiling still bounds the release.
-An unmeasured required metric fails. The thresholds are mirrored in `k8s/base/gate-config.yaml`
+rise, citation validity ≥ 0.98, p95 ≤ 20 s and ≤ 125% of baseline. An unmeasured required
+metric fails. The thresholds are mirrored in `k8s/base/gate-config.yaml`
 (tested equal in `eval/tests/test_gate.py`) and mounted at `/etc/rahbar-gate/gate.yaml`; the
 release Job exits 1 when the gate fails.
 
@@ -273,8 +266,8 @@ python eval/gate.py --candidate <candidate.json> \
 kubectl -n rahbar delete job eval-gate --ignore-not-found
 kubectl apply -f k8s/release/eval-gate-only-job.yaml
 kubectl -n rahbar logs -f job/eval-gate
-# flip a decision by editing only the ConfigMap, then restore it. With the qwen baseline
-# recall@5 = 0.9643 and candidate = 0.9643, max_drop -0.01 demands a 1-point gain and fails.
+# flip a decision by editing only the ConfigMap, then restore it. With baseline recall@5
+# = 0.9643 and candidate = 0.9643, max_drop -0.01 demands a 1-point gain and fails.
 kubectl -n rahbar patch configmap rahbar-gate --type merge \
   -p '{"data":{"gate.yaml":"version: 1\nrules:\n  - id: component-recall5\n    level: component\n    metric: recall@5\n    max_drop: -0.01\n"}}'
 kubectl -n rahbar delete job eval-gate --ignore-not-found
@@ -284,8 +277,10 @@ kubectl -n rahbar apply -f k8s/base/gate-config.yaml
 
 Evidence: `eval/results/suite/*-gate.json/.md`, `docs/evidence/a3/C-gate-pass.txt` and
 `docs/evidence/a3/F2-gate-config-change.txt` (pass → fail → pass without rebuilding the image).
-`ragops-20261127T154916Z` is the earlier failed run: the fee page was archived by the fresh
-verification (fixed with `_restore.txt`) and gpt-oss hit its 200000 TPD quota.
+`ragops-20261127T154916Z` is an earlier failed run: the fee page was archived by the fresh
+verification (fixed with `_restore.txt`) and gpt-oss hit its 200000 TPD quota. After the quota
+refreshed, `ragops-20261128T115331Z` passed against the original baseline; the interim qwen
+runs remain in the results directory but are not used in C1/C2.
 
 ## Part E: live query log, coverage and drift
 
@@ -333,10 +328,9 @@ final candidate was rebuilt with a full verification Job (`20261127T140208Z`, 23
 checked: 14 indexed, 2 archived by recency, 7 quarantined, 1,032 chunks embedded). Because
 b09 arrived with the mirror, the 2026-27 fee page was archived; the baseline has it current,
 so `_restore.txt` was queued and a 4.7 s reconcile-only run relabelled 13 chunks with
-**0** chunks embedded. The two matched qwen suites then changed only `TOP_K`: recall@5
-0.9643 → 0.9643, MRR 0.8244 → 0.8244, false abstention 0.2500 → 0.0714 and expected-string
-0.7143 → 0.9286. Reports: `eval/results/suite/ragops-20261127T162843Z.json`,
-`eval/results/suite/ragops-20261127T163847Z.json`, `eval/results/suite/baseline-qwen.json`.
+**0** chunks embedded. The final gpt-oss candidate at `TOP_K=6` reached recall@5 0.9643,
+MRR 0.8244, false abstention 0.0714 and faithfulness 0.9615, passing the gate against the
+original Part B baseline. Report: `eval/results/suite/ragops-20261128T115331Z.json`.
 
 ## Part F (release side): F2 gate and F3 controlled release
 
@@ -347,7 +341,7 @@ only be reached by the eval Job. The release decision:
 ```bash
 # passing candidate -> live api
 kubectl -n rahbar set env deploy/api \
-  CHROMA_COLLECTION=rahbar-cand-topk6 TOP_K=6 LLM_MODEL=qwen/qwen3.8-27b
+  CHROMA_COLLECTION=rahbar-cand-topk6 TOP_K=6 LLM_MODEL=openai/gpt-oss-20b
 kubectl -n rahbar rollout status deploy/api          # maxUnavailable: 0
 kubectl -n rahbar exec -i deploy/api -- python - <<'PY'
 import httpx
@@ -362,8 +356,8 @@ kubectl -n rahbar rollout status deploy/api
 
 Every trace records `collection.name`, `collection.index_id` and `embedding.version`, so
 the rollback is visible in the data itself, not just in a Deployment spec. The passing
-rollout trace `73d0a6c6d5bb4a978d0c9a314b8d320b` shows `rahbar-cand-topk6@7a0aa714ee0b`
-and answered 2.00; after `rollout undo`, trace `8f4be339e26f45cd9a5bf2cb641816bb` shows
+rollout trace `032c49156c244bd2ac02eba71d74b2f8` shows `rahbar-cand-topk6@7a0aa714ee0b`
+and answered 2.00; after `rollout undo`, trace `3d87e6810d1e4346ba5676336be34c0a` shows
 `rahbar@4dcc91100345` with the same embedding version. The deliberately bad `cs300`
 release and its undo are kept in `docs/evidence/f3-rollout.txt` / `f3-rollback.txt`.
 Evidence: `docs/evidence/a3/F3-rollout-topk6.txt`, `F3-rollback-topk6.txt`.
@@ -386,7 +380,7 @@ Raw logs: `docs/evidence/a3/`. Machine-readable reports: `eval/results/ingest/`
 | C | candidate collection `rahbar-cand-cs300` (`--reconcile-only`, CHUNK_SIZE 300) | — | 14 docs | 834 | live `rahbar` untouched; no re-download, no re-OCR | 34 s |
 | C | candidate collection `rahbar-cand-cs100` (CHUNK_SIZE 100, overlap 20) | — | 14 docs | 1262 | deliberately bad: used for the gate-fails demo | 55 s |
 | C | regenerate the lake registry from the restored PVC | 23 checked (14 index, 2 archive, 7 quarantine) | — | 1032 | full verify + OCR, then fee page restored; `rahbar-cand-topk6` | 2260 s |
-| C | `TOP_K=6` candidate suite (`20261127T163847Z`, qwen) | — | — | — | gate PASS against 1-run qwen baseline `20261127T162843Z` (`TOP_K=5`) | 13 min |
+| C | `TOP_K=6` candidate suite (`20261128T115331Z`, gpt-oss) | — | — | — | gate PASS against original Part B baseline | 10 min |
 
 ### Batch B verification (A1)
 

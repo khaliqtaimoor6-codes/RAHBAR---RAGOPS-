@@ -69,7 +69,7 @@ def main() -> int:
          "evidence-f2.txt", "F2-config-change.png"),
         ("F3", "cat docs/evidence/a3/F3-rollout-topk6.txt docs/evidence/a3/F3-rollback-topk6.txt",
          "evidence-f3.txt", "F3-rollout-undo.png"),
-        ("F4", "kubectl -n rahbar logs job/ingest-cand-topk6; kubectl -n rahbar logs job/eval-baseline-candidate",
+        ("F4", "kubectl -n rahbar logs job/ingest-cand-topk6; kubectl -n rahbar logs job/eval-candidate",
          "evidence-completed-jobs.txt", "F4-completed-jobs.png"),
     ]
     for label, cmd, path, name in spec:

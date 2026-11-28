@@ -78,4 +78,4 @@ rules:
     level: end_to_end
     metric: latency_p95_ms
     max: 20000
-    max_rise_pct: 60
+    max_rise_pct: 25
