@@ -1,23 +1,11 @@
-=== F3 rollout: live api -> passing topk6 candidate ===
-2026-11-27T17:22:10Z
-
+=== F3 rollout: live api -> passing topk6 candidate (gpt-oss-20b) ===
+2026-11-28T12:20:06Z
 --- before ---
-REVISION  CHANGE-CAUSE
-1         <none>
-2         <none>
-3         <none>
-4         <none>
-6         <none>
-7         <none>
-
 TOP_K=5
 CHROMA_COLLECTION=rahbar
 LLM_MODEL=openai/gpt-oss-20b
 
---- set env to passing candidate ---
-deployment.apps/api env updated
-Waiting for deployment spec update to be observed...
-Waiting for deployment "api" rollout to finish: 0 out of 3 new replicas have been updated...
+--- set env + rollout ---
 Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
@@ -29,10 +17,8 @@ Waiting for deployment "api" rollout to finish: 1 old replicas are pending termi
 Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
 Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
 deployment "api" successfully rolled out
-
---- after rollout ---
 TOP_K=6
 CHROMA_COLLECTION=rahbar-cand-topk6
-LLM_MODEL=qwen/qwen3.8-27b
-status 200 answered True trace 73d0a6c6d5bb4a978d0c9a314b8d320b
-answer An undergraduate student needs a minimum CGPA of 2.00 to avoid academic warning.
+LLM_MODEL=openai/gpt-oss-20b
+status 200 answered True trace 032c49156c244bd2ac02eba71d74b2f8
+answer 2.00

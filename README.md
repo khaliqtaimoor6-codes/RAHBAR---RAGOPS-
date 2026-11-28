@@ -221,10 +221,10 @@ in an ephemeral k3d cluster. Results and method: [docs/PIPELINE.md](docs/PIPELIN
 ## Part C: one change, three levels and the release gate
 
 The passing candidate changes `TOP_K` 5 → 6 on a baseline-equivalent 1,032-chunk
-collection (`rahbar-cand-topk6`). The deliberately bad `CHUNK_SIZE=300`/`100` collections
-remain as gate-fail demos. All run the same three-level suite; the gate compares with a
-matched qwen baseline using thresholds from the `rahbar-gate` ConfigMap. Full method:
-[docs/RAGOPS.md](docs/RAGOPS.md).
+collection (`rahbar-cand-topk6`) with the same gpt-oss-20b answer model as Part B. The
+deliberately bad `CHUNK_SIZE=300`/`100` collections remain as gate-fail demos. All run
+the same three-level suite; the gate compares with the original Part B baseline using
+thresholds from the `rahbar-gate` ConfigMap. Full method: [docs/RAGOPS.md](docs/RAGOPS.md).
 
 ```bash
 kubectl apply -f k8s/base/namespace.yaml

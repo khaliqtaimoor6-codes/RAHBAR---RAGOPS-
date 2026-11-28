@@ -33,7 +33,7 @@ spec:
             - >-
               exec python ragops_suite.py
               --gate-only "$(ls -t /results/ragops-*.json | grep -v -- '-gate.json' | head -1)"
-              --gate-baseline /results/baseline-qwen.json
+              --gate-baseline /app/eval/baseline-a3.json
               --gate-config /etc/rahbar-gate/gate.yaml
           resources:
             requests: {cpu: 20m, memory: 64Mi}

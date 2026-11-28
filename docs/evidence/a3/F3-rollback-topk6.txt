@@ -1,14 +1,12 @@
-=== F3 trace after rollout to topk6 ===
-trace_id 73d0a6c6d5bb4a978d0c9a314b8d320b
+=== trace after rollout ===
+trace_id 032c49156c244bd2ac02eba71d74b2f8
 collection {"name": "rahbar-cand-topk6", "index_id": "7a0aa714ee0b"}
 embedding {"model": "nomic-embed-text", "version": "nomic-embed-text@0a109f422b47"}
-response {"answer": "An undergraduate student needs a minimum CGPA of 2.00 to avoid academic warning.", "answered_from_context": true, "confidence": "high", "abstain_reason": null}
+response {"answer": "2.00", "answered_from_context": true, "confidence": "high", "abstain_reason": null}
 
 === F3 rollback: live api -> previous collection ===
-2026-11-27T17:23:10Z
+2026-11-28T12:20:49Z
 deployment.apps/api rolled back
-Waiting for deployment spec update to be observed...
-Waiting for deployment "api" rollout to finish: 0 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
@@ -16,18 +14,17 @@ Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have bee
 Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
-Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
 Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
 Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
 deployment "api" successfully rolled out
 TOP_K=5
 CHROMA_COLLECTION=rahbar
 LLM_MODEL=openai/gpt-oss-20b
-status 200 answered False trace 8f4be339e26f45cd9a5bf2cb641816bb
-answer I could not produce a reliable answer from the documents just now. Please try again, or check with the Academic Office.
+status 200 answered True trace 3d87e6810d1e4346ba5676336be34c0a
+answer An undergraduate needs a CGPA of at least 2.00 to stay off academic warning.
 
 === trace after rollback ===
-trace_id 8f4be339e26f45cd9a5bf2cb641816bb
+trace_id 3d87e6810d1e4346ba5676336be34c0a
 collection {"name": "rahbar", "index_id": "4dcc91100345", "indexed_at": "2026-11-07T17:22:23Z", "embed_model": "nomic-embed-text", "chunk_size": 150, "chunk_overlap": 30, "chunks": 1008}
 embedding {"model": "nomic-embed-text", "version": "nomic-embed-text@0a109f422b47"}
-grounding {"relevance_floor": 0.66, "top1_score": 0.8663, "abstain_reason": "fallback", "fallback": "invalid_output", "citations_dropped": 0}
+response {"answer": "An undergraduate needs a CGPA of at least 2.00 to stay off academic warning.", "answered_from_context": true, "confidence": "high", "abstain_reason": null}

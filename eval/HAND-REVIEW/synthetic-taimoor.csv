@@ -1,0 +1,76 @@
+id,question,type,hard,declared_evidence,expect,must_abstain,source_excerpt,reviewed_by,decision,notes
+a04,How much does a lunch meal cost in the university cafeteria?,abstain,False,(no relevant document declared),,True,(none — this is an abstain question; check that no document answers it),,,
+a05,Who won the 2022 FIFA World Cup?,abstain,False,(no relevant document declared),,True,(none — this is an abstain question; check that no document answers it),,,
+a06,What is the monthly parking fee for a student's car?,abstain,False,(no relevant document declared),,True,(none — this is an abstain question; check that no document answers it),,,
+h02,"What CGPA puts a student on academic warning, and what happens if it stays that low for three semesters?",multi-chunk,True,academic-rules-handbook-jun-2026.pdf / 5.4 | academic-rules-handbook-jun-2026.pdf / 5.6,2.00,False,"p24: 5. Academic Assessment
+5.1 The performance of students is assessed during the semester
+through midterm exams, assignments, quizzes, case studies or
+any other method considered appropriate by the course
+instructor and the University and communicated to the
+students at the start of a course.
+5.2 The semester work will normally contribute 50% towards the
+final grade, while the final examination will contribute the
+remaining 50% of the total marks. A letter grade will be
+awarded to each student based on his/her overall academic
+performance in a course.
+5.3 Any deviation from Rule 5.2 above if necessitated by the
+nature of course will be made with the approval of Dean of the
+Faculty.
+Academic Warning/Probation
+5.4 Minimum CGPA required to avoid academic warning is 2.00
+for all undergraduate programs.
+5.5 If at the end of a semester (including summer semester) CGPA
+drops below 2.00, warning is issued, and warning count is
+incremented by one.
+5.6 If CGPA remains below 2.00 for 3 consecutive semesters,
+warning count becomes three and the admission of student at
+the University is automatically closed.",,,
+h04,"How many library books can an undergraduate borrow at a time, and for how long?",batch-b,True,b02-library-borrowing-rules.md / 2.1,three,False,"p1: # Library Borrowing Rules
+
+1. Membership
+
+1.1 Every enrolled student is a member of the campus library. The university ID card is
+the library card; it must be shown for every loan.
+
+2. Loans
+
+2.1 An undergraduate student may borrow up to three books at a time, for fourteen days.
+A loan may be renewed twice, online or at the desk, unless another member has reserved
+the book.
+
+2.2 Reference books, theses and the current issues of journals are for use in the
+library only and are never lent.
+
+3. Fines
+
+3.1 A book returned late is charged a fine of 50 rupees per day per book. A student with
+unpaid library fines cannot collect their degree or transcript until the fines are paid.
+
+3.2 A lost or damaged book is replaced by the borrower, or paid for at twice its current
+price when a replacement copy cannot be bought.",,,
+h06,When are the Fall 2026 midterm examinations held?,batch-b,True,b01-midterm-exam-notice-2026.md / 1.1,week 8,False,"p1: # Midterm Examination Notice, Fall 2026
+
+1. Schedule
+
+1.1 Midterm examinations for all undergraduate courses are held in week 8 of the
+semester, from Monday 19 October to Saturday 24 October 2026. Each paper is 90 minutes.
+
+1.2 The detailed date sheet is published on the student portal at least seven days before
+the first paper. Clashes must be reported to the Academic Office within two working days
+of publication; clashes reported later are not rescheduled.
+
+2. Conduct
+
+2.1 Students must carry their university ID card to every paper. A student without an ID
+card is allowed to sit the paper only after the invigilator records the roll number, and
+must show the card at the Academic Office within 24 hours.
+
+2.2 Mobile phones, smart watches and any device that can store or transmit data must be
+switched off and placed in bags at the front of the hall. Possession of such a device at
+the desk is treated as use of unfair means.
+
+3. Missed papers
+
+3.1 A student who misses a midterm for a documented medical reason may apply for a
+retake within three working days of the paper, with the medical certificate attached.
+There is no retake for any other reason.",,,

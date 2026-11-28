@@ -1,62 +1,43 @@
 === completed ingestion Job logs ===
-  docs_added                 0
-  docs_replaced              0
-  docs_metadata_updated      2
-  docs_removed               0
-  docs_unchanged             14
-  chunks_embedded            0
-  chunks_reused              0
-  chunks_deleted             0
-  chunks_metadata_updated    13
-  chunks_total               1032
-  orphan_chunks              0
-  chunks by doc_id (from Chroma):
-    academic-rules-handbook-jun-2026                     214
-    annual-report-2019-20                                96
-    annual-report-2023-24                                370
-    b01-midterm-exam-notice-2026                         5
-    b02-library-borrowing-rules                          5
-    b05-lab-policy-revised-draft                         5
-    b09-fee-structure-2027-28                            4
-    b10-attendance-notice-injected                       3
-    c01-convocation-notice                               1
-    c02-laptop-loan-scheme                               1
-    faculty-entrepreneurship-and-technical-start-ups-policy 26
-    fee-structure-page                                   9
-    grading-page                                         10
-    prospectus-2026-academic-rules-and-regulations       48
-    student-handbook-jun-2026                            112
-    undergraduate-academic-rules-aug-2023                123
 
-{"ts": "2026-11-27T16:11:32Z", "logger": "rahbar.ingest", "msg": "ingestion finished", "run_id": "20261127T161127Z", "seconds": 4.7, "peak_rss_mb": 82.2, "summary": {"docs_added": 0, "docs_replaced": 0, "docs_metadata_updated": 2, "docs_removed": 0, "docs_unchanged": 14, "chunks_embedded": 0, "chunks_reused": 0, "chunks_deleted": 0, "orphan_chunks": 0}}
-
-=== completed evaluation Job logs (baseline half of C1) ===
-[run 1] end-to-end (34 questions)...
-[run 1] component (retrieval + typo noise)...
-[run 1] module (embedding)...
-
-=== RAHBAR offline suite  20261127T162843Z  collection={'name': 'rahbar-cand-topk6', 'index_id': '7a0aa714ee0b', 'indexed_at': '2026-11-27T16:11:32Z', 'embed_model': 'nomic-embed-text', 'chunk_size': 150, 'chunk_overlap': 30, 'chunks': 1032} ===
-golden: {'file': 'golden.jsonl', 'questions': 34, 'answerable': 28, 'unanswerable': 6, 'hard': 16, 'human': 21, 'synthetic': 13}
-| level | metric | run 1 |
-|---|---|---|
-| module | paraphrase_mean_cosine | 0.7865 |
-| module | unrelated_mean_cosine | 0.4601 |
-| module | gap | 0.3263 |
-| module | ms_per_chunk_single | 759.5 |
-| module | determinism_max_abs_diff | 0.0 |
-| component.clean | recall@3 | 0.9107 |
-| component.clean | recall@5 | 0.9643 |
-| component.clean | mrr | 0.8244 |
-| component.clean | ndcg@5 | 0.8354 |
-| component.typos | recall@5 | 0.9286 |
+=== completed evaluation Job logs (gpt-oss candidate) ===
 | component.typos | mrr | 0.8393 |
-| end_to_end | faithfulness | 1.0 |
+| end_to_end | faithfulness | 0.9615 |
 | end_to_end | abstention_correct_unanswerable | 1.0 |
-| end_to_end | false_abstention_answerable | 0.25 |
+| end_to_end | false_abstention_answerable | 0.0714 |
 | end_to_end | citation_validity_in_retrieved | 1.0 |
-| end_to_end | citation_validity_gt_doc | 0.7937 |
-| end_to_end | expected_string_hit | 0.7143 |
-| end_to_end | latency_p50_ms | 4325.0 |
-| end_to_end | latency_p95_ms | 9664.92 |
+| end_to_end | citation_validity_gt_doc | 0.8205 |
+| end_to_end | expected_string_hit | 0.7857 |
+| end_to_end | latency_p50_ms | 7591.8 |
+| end_to_end | latency_p95_ms | 11822.04 |
 
-wrote /results/ragops-20261127T162843Z.json
+wrote /results/ragops-20261128T115331Z.json
+# RAHBAR release gate: PASS
+
+- candidate: `/results/ragops-20261128T115331Z.json` — collection rahbar-cand-topk6 (1032 chunks)
+- baseline: `/app/eval/baseline-a3.json` — collection rahbar (1032 chunks)
+- config: `/etc/rahbar-gate/gate.yaml`
+- generated: 20261128T120356Z
+
+| rule | level | metric | baseline | candidate | delta | requirement | result |
+|---|---|---|---:|---:|---:|---|---|
+| module-paraphrase | module | paraphrase_mean_cosine | 0.7864 | 0.7865 | +0.0001 | >= 0.7864 (baseline - 0.02) | PASS |
+| module-gap | module | gap | 0.3264 | 0.3263 | -0.0001 | >= 0.3264 (baseline - 0.02) | PASS |
+| module-determinism | module | determinism_max_abs_diff | 0.0000 | 0.0000 | +0.0000 | <= 0.001 | PASS |
+| component-recall3 | component | recall@3 | 0.9107 | 0.9107 | +0.0000 | >= 0.9107 (baseline - 0.05) | PASS |
+| component-recall5 | component | recall@5 | 0.9643 | 0.9643 | +0.0000 | >= 0.9643 (baseline - 0.02) | PASS |
+| component-mrr | component | mrr | 0.8304 | 0.8244 | -0.0060 | >= 0.8304 (baseline - 0.03) | PASS |
+| component-ndcg5 | component | ndcg@5 | 0.8383 | 0.8373 | -0.0010 | >= 0.8383 (baseline - 0.03) | PASS |
+| component-typos-recall5 | component | typos.recall@5 | 0.9286 | 0.9286 | +0.0000 | >= 0.9286 (baseline - 0.03) | PASS |
+| component-typos-mrr | component | typos.mrr | 0.8393 | 0.8393 | +0.0000 | >= 0.8393 (baseline - 0.03) | PASS |
+| e2e-faithfulness | end_to_end | faithfulness | 1.0000 | 0.9615 | -0.0385 | >= 0.95 and >= 1.0000 (baseline - 0.05) | PASS |
+| e2e-abstention | end_to_end | abstention_correct_unanswerable | 0.8333 | 1.0000 | +0.1667 | >= 0.83 | PASS |
+| e2e-false-abstention | end_to_end | false_abstention_answerable | 0.0714 | 0.0714 | +0.0000 | <= 0.12 and <= 0.0714 (baseline + 0.05) | PASS |
+| e2e-citations | end_to_end | citation_validity_in_retrieved | 1.0000 | 1.0000 | +0.0000 | >= 0.98 and >= 1.0000 (baseline - 0.02) | PASS |
+| e2e-latency-p95 | end_to_end | latency_p95_ms | 13671.5350 | 11822.0400 | -1849.4950 | <= 20000 and <= 13671.5350 (baseline x 1.60) | PASS |
+
+## Failures
+
+- none
+
+GATE PASSED
