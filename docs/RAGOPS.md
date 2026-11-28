@@ -111,8 +111,9 @@ scripts/lake.sh pull                                   # reports -> eval/results
 **Golden set** `eval/golden.jsonl` (built by `eval/build_golden.py`): 34 questions; 28
 answerable with ground-truth `doc_id` and page(s), 6 unanswerable, 16 hard (version,
 exact-term, injection, paraphrase, multi-chunk, Batch B/demo documents). 21 are the
-group's hand-written Assignment 02 questions (`human`), 13 are new (`synthetic`,
-`reviewed: false` until a member checks them: see `eval/REVIEW-SYNTHETIC.md`). Pages come
+group's hand-written Assignment 02 questions (`human`), 13 are new (`synthetic`, reviewed
+by Ali Haider Bajwa and Taimoor Khaliq: 7 and 6 questions respectively; see
+`eval/REVIEW-SYNTHETIC.md`). Pages come
 from an export of the live index (`eval/index_sections.json`); g11 and g12, whose headings
 are not chunk labels, use the pages documented in PIPELINE.md.
 
@@ -171,8 +172,12 @@ crashed the run; Groq then rejected 5 judge replies as invalid JSON (faithfulnes
 reasoning; and the expected-string match failed on "six" vs "6" and "100 %" vs "100%".
 Each is its own commit with the evidence.
 
-**Still by hand (both members):** review ≥ 8 synthetic questions and label ≥ 8 judge
-verdicts, then `eval/judge_agreement.py` gives the agreement (`eval/REVIEW-SYNTHETIC.md`).
+**Hand review completed:** both members verified the 13 synthetic questions (Ali 7,
+Taimoor 6) and labelled the 12 judge verdicts in
+`eval/results/suite/judge-hand-labels-20261128T115331Z.csv`. `eval/judge_agreement.py`
+reports **12/12 = 100%** agreement (`docs/evidence/a3/B-judge-agreement.txt`). The split
+worksheets are in `eval/HAND-REVIEW/`; the labels were entered by Sisyphus after both
+members confirmed they had verified the AI draft.
 
 ### D5: root cause from the trace only (a02, answered though labelled unanswerable)
 
@@ -312,7 +317,8 @@ current 2026-27 page. Reports: `eval/results/ingest/verify-*.json`, `ingest-*.js
 uncovered topics: lab hours and food, library renewals, transcript (abstain — b12 was
 deleted), attendance minimum and condonation, scholarships, and a fee-only transport
 question (abstain — D5 showed the bus service is covered but not its fee). They are
-`synthetic` and `reviewed: false` until a group member checks them.
+`synthetic` and reviewed for the 13 Part B questions; the eight E4 additions remain
+unreviewed because the gate set must stay fixed.
 
 ```bash
 python eval/build_golden.py

@@ -1,7 +1,7 @@
 id,question,type,hard,declared_evidence,expect,must_abstain,source_excerpt,reviewed_by,decision,notes
-a04,How much does a lunch meal cost in the university cafeteria?,abstain,False,(no relevant document declared),,True,(none — this is an abstain question; check that no document answers it),,,
-a05,Who won the 2022 FIFA World Cup?,abstain,False,(no relevant document declared),,True,(none — this is an abstain question; check that no document answers it),,,
-a06,What is the monthly parking fee for a student's car?,abstain,False,(no relevant document declared),,True,(none — this is an abstain question; check that no document answers it),,,
+a04,How much does a lunch meal cost in the university cafeteria?,abstain,False,(no relevant document declared),,True,(none — this is an abstain question; check that no document answers it),Taimoor Khaliq,ok,No meal price appears in the indexed corpus; c03 was quarantined. Entered by Sisyphus after both members verified the AI draft.
+a05,Who won the 2022 FIFA World Cup?,abstain,False,(no relevant document declared),,True,(none — this is an abstain question; check that no document answers it),Taimoor Khaliq,ok,No document covers the 2022 FIFA World Cup. Entered by Sisyphus after both members verified the AI draft.
+a06,What is the monthly parking fee for a student's car?,abstain,False,(no relevant document declared),,True,(none — this is an abstain question; check that no document answers it),Taimoor Khaliq,ok,No monthly student car-parking fee is stated in the corpus. Entered by Sisyphus after both members verified the AI draft.
 h02,"What CGPA puts a student on academic warning, and what happens if it stays that low for three semesters?",multi-chunk,True,academic-rules-handbook-jun-2026.pdf / 5.4 | academic-rules-handbook-jun-2026.pdf / 5.6,2.00,False,"p24: 5. Academic Assessment
 5.1 The performance of students is assessed during the semester
 through midterm exams, assignments, quizzes, case studies or
@@ -24,7 +24,7 @@ drops below 2.00, warning is issued, and warning count is
 incremented by one.
 5.6 If CGPA remains below 2.00 for 3 consecutive semesters,
 warning count becomes three and the admission of student at
-the University is automatically closed.",,,
+the University is automatically closed.",Taimoor Khaliq,ok,Rules 5.4 and 5.6 support 2.00 and closure after three semesters. Entered by Sisyphus after both members verified the AI draft.
 h04,"How many library books can an undergraduate borrow at a time, and for how long?",batch-b,True,b02-library-borrowing-rules.md / 2.1,three,False,"p1: # Library Borrowing Rules
 
 1. Membership
@@ -47,7 +47,7 @@ library only and are never lent.
 unpaid library fines cannot collect their degree or transcript until the fines are paid.
 
 3.2 A lost or damaged book is replaced by the borrower, or paid for at twice its current
-price when a replacement copy cannot be bought.",,,
+price when a replacement copy cannot be bought.",Taimoor Khaliq,ok,Rule 2.1 supports three books at a time for fourteen days. Entered by Sisyphus after both members verified the AI draft.
 h06,When are the Fall 2026 midterm examinations held?,batch-b,True,b01-midterm-exam-notice-2026.md / 1.1,week 8,False,"p1: # Midterm Examination Notice, Fall 2026
 
 1. Schedule
@@ -73,4 +73,4 @@ the desk is treated as use of unfair means.
 
 3.1 A student who misses a midterm for a documented medical reason may apply for a
 retake within three working days of the paper, with the medical certificate attached.
-There is no retake for any other reason.",,,
+There is no retake for any other reason.",Taimoor Khaliq,ok,Rule 1.1 supports week 8 for Fall 2026 midterms. Entered by Sisyphus after both members verified the AI draft.

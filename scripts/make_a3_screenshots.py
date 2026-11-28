@@ -71,6 +71,8 @@ def main() -> int:
          "evidence-f3.txt", "F3-rollout-undo.png"),
         ("F4", "kubectl -n rahbar logs job/ingest-cand-topk6; kubectl -n rahbar logs job/eval-candidate",
          "evidence-completed-jobs.txt", "F4-completed-jobs.png"),
+        ("B hand labels", "python eval/judge_agreement.py eval/results/suite/judge-hand-labels-20261128T115331Z.csv",
+         "evidence-judge-agreement.txt", "B-judge-agreement.png"),
     ]
     for label, cmd, path, name in spec:
         p = ROOT / "docs" / "report" / "assets" / path

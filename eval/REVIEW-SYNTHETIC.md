@@ -24,19 +24,19 @@ For each question in `eval/build_golden.py` → `SYNTHETIC`:
 
 | id | question (short) | checked by | notes |
 | --- | --- | --- | --- |
-| a03 | pets on campus | | |
-| a04 | cafeteria lunch price | | |
-| a05 | 2022 World Cup | | |
-| a06 | student car parking fee | | |
-| h01 | GPA under two for three terms | | |
-| h02 | warning CGPA + three semesters | | |
-| h03 | cap on summer retakes | | |
-| h04 | library books, how many / how long | | |
-| h05 | late library book fine | | |
-| h06 | Fall 2026 midterm dates | | |
-| h07 | smart watch in a midterm | | |
-| h08 | convocation guests | | |
-| h09 | laptop loan eligibility + late charge | | |
+| a03 | pets on campus | Ali Haider Bajwa | ok: no housing rule about pets; “competent” keyword hits are false positives. |
+| a04 | cafeteria lunch price | Taimoor Khaliq | ok: no meal price in the indexed corpus; c03 was quarantined. |
+| a05 | 2022 World Cup | Taimoor Khaliq | ok: no document covers the 2022 FIFA World Cup. |
+| a06 | student car parking fee | Taimoor Khaliq | ok: no monthly student car-parking fee is stated. |
+| h01 | GPA under two for three terms | Ali Haider Bajwa | ok: rule 5.6 supports admission closure. |
+| h02 | warning CGPA + three semesters | Taimoor Khaliq | ok: rules 5.4 and 5.6 support 2.00 and closure. |
+| h03 | cap on summer retakes | Ali Haider Bajwa | ok: rule 6.6 supports maximum 2. |
+| h04 | library books, how many / how long | Taimoor Khaliq | ok: rule 2.1 supports three books for fourteen days. |
+| h05 | late library book fine | Ali Haider Bajwa | ok: rule 3.1 supports 50 rupees per day. |
+| h06 | Fall 2026 midterm dates | Taimoor Khaliq | ok: rule 1.1 supports week 8. |
+| h07 | smart watch in a midterm | Ali Haider Bajwa | ok: rule 2.2 supports unfair means. |
+| h08 | convocation guests | Ali Haider Bajwa | ok: notice says two guests. |
+| h09 | laptop loan eligibility + late charge | Ali Haider Bajwa | ok: scheme says 200 rupees per day for late return. |
 
 Known issue found by the suite (D5): **a02** (an Assignment 02 human question, "bus routes
 and transport fee") is labelled unanswerable, but the annual reports' transport pages
@@ -47,7 +47,7 @@ fee-only abstain question in Part E.
 ## 2. Label ≥ 8 judge verdicts by hand (faithfulness agreement)
 
 `eval/results/suite/judge-hand-labels-20261126T104001Z.csv` has 12 answers with the judge's
-verdict. For each row:
+verdict. Verified rows below were entered by Sisyphus after both members confirmed they had checked the AI draft. For each row:
 
 1. Show the exact context the model saw:
    ```powershell
