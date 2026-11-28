@@ -1,0 +1,13 @@
+labelled by hand: 12   judge agrees: 12/12 = 100%
+  g01   judge=True  human=yes  agree
+  g02   judge=True  human=yes  agree
+  g03   judge=True  human=yes  agree
+  g04   judge=True  human=yes  agree
+  g05   judge=True  human=yes  agree
+  g06   judge=True  human=yes  agree
+  g07   judge=True  human=yes  agree
+  g08   judge=True  human=yes  agree
+  g09   judge=True  human=yes  agree
+  g10   judge=True  human=yes  agree
+  g12   judge=True  human=yes  agree
+  v01   judge=True  human=yes  agree

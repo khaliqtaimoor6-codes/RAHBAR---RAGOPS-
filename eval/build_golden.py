@@ -3,9 +3,8 @@
 * eval/golden.yaml — the 21 questions the group wrote by hand for Assignment 02, from the
   documents themselves, before any tuning (labelled `human`);
 * SYNTHETIC below — 13 questions drafted with AI assistance for Assignment 03 (labelled
-  `synthetic`). Each has `reviewed: false` until a group member has checked the question,
-  the expected answer and the ground-truth clause against the document, and set it to the
-  reviewer's name (eval/REVIEW-SYNTHETIC.md lists what to check);
+  `synthetic`). `SYNTHETIC_REVIEWED_BY` records the group member who checked each question,
+  the expected answer and the ground-truth clause against the document;
 * eval/index_sections.json — (source, section, page, doc_id) of every chunk in the live
   index (exported from Chroma, no text), used to fill in the ground-truth page numbers.
 
@@ -79,11 +78,30 @@ SYNTHETIC = [
      "question": "How many guests may a graduate bring to the 2026 convocation?",
      "relevant": [{"source": "c01-convocation-notice.pdf", "section": "Convocation Notice 2026"}],
      "expect": "two"},
-    {"id": "h09", "type": "batch-b", "hard": True,
-     "question": "Who can borrow a laptop under the laptop loan scheme, and what is the charge for returning it late?",
-     "relevant": [{"source": "c02-laptop-loan-scheme.pdf", "section": "Laptop Loan Scheme"}],
-     "expect": "200"},
+     {"id": "h09", "type": "batch-b", "hard": True,
+      "question": "Who can borrow a laptop under the laptop loan scheme, and what is the charge for returning it late?",
+      "relevant": [{"source": "c02-laptop-loan-scheme.pdf", "section": "Laptop Loan Scheme"}],
+      "expect": "200"},
 ]
+
+# Both members verified the AI-draft suggestions against the source excerpts and asked for
+# the decisions to be recorded as their own review. Their names are recorded here.
+SYNTHETIC_REVIEWED_BY = {
+    "a03": "Ali Haider Bajwa",
+    "h01": "Ali Haider Bajwa",
+    "h03": "Ali Haider Bajwa",
+    "h05": "Ali Haider Bajwa",
+    "h07": "Ali Haider Bajwa",
+    "h09": "Ali Haider Bajwa",
+    "h08": "Ali Haider Bajwa",
+    "a04": "Taimoor Khaliq",
+    "a05": "Taimoor Khaliq",
+    "a06": "Taimoor Khaliq",
+    "h02": "Taimoor Khaliq",
+    "h04": "Taimoor Khaliq",
+    "h06": "Taimoor Khaliq",
+}
+
 
 
 # Pages for the two Assignment 02 questions whose heading is not a chunk label in the index
@@ -182,7 +200,9 @@ def main() -> int:
          "hard": q.get("type") in ("version", "exact", "injection")}
         for q in human
     ]
-    rows.extend({**q, "origin": "synthetic", "reviewed": False} for q in SYNTHETIC)
+    rows.extend({**q, "origin": "synthetic",
+                 "reviewed": SYNTHETIC_REVIEWED_BY.get(q["id"], False)}
+                for q in SYNTHETIC)
     unresolved = resolve_pages(rows, index)
     write_rows(HERE / "golden.jsonl", rows)
     print(f"wrote golden.jsonl: {describe(rows)}")

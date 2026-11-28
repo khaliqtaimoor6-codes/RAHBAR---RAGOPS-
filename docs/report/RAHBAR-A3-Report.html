@@ -147,7 +147,7 @@ code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
 <p><b>(c)</b> We archive, never delete, superseded versions. Their chunks stay indexed with <code>superseded=true</code> and are filtered out unless a question asks for an older edition. Deleting them would break rollback (restore is 0 chunks re-embedded), questions about the 2023 rules, and audits of old traces. Operator deletions move the file to <code>deleted/&lt;run&gt;/</code>.</p>
 </div>
 <div>
-<p><b>(d)</b> We trust the LLM-judged faithfulness least: it is one more API call with JSON-mode and rate-limit failures (5 unparsable replies in the first run), and a grounded number can still be wrong, as g11 showed. Hand labelling ≥ 8 answers and comparing agreement is the mitigation; citations and expected strings give independent checks.</p>
+<p><b>(d)</b> We trust the LLM-judged faithfulness least: it is one more API call with JSON-mode and rate-limit failures (5 unparsable replies in the first run), and a grounded number can still be wrong, as g11 showed. Hand labelling ≥ 8 answers is the mitigation: 12 verdicts were verified by Ali and Taimoor and the judge agreed <b>12/12 = 100%</b> (<code>docs/evidence/a3/B-judge-agreement.txt</code>). Citations and expected strings give independent checks.</p>
 <p><b>(e)</b> The hardest paper idea was one-writer / atomic updates. We approximated it with an indexer-only writer, a lake lock, NetworkPolicy and per-document reconcile. A crash mid-run can still leave a partially updated collection until the next run; a blue/green collection swap would be closer to the paper but costs another 1,032 embeddings.</p>
 <p><b>(f)</b> Job <code>ingest</code> (and its CronJob with <code>Forbid</code> plus a lake lock) is the only writer, enforced by <code>chroma-from-api-and-indexer</code>. PVC <code>rahbar-lake</code> holds the lake, quarantine and archive; StatefulSet <code>chroma</code> holds retrieval sources; ConfigMaps hold thresholds and the embedding pin; PVC <code>rahbar-traces</code> plus stdout carry traceability; the api readiness probe refuses an index built with another embedding model; Secret <code>rahbar-secret</code> holds the Groq key.</p>
 </div>
@@ -155,8 +155,8 @@ code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
 <h2>7. Contribution and AI statement</h2>
 <table>
 <tr><th>Member</th><th>Work</th></tr>
-<tr><td>Taimoor Khaliq</td><td>Part A (verification, data lake, incremental update, Batch B); Part B (golden set, three-level suite, stochasticity); Part D1–D4 (trace record, tool, metrics, injection rail, D5); F1, F2-ingestion, F4, F5; repository and CI fixes.</td></tr>
-<tr><td>Ali Haider Bajwa</td><td>Parts C, E, F2 gate ConfigMap and threshold-change demo, F3 controlled release; final gpt-oss candidate rerun after the provider quota reset; report, screenshots and submission checks.</td></tr>
+<tr><td>Taimoor Khaliq</td><td>Part A (verification, data lake, incremental update, Batch B); Part B (golden set, three-level suite, stochasticity); Part D1–D4 (trace record, tool, metrics, injection rail, D5); F1, F2-ingestion, F4, F5; 6 synthetic-question reviews and 6 judge labels; repository and CI fixes.</td></tr>
+<tr><td>Ali Haider Bajwa</td><td>Parts C, E, F2 gate ConfigMap and threshold-change demo, F3 controlled release; final gpt-oss candidate rerun after the provider quota reset; 7 synthetic-question reviews and 6 judge labels; report, screenshots and submission checks.</td></tr>
 </table>
 <p><b>AI statement.</b> We used Claude Code and Sisyphus to help write code, manifests, tests and drafts of this report. Every number comes from runs of our own pipeline on our own cluster, and both members reviewed the work and can explain every part of it.</p>
 </section>
@@ -170,6 +170,7 @@ code { font-family: DejaVu Sans Mono, monospace; font-size: 6.8pt; }
 <figure><img src="../screenshots/C-gate-fail.png"><figcaption><b>C fail.</b> Release gate stops the deliberately bad <code>cs300</code> candidate.</figcaption></figure>
 <figure><img src="../screenshots/C-gate-pass.png"><figcaption><b>C pass.</b> Release gate passes for <code>TOP_K=6</code>.</figcaption></figure>
 <figure><img src="../screenshots/F2-config-change.png"><figcaption><b>F2.</b> ConfigMap threshold edit flips PASS → FAIL → PASS without an image rebuild.</figcaption></figure>
+<figure><img src="../screenshots/B-judge-agreement.png"><figcaption><b>B hand labels.</b> Judge agreement after the 12 hand-verified labels: 12/12 = 100%.</figcaption></figure>
 </div>
 </section>
 
